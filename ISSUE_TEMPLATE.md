@@ -2,8 +2,8 @@ Please fill out as much known and relevant information as possible.
 
 #### Version Information:
 
-  * WKB Java Version:
-  * WKB Java Source: (e.g. Central Repository, Release, Source Code Build)
+  * SF Java Version:
+  * SF Java Source: (e.g. Central Repository, Release, Source Code Build)
   * IDE Name & Version:
   * Maven Version: (mvn -version)
   * Java Version: (java -version)
