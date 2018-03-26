@@ -177,12 +177,32 @@ public class GeometryEnvelope {
 	}
 
 	/**
+	 * True if has Z coordinates
+	 * 
+	 * @return has z
+	 * @see #hasZ()
+	 */
+	public boolean is3D() {
+		return hasZ();
+	}
+
+	/**
 	 * True if has M measurements
 	 * 
 	 * @return has m
 	 */
 	public boolean hasM() {
 		return hasM;
+	}
+
+	/**
+	 * True if has M measurements
+	 * 
+	 * @return has m
+	 * @see #hasM()
+	 */
+	public boolean isMeasured() {
+		return hasM();
 	}
 
 	/**
@@ -376,82 +396,6 @@ public class GeometryEnvelope {
 	}
 
 	/**
-	 * Get min longitude (min x value)
-	 * 
-	 * @return min longitude
-	 */
-	public double getMinLongitude() {
-		return getMinX();
-	}
-
-	/**
-	 * Set min longitude (min x value)
-	 * 
-	 * @param longitude
-	 *            min longitude
-	 */
-	public void setMinLongitude(double longitude) {
-		setMinX(longitude);
-	}
-
-	/**
-	 * Get max longitude (max x value)
-	 * 
-	 * @return max longitude
-	 */
-	public double getMaxLongitude() {
-		return getMaxX();
-	}
-
-	/**
-	 * Set max longitude (max x value)
-	 * 
-	 * @param longitude
-	 *            max longitude
-	 */
-	public void setMaxLongitude(double longitude) {
-		setMaxX(longitude);
-	}
-
-	/**
-	 * Set min latitude (min y value)
-	 * 
-	 * @return min latitude
-	 */
-	public double getMinLatitude() {
-		return getMinY();
-	}
-
-	/**
-	 * Set min latitude (min y value)
-	 * 
-	 * @param latitude
-	 *            min latitude
-	 */
-	public void setMinLatitude(double latitude) {
-		setMinY(latitude);
-	}
-
-	/**
-	 * Get max latitude (max y value)
-	 * 
-	 * @return max latitude
-	 */
-	public double getMaxLatitude() {
-		return getMaxY();
-	}
-
-	/**
-	 * Set max latitude (max y value)
-	 * 
-	 * @param latitude
-	 *            max latitude
-	 */
-	public void setMaxLatitude(double latitude) {
-		setMaxY(latitude);
-	}
-
-	/**
 	 * Get the overlapping geometry envelope between the two envelopes
 	 *
 	 * @param envelope
@@ -463,20 +407,15 @@ public class GeometryEnvelope {
 	public static GeometryEnvelope overlap(GeometryEnvelope envelope,
 			GeometryEnvelope envelope2) {
 
-		double minLongitude = Math.max(envelope.getMinLongitude(),
-				envelope2.getMinLongitude());
-		double maxLongitude = Math.min(envelope.getMaxLongitude(),
-				envelope2.getMaxLongitude());
-		double minLatitude = Math.max(envelope.getMinLatitude(),
-				envelope2.getMinLatitude());
-		double maxLatitude = Math.min(envelope.getMaxLatitude(),
-				envelope2.getMaxLatitude());
+		double minX = Math.max(envelope.getMinX(), envelope2.getMinX());
+		double maxX = Math.min(envelope.getMaxX(), envelope2.getMaxX());
+		double minY = Math.max(envelope.getMinY(), envelope2.getMinY());
+		double maxLatitude = Math.min(envelope.getMaxY(), envelope2.getMaxY());
 
 		GeometryEnvelope overlap = null;
 
-		if (minLongitude < maxLongitude && minLatitude < maxLatitude) {
-			overlap = new GeometryEnvelope(minLongitude, minLatitude,
-					maxLongitude, maxLatitude);
+		if (minX < maxX && minY < maxLatitude) {
+			overlap = new GeometryEnvelope(minX, minY, maxX, maxLatitude);
 		}
 
 		return overlap;
@@ -494,20 +433,15 @@ public class GeometryEnvelope {
 	public static GeometryEnvelope union(GeometryEnvelope envelope,
 			GeometryEnvelope envelope2) {
 
-		double minLongitude = Math.min(envelope.getMinLongitude(),
-				envelope2.getMinLongitude());
-		double maxLongitude = Math.max(envelope.getMaxLongitude(),
-				envelope2.getMaxLongitude());
-		double minLatitude = Math.min(envelope.getMinLatitude(),
-				envelope2.getMinLatitude());
-		double maxLatitude = Math.max(envelope.getMaxLatitude(),
-				envelope2.getMaxLatitude());
+		double minX = Math.min(envelope.getMinX(), envelope2.getMinX());
+		double maxX = Math.max(envelope.getMaxX(), envelope2.getMaxX());
+		double minY = Math.min(envelope.getMinY(), envelope2.getMinY());
+		double maxY = Math.max(envelope.getMaxY(), envelope2.getMaxY());
 
 		GeometryEnvelope union = null;
 
-		if (minLongitude < maxLongitude && minLatitude < maxLatitude) {
-			union = new GeometryEnvelope(minLongitude, minLatitude,
-					maxLongitude, maxLatitude);
+		if (minX < maxX && minY < maxY) {
+			union = new GeometryEnvelope(minX, minY, maxX, maxY);
 		}
 
 		return union;
