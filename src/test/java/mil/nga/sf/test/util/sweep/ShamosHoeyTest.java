@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import mil.nga.sf.geom.LineString;
-import mil.nga.sf.geom.Point;
-import mil.nga.sf.geom.Polygon;
+import mil.nga.sf.LineString;
+import mil.nga.sf.Point;
+import mil.nga.sf.Polygon;
 import mil.nga.sf.util.sweep.ShamosHoey;
 
 import org.junit.Test;
@@ -29,11 +29,21 @@ public class ShamosHoeyTest {
 		addPoint(points, .5, 1);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertTrue(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertTrue(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertTrue((new LineString(points)).isSimple());
+		TestCase.assertTrue((new Polygon(new LineString(points))).isSimple());
 		TestCase.assertEquals(3, points.size());
 
 		addPoint(points, 0, 0);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertTrue(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertTrue(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertTrue((new LineString(points)).isSimple());
+		TestCase.assertTrue((new Polygon(new LineString(points))).isSimple());
 		TestCase.assertEquals(4, points.size());
 
 		points.clear();
@@ -45,6 +55,11 @@ public class ShamosHoeyTest {
 		addPoint(points, 0, 100);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertTrue(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertTrue(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertTrue((new LineString(points)).isSimple());
+		TestCase.assertTrue((new Polygon(new LineString(points))).isSimple());
 		TestCase.assertEquals(5, points.size());
 
 		points.clear();
@@ -58,6 +73,11 @@ public class ShamosHoeyTest {
 		addPoint(points, -104.8383236, 39.753723);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertTrue(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertTrue(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertTrue((new LineString(points)).isSimple());
+		TestCase.assertTrue((new Polygon(new LineString(points))).isSimple());
 		TestCase.assertEquals(7, points.size());
 
 		points.clear();
@@ -68,6 +88,11 @@ public class ShamosHoeyTest {
 		addPoint(points, -105.6445313, 38.5911139);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertTrue(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertTrue(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertTrue((new LineString(points)).isSimple());
+		TestCase.assertTrue((new Polygon(new LineString(points))).isSimple());
 		TestCase.assertEquals(4, points.size());
 
 	}
@@ -80,16 +105,31 @@ public class ShamosHoeyTest {
 		addPoint(points, 0, 0);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertFalse((new LineString(points)).isSimple());
+		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
 		TestCase.assertEquals(1, points.size());
 
 		addPoint(points, 1, 0);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertFalse((new LineString(points)).isSimple());
+		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
 		TestCase.assertEquals(2, points.size());
 
 		addPoint(points, 0, 0);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertFalse((new LineString(points)).isSimple());
+		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
 		TestCase.assertEquals(3, points.size());
 
 		points.clear();
@@ -102,6 +142,11 @@ public class ShamosHoeyTest {
 		addPoint(points, 0, 100);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertFalse((new LineString(points)).isSimple());
+		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
 		TestCase.assertEquals(6, points.size());
 
 		points.clear();
@@ -116,6 +161,11 @@ public class ShamosHoeyTest {
 		addPoint(points, -104.8383236, 39.753723);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertFalse((new LineString(points)).isSimple());
+		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
 		TestCase.assertEquals(8, points.size());
 
 		points.clear();
@@ -126,6 +176,11 @@ public class ShamosHoeyTest {
 		addPoint(points, -105.6445313, 38.5911138);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertFalse((new LineString(points)).isSimple());
+		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
 		TestCase.assertEquals(4, points.size());
 
 	}
@@ -147,6 +202,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(ring);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertTrue(polygon.isSimple());
 		TestCase.assertEquals(1, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 
@@ -162,6 +218,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertTrue(polygon.isSimple());
 		TestCase.assertEquals(2, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -184,6 +241,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(ring);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertTrue(polygon.isSimple());
 		TestCase.assertEquals(1, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 
@@ -200,6 +258,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertFalse(polygon.isSimple());
 		TestCase.assertEquals(2, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(4, polygon.getRings().get(1).numPoints());
@@ -222,6 +281,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(ring);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertTrue(polygon.isSimple());
 		TestCase.assertEquals(1, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 
@@ -237,6 +297,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertFalse(polygon.isSimple());
 		TestCase.assertEquals(2, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -259,6 +320,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(ring);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertTrue(polygon.isSimple());
 		TestCase.assertEquals(1, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 
@@ -274,6 +336,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole1);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertTrue(polygon.isSimple());
 		TestCase.assertEquals(2, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -290,6 +353,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole2);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertFalse(polygon.isSimple());
 		TestCase.assertEquals(3, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -313,6 +377,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(ring);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertTrue(polygon.isSimple());
 		TestCase.assertEquals(1, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 
@@ -328,6 +393,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole1);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertTrue(polygon.isSimple());
 		TestCase.assertEquals(2, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -344,6 +410,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole2);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertFalse(polygon.isSimple());
 		TestCase.assertEquals(3, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -367,6 +434,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(ring);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertTrue(polygon.isSimple());
 		TestCase.assertEquals(1, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 
@@ -382,6 +450,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertFalse(polygon.isSimple());
 		TestCase.assertEquals(2, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -420,6 +489,11 @@ public class ShamosHoeyTest {
 
 		// Date before = new Date();
 		TestCase.assertTrue(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertTrue(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertTrue(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertTrue((new LineString(points)).isSimple());
+		TestCase.assertTrue((new Polygon(new LineString(points))).isSimple());
 		// Date after = new Date();
 		// long time = after.getTime() - before.getTime();
 		// System.out.println("Points: " + points.size() + ", Time: " + time);
@@ -465,6 +539,11 @@ public class ShamosHoeyTest {
 
 		// Date before = new Date();
 		TestCase.assertFalse(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertFalse((new LineString(points)).isSimple());
+		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
 		// Date after = new Date();
 		// long time = after.getTime() - before.getTime();
 		// System.out.println("Points: " + points.size() + ", Time: " + time);
@@ -477,6 +556,11 @@ public class ShamosHoeyTest {
 
 		// Date before2 = new Date();
 		TestCase.assertFalse(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new Polygon(
+				new LineString(points))));
+		TestCase.assertFalse((new LineString(points)).isSimple());
+		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
 		// Date after2 = new Date();
 		// long time2 = after2.getTime() - before2.getTime();
 		// System.out.println("Points: " + points.size() + ", Time: " + time2);

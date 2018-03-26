@@ -1,7 +1,10 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import mil.nga.sf.util.GeometryUtils;
+import mil.nga.sf.util.sweep.ShamosHoey;
 
 /**
  * Compound Curve, Curve sub type
@@ -36,6 +39,28 @@ public class CompoundCurve extends Curve {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param lineStrings
+	 *            list of line strings
+	 */
+	public CompoundCurve(List<LineString> lineStrings) {
+		this(GeometryUtils.hasZ(lineStrings), GeometryUtils.hasM(lineStrings));
+		setLineStrings(lineStrings);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param lineString
+	 *            line string
+	 */
+	public CompoundCurve(LineString lineString) {
+		this(lineString.hasZ(), lineString.hasM());
+		addLineString(lineString);
+	}
+
+	/**
+	 * Copy Constructor
 	 * 
 	 * @param compoundCurve
 	 *            compound Curve to copy
@@ -89,8 +114,59 @@ public class CompoundCurve extends Curve {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public Point startPoint() {
+		Point startPoint = null;
+		if (!isEmpty()) {
+			for (LineString lineString : lineStrings) {
+				if (!lineString.isEmpty()) {
+					startPoint = lineString.startPoint();
+					break;
+				}
+			}
+		}
+		return startPoint;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Point endPoint() {
+		Point endPoint = null;
+		if (!isEmpty()) {
+			for (int i = lineStrings.size() - 1; i >= 0; i--) {
+				LineString lineString = lineStrings.get(i);
+				if (!lineString.isEmpty()) {
+					endPoint = lineString.endPoint();
+					break;
+				}
+			}
+		}
+		return endPoint;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isSimple() {
+		return ShamosHoey.simplePolygon(lineStrings);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Geometry copy() {
 		return new CompoundCurve(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEmpty() {
+		return lineStrings.isEmpty();
 	}
 
 }

@@ -1,4 +1,4 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
 
 /**
  * A single location in space. Each point has an X and Y coordinate. A point MAY
@@ -30,6 +30,13 @@ public class Point extends Geometry {
 
 	/**
 	 * Constructor
+	 */
+	public Point() {
+		this(0.0, 0.0);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param x
 	 *            x coordinate
@@ -42,9 +49,36 @@ public class Point extends Geometry {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param x
+	 *            x coordinate
+	 * @param y
+	 *            y coordinate
+	 * @param z
+	 *            z coordinate
 	 */
-	public Point() {
-		this(0.0, 0.0);
+	public Point(double x, double y, Double z) {
+		this(x, y, z, null);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param x
+	 *            x coordinate
+	 * @param y
+	 *            y coordinate
+	 * @param z
+	 *            z coordinate
+	 * @param m
+	 *            m coordinate
+	 */
+	public Point(double x, double y, Double z, Double m) {
+		super(GeometryType.POINT, z != null, m != null);
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.m = m;
 	}
 
 	/**
@@ -66,7 +100,7 @@ public class Point extends Geometry {
 	}
 
 	/**
-	 * Constructor
+	 * Copy Constructor
 	 * 
 	 * @param point
 	 *            point to copy
@@ -159,6 +193,68 @@ public class Point extends Geometry {
 	@Override
 	public Geometry copy() {
 		return new Point(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEmpty() {
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isSimple() {
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((m == null) ? 0 : m.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(x);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(y);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((z == null) ? 0 : z.hashCode());
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Point other = (Point) obj;
+		if (m == null) {
+			if (other.m != null)
+				return false;
+		} else if (!m.equals(other.m))
+			return false;
+		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
+			return false;
+		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
+			return false;
+		if (z == null) {
+			if (other.z != null)
+				return false;
+		} else if (!z.equals(other.z))
+			return false;
+		return true;
 	}
 
 }

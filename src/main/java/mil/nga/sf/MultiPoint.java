@@ -1,6 +1,10 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import mil.nga.sf.util.GeometryUtils;
 
 /**
  * A restricted form of GeometryCollection where each Geometry in the collection
@@ -31,6 +35,28 @@ public class MultiPoint extends GeometryCollection<Point> {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param points
+	 *            list of points
+	 */
+	public MultiPoint(List<Point> points) {
+		this(GeometryUtils.hasZ(points), GeometryUtils.hasM(points));
+		setPoints(points);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param point
+	 *            point
+	 */
+	public MultiPoint(Point point) {
+		this(point.hasZ(), point.hasM());
+		addPoint(point);
+	}
+
+	/**
+	 * Copy Constructor
 	 * 
 	 * @param multiPoint
 	 *            multi point to copy
@@ -86,6 +112,15 @@ public class MultiPoint extends GeometryCollection<Point> {
 	@Override
 	public Geometry copy() {
 		return new MultiPoint(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isSimple() {
+		Set<Point> points = new HashSet<>(getPoints());
+		return points.size() == numPoints();
 	}
 
 }

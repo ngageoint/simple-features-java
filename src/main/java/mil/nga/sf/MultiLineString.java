@@ -1,6 +1,8 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
 
 import java.util.List;
+
+import mil.nga.sf.util.GeometryUtils;
 
 /**
  * A restricted form of MultiCurve where each Curve in the collection must be of
@@ -31,6 +33,28 @@ public class MultiLineString extends MultiCurve<LineString> {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param lineStrings
+	 *            list of line strings
+	 */
+	public MultiLineString(List<LineString> lineStrings) {
+		this(GeometryUtils.hasZ(lineStrings), GeometryUtils.hasM(lineStrings));
+		setLineStrings(lineStrings);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param lineString
+	 *            line string
+	 */
+	public MultiLineString(LineString lineString) {
+		this(lineString.hasZ(), lineString.hasM());
+		addLineString(lineString);
+	}
+
+	/**
+	 * Copy Constructor
 	 * 
 	 * @param multiLineString
 	 *            multi line string to copy

@@ -1,6 +1,8 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
 
 import java.util.List;
+
+import mil.nga.sf.util.GeometryUtils;
 
 /**
  * A restricted form of MultiSurface where each Surface in the collection must
@@ -31,6 +33,28 @@ public class MultiPolygon extends MultiSurface<Polygon> {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param polygons
+	 *            list of polygons
+	 */
+	public MultiPolygon(List<Polygon> polygons) {
+		this(GeometryUtils.hasZ(polygons), GeometryUtils.hasM(polygons));
+		setPolygons(polygons);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param polygon
+	 *            polygon
+	 */
+	public MultiPolygon(Polygon polygon) {
+		this(polygon.hasZ(), polygon.hasM());
+		addPolygon(polygon);
+	}
+
+	/**
+	 * Copy Constructor
 	 * 
 	 * @param multiPolygon
 	 *            multi polygon to copy

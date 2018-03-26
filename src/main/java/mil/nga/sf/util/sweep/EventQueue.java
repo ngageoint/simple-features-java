@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import mil.nga.sf.geom.LineString;
-import mil.nga.sf.geom.Point;
+import mil.nga.sf.LineString;
+import mil.nga.sf.Point;
 
 /**
  * Event queue for processing events

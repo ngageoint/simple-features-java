@@ -1,4 +1,8 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
+
+import java.util.List;
+
+import mil.nga.sf.util.GeometryUtils;
 
 /**
  * A tetrahedron (4 triangular faces), corner at the origin and each unit
@@ -29,6 +33,28 @@ public class TIN extends PolyhedralSurface {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param polygons
+	 *            list of polygons
+	 */
+	public TIN(List<Polygon> polygons) {
+		this(GeometryUtils.hasZ(polygons), GeometryUtils.hasM(polygons));
+		setPolygons(polygons);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param polygon
+	 *            polygon
+	 */
+	public TIN(Polygon polygon) {
+		this(polygon.hasZ(), polygon.hasM());
+		addPolygon(polygon);
+	}
+
+	/**
+	 * Copy Constructor
 	 * 
 	 * @param tin
 	 *            tin to copy

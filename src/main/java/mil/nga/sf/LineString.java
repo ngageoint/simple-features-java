@@ -1,7 +1,10 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import mil.nga.sf.util.GeometryUtils;
+import mil.nga.sf.util.sweep.ShamosHoey;
 
 /**
  * A Curve that connects two or more points in space.
@@ -36,6 +39,17 @@ public class LineString extends Curve {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param points
+	 *            list of points
+	 */
+	public LineString(List<Point> points) {
+		this(GeometryUtils.hasZ(points), GeometryUtils.hasM(points));
+		setPoints(points);
+	}
+
+	/**
+	 * Copy Constructor
 	 * 
 	 * @param lineString
 	 *            line string to copy
@@ -100,11 +114,62 @@ public class LineString extends Curve {
 	}
 
 	/**
+	 * Returns the Nth point
+	 * 
+	 * @param n
+	 *            nth point to return
+	 * @return point
+	 */
+	public Point getPoint(int n) {
+		return points.get(n);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Point startPoint() {
+		Point startPoint = null;
+		if (!isEmpty()) {
+			startPoint = points.get(0);
+		}
+		return startPoint;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Point endPoint() {
+		Point endPoint = null;
+		if (!isEmpty()) {
+			endPoint = points.get(points.size() - 1);
+		}
+		return endPoint;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isSimple() {
+		return ShamosHoey.simplePolygonPoints(points);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Geometry copy() {
 		return new LineString(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEmpty() {
+		return points.isEmpty();
 	}
 
 }

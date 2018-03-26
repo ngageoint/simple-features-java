@@ -1,7 +1,9 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import mil.nga.sf.util.GeometryUtils;
 
 /**
  * A planar surface defined by an exterior ring and zero or more interior ring.
@@ -37,6 +39,28 @@ public class CurvePolygon<T extends Curve> extends Surface {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param rings
+	 *            list of rings
+	 */
+	public CurvePolygon(List<T> rings) {
+		this(GeometryUtils.hasZ(rings), GeometryUtils.hasM(rings));
+		setRings(rings);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param ring
+	 *            ring
+	 */
+	public CurvePolygon(T ring) {
+		this(ring.hasZ(), ring.hasM());
+		addRing(ring);
+	}
+
+	/**
+	 * Copy Constructor
 	 * 
 	 * @param curvePolygon
 	 *            curve polygon to copy
@@ -103,11 +127,57 @@ public class CurvePolygon<T extends Curve> extends Surface {
 	}
 
 	/**
+	 * Get the exterior ring
+	 * 
+	 * @return exterior ring
+	 */
+	public T getExteriorRing() {
+		return rings.get(0);
+	}
+
+	/**
+	 * Get the number of interior rings
+	 * 
+	 * @return number of interior rings
+	 */
+	public int numInteriorRing() {
+		return rings.size() - 1;
+	}
+
+	/**
+	 * Returns the Nth interior ring for this Polygon
+	 * 
+	 * @param n
+	 *            interior ring number
+	 * @return interior ring
+	 */
+	public T getInteriorRing(int n) {
+		return rings.get(n + 1);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Geometry copy() {
 		return new CurvePolygon<T>(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEmpty() {
+		return rings.isEmpty();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isSimple() {
+		throw new UnsupportedOperationException(
+				"Is Simple not implemented for " + getClass().getSimpleName());
 	}
 
 }

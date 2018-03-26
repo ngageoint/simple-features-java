@@ -1,6 +1,6 @@
 package mil.nga.sf.util.sweep;
 
-import mil.nga.sf.geom.Point;
+import mil.nga.sf.Point;
 
 /**
  * Line segment of an edge between two points

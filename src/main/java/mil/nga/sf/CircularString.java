@@ -1,4 +1,8 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
+
+import java.util.List;
+
+import mil.nga.sf.util.GeometryUtils;
 
 /**
  * Circular String, Curve sub type
@@ -28,6 +32,17 @@ public class CircularString extends LineString {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param points
+	 *            list of points
+	 */
+	public CircularString(List<Point> points) {
+		this(GeometryUtils.hasZ(points), GeometryUtils.hasM(points));
+		setPoints(points);
+	}
+
+	/**
+	 * Copy Constructor
 	 * 
 	 * @param circularString
 	 *            circular string to copy

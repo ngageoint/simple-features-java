@@ -1,4 +1,8 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
+
+import java.util.List;
+
+import mil.nga.sf.util.GeometryUtils;
 
 /**
  * Triangle
@@ -28,6 +32,28 @@ public class Triangle extends Polygon {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param rings
+	 *            list of rings
+	 */
+	public Triangle(List<LineString> rings) {
+		this(GeometryUtils.hasZ(rings), GeometryUtils.hasM(rings));
+		setRings(rings);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param ring
+	 *            ring
+	 */
+	public Triangle(LineString ring) {
+		this(ring.hasZ(), ring.hasM());
+		addRing(ring);
+	}
+
+	/**
+	 * Copy Constructor
 	 * 
 	 * @param triangle
 	 *            triangle to copy

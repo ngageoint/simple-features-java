@@ -1,7 +1,9 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import mil.nga.sf.util.GeometryUtils;
 
 /**
  * A collection of zero or more Geometry instances.
@@ -36,6 +38,28 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param geometries
+	 *            list of geometries
+	 */
+	public GeometryCollection(List<T> geometries) {
+		this(GeometryUtils.hasZ(geometries), GeometryUtils.hasM(geometries));
+		setGeometries(geometries);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param geometry
+	 *            geometry
+	 */
+	public GeometryCollection(T geometry) {
+		this(geometry.hasZ(), geometry.hasM());
+		addGeometry(geometry);
+	}
+
+	/**
+	 * Copy Constructor
 	 * 
 	 * @param geometryCollection
 	 *            geometry collection to copy
@@ -102,11 +126,39 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 	}
 
 	/**
+	 * Returns the Nth geometry
+	 * 
+	 * @param n
+	 *            nth geometry to return
+	 * @return geometry
+	 */
+	public Geometry getGeometry(int n) {
+		return geometries.get(n);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Geometry copy() {
 		return new GeometryCollection<T>(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEmpty() {
+		return geometries.isEmpty();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isSimple() {
+		throw new UnsupportedOperationException(
+				"Is Simple not implemented for " + getClass().getSimpleName());
 	}
 
 }

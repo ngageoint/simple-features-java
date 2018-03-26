@@ -2,23 +2,23 @@ package mil.nga.sf.util;
 
 import java.util.List;
 
-import mil.nga.sf.geom.CircularString;
-import mil.nga.sf.geom.CompoundCurve;
-import mil.nga.sf.geom.Curve;
-import mil.nga.sf.geom.CurvePolygon;
-import mil.nga.sf.geom.Geometry;
-import mil.nga.sf.geom.GeometryCollection;
-import mil.nga.sf.geom.GeometryEnvelope;
-import mil.nga.sf.geom.GeometryType;
-import mil.nga.sf.geom.LineString;
-import mil.nga.sf.geom.MultiLineString;
-import mil.nga.sf.geom.MultiPoint;
-import mil.nga.sf.geom.MultiPolygon;
-import mil.nga.sf.geom.Point;
-import mil.nga.sf.geom.Polygon;
-import mil.nga.sf.geom.PolyhedralSurface;
-import mil.nga.sf.geom.TIN;
-import mil.nga.sf.geom.Triangle;
+import mil.nga.sf.CircularString;
+import mil.nga.sf.CompoundCurve;
+import mil.nga.sf.Curve;
+import mil.nga.sf.CurvePolygon;
+import mil.nga.sf.Geometry;
+import mil.nga.sf.GeometryCollection;
+import mil.nga.sf.GeometryEnvelope;
+import mil.nga.sf.GeometryType;
+import mil.nga.sf.LineString;
+import mil.nga.sf.MultiLineString;
+import mil.nga.sf.MultiPoint;
+import mil.nga.sf.MultiPolygon;
+import mil.nga.sf.Point;
+import mil.nga.sf.Polygon;
+import mil.nga.sf.PolyhedralSurface;
+import mil.nga.sf.TIN;
+import mil.nga.sf.Triangle;
 
 /**
  * Builds an envelope from a Geometry

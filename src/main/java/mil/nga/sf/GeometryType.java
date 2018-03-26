@@ -1,4 +1,4 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
 
 import java.util.Locale;
 

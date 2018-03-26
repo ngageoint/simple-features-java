@@ -3,9 +3,9 @@ package mil.nga.sf.util.sweep;
 import java.util.ArrayList;
 import java.util.List;
 
-import mil.nga.sf.geom.LineString;
-import mil.nga.sf.geom.Point;
-import mil.nga.sf.geom.Polygon;
+import mil.nga.sf.LineString;
+import mil.nga.sf.Point;
+import mil.nga.sf.Polygon;
 import mil.nga.sf.util.GeometryUtils;
 
 /**

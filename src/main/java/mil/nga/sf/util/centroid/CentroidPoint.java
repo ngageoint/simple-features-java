@@ -2,11 +2,11 @@ package mil.nga.sf.util.centroid;
 
 import java.util.List;
 
-import mil.nga.sf.geom.Geometry;
-import mil.nga.sf.geom.GeometryCollection;
-import mil.nga.sf.geom.GeometryType;
-import mil.nga.sf.geom.MultiPoint;
-import mil.nga.sf.geom.Point;
+import mil.nga.sf.Geometry;
+import mil.nga.sf.GeometryCollection;
+import mil.nga.sf.GeometryType;
+import mil.nga.sf.MultiPoint;
+import mil.nga.sf.Point;
 import mil.nga.sf.util.SFException;
 
 /**

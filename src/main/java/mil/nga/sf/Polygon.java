@@ -1,4 +1,9 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
+
+import java.util.List;
+
+import mil.nga.sf.util.GeometryUtils;
+import mil.nga.sf.util.sweep.ShamosHoey;
 
 /**
  * A restricted form of CurvePolygon where each ring is defined as a simple,
@@ -30,6 +35,28 @@ public class Polygon extends CurvePolygon<LineString> {
 	/**
 	 * Constructor
 	 * 
+	 * @param rings
+	 *            list of rings
+	 */
+	public Polygon(List<LineString> rings) {
+		this(GeometryUtils.hasZ(rings), GeometryUtils.hasM(rings));
+		setRings(rings);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param ring
+	 *            ring
+	 */
+	public Polygon(LineString ring) {
+		this(ring.hasZ(), ring.hasM());
+		addRing(ring);
+	}
+
+	/**
+	 * Copy Constructor
+	 * 
 	 * @param polygon
 	 *            polygon to copy
 	 */
@@ -60,6 +87,14 @@ public class Polygon extends CurvePolygon<LineString> {
 	@Override
 	public Geometry copy() {
 		return new Polygon(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isSimple() {
+		return ShamosHoey.simplePolygon(this);
 	}
 
 }

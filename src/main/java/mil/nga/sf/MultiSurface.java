@@ -1,4 +1,4 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
 
 /**
  * A restricted form of GeometryCollection where each Geometry in the collection

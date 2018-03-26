@@ -1,4 +1,4 @@
-package mil.nga.sf.geom;
+package mil.nga.sf;
 
 /**
  * A restricted form of GeometryCollection where each Geometry in the collection
@@ -20,6 +20,23 @@ public abstract class MultiCurve<T extends Curve> extends GeometryCollection<T> 
 	 */
 	protected MultiCurve(GeometryType type, boolean hasZ, boolean hasM) {
 		super(type, hasZ, hasM);
+	}
+
+	/**
+	 * Determine if this Multi Curve is closed for each Curve (start point = end
+	 * point)
+	 * 
+	 * @return true if closed
+	 */
+	public boolean isClosed() {
+		boolean closed = true;
+		for (Curve curve : getGeometries()) {
+			if (!curve.isClosed()) {
+				closed = false;
+				break;
+			}
+		}
+		return closed;
 	}
 
 }

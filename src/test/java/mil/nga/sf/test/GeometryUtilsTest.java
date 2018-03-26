@@ -6,16 +6,16 @@ import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
-import mil.nga.sf.geom.Geometry;
-import mil.nga.sf.geom.GeometryCollection;
-import mil.nga.sf.geom.GeometryEnvelope;
-import mil.nga.sf.geom.GeometryType;
-import mil.nga.sf.geom.LineString;
-import mil.nga.sf.geom.MultiLineString;
-import mil.nga.sf.geom.MultiPoint;
-import mil.nga.sf.geom.MultiPolygon;
-import mil.nga.sf.geom.Point;
-import mil.nga.sf.geom.Polygon;
+import mil.nga.sf.Geometry;
+import mil.nga.sf.GeometryCollection;
+import mil.nga.sf.GeometryEnvelope;
+import mil.nga.sf.GeometryType;
+import mil.nga.sf.LineString;
+import mil.nga.sf.MultiLineString;
+import mil.nga.sf.MultiPoint;
+import mil.nga.sf.MultiPolygon;
+import mil.nga.sf.Point;
+import mil.nga.sf.Polygon;
 import mil.nga.sf.util.GeometryEnvelopeBuilder;
 import mil.nga.sf.util.GeometryUtils;
 
@@ -48,6 +48,7 @@ public class GeometryUtilsTest {
 			Point point = SFTestUtils.createPoint(SFTestUtils.coinFlip(),
 					SFTestUtils.coinFlip());
 			TestCase.assertEquals(0, GeometryUtils.getDimension(point));
+			TestCase.assertEquals(0, point.getDimension());
 			geometryCentroidTester(point);
 		}
 
@@ -61,6 +62,7 @@ public class GeometryUtilsTest {
 			LineString lineString = SFTestUtils.createLineString(
 					SFTestUtils.coinFlip(), SFTestUtils.coinFlip());
 			TestCase.assertEquals(1, GeometryUtils.getDimension(lineString));
+			TestCase.assertEquals(1, lineString.getDimension());
 			geometryCentroidTester(lineString);
 		}
 
@@ -73,6 +75,7 @@ public class GeometryUtilsTest {
 			// Create and test a polygon
 			Polygon polygon = createPolygon();
 			TestCase.assertEquals(2, GeometryUtils.getDimension(polygon));
+			TestCase.assertEquals(2, polygon.getDimension());
 			geometryCentroidTester(polygon);
 		}
 
@@ -86,6 +89,7 @@ public class GeometryUtilsTest {
 			MultiPoint multiPoint = SFTestUtils.createMultiPoint(
 					SFTestUtils.coinFlip(), SFTestUtils.coinFlip());
 			TestCase.assertEquals(0, GeometryUtils.getDimension(multiPoint));
+			TestCase.assertEquals(0, multiPoint.getDimension());
 			geometryCentroidTester(multiPoint);
 		}
 
@@ -101,6 +105,7 @@ public class GeometryUtilsTest {
 							SFTestUtils.coinFlip());
 			TestCase.assertEquals(1,
 					GeometryUtils.getDimension(multiLineString));
+			TestCase.assertEquals(1, multiLineString.getDimension());
 			geometryCentroidTester(multiLineString);
 		}
 
@@ -113,6 +118,7 @@ public class GeometryUtilsTest {
 			// Create and test a multi polygon
 			MultiPolygon multiPolygon = createMultiPolygon();
 			TestCase.assertEquals(2, GeometryUtils.getDimension(multiPolygon));
+			TestCase.assertEquals(2, multiPolygon.getDimension());
 			geometryCentroidTester(multiPolygon);
 		}
 
@@ -125,6 +131,9 @@ public class GeometryUtilsTest {
 			// Create and test a geometry collection
 			GeometryCollection<Geometry> geometryCollection = createGeometryCollection(
 					SFTestUtils.coinFlip(), SFTestUtils.coinFlip());
+			TestCase.assertEquals(
+					GeometryUtils.getDimension(geometryCollection),
+					geometryCollection.getDimension());
 			geometryCentroidTester(geometryCollection);
 		}
 
@@ -142,6 +151,7 @@ public class GeometryUtilsTest {
 		polygon.addRing(lineString);
 
 		TestCase.assertEquals(2, GeometryUtils.getDimension(polygon));
+		TestCase.assertEquals(2, polygon.getDimension());
 		Point centroid = geometryCentroidTester(polygon);
 
 		TestCase.assertEquals(0.0, centroid.getX());
@@ -155,6 +165,7 @@ public class GeometryUtilsTest {
 		polygon.addRing(holeLineString);
 
 		TestCase.assertEquals(2, GeometryUtils.getDimension(polygon));
+		TestCase.assertEquals(2, polygon.getDimension());
 		centroid = geometryCentroidTester(polygon);
 
 		TestCase.assertEquals(-15.0, centroid.getX());
@@ -170,6 +181,7 @@ public class GeometryUtilsTest {
 	private Point geometryCentroidTester(Geometry geometry) throws IOException {
 
 		Point point = GeometryUtils.getCentroid(geometry);
+		TestCase.assertEquals(point, geometry.getCentroid());
 
 		GeometryEnvelope envelope = GeometryEnvelopeBuilder
 				.buildEnvelope(geometry);
