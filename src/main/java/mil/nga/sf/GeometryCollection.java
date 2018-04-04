@@ -161,4 +161,37 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 				"Is Simple not implemented for " + getClass().getSimpleName());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ ((geometries == null) ? 0 : geometries.hashCode());
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		@SuppressWarnings("unchecked")
+		GeometryCollection<T> other = (GeometryCollection<T>) obj;
+		if (geometries == null) {
+			if (other.geometries != null)
+				return false;
+		} else if (!geometries.equals(other.geometries))
+			return false;
+		return true;
+	}
+
 }

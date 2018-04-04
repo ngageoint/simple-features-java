@@ -217,7 +217,7 @@ public class Point extends Geometry {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + ((m == null) ? 0 : m.hashCode());
 		long temp;
 		temp = Double.doubleToLongBits(x);
@@ -235,7 +235,7 @@ public class Point extends Geometry {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
