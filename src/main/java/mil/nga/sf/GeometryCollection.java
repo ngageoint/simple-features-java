@@ -117,6 +117,16 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 	}
 
 	/**
+	 * Add geometries
+	 * 
+	 * @param geometries
+	 *            geometries
+	 */
+	public void addGeometries(List<T> geometries) {
+		this.geometries.addAll(geometries);
+	}
+
+	/**
 	 * Get the number of geometries in the collection
 	 * 
 	 * @return number of geometries
@@ -132,7 +142,7 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 	 *            nth geometry to return
 	 * @return geometry
 	 */
-	public Geometry getGeometry(int n) {
+	public T getGeometry(int n) {
 		return geometries.get(n);
 	}
 

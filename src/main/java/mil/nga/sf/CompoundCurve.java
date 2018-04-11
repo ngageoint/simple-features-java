@@ -102,12 +102,33 @@ public class CompoundCurve extends Curve {
 	}
 
 	/**
+	 * Add line strings
+	 * 
+	 * @param lineStrings
+	 *            line strings
+	 */
+	public void addLineStrings(List<LineString> lineStrings) {
+		this.lineStrings.addAll(lineStrings);
+	}
+
+	/**
 	 * Get the number of line strings
 	 * 
 	 * @return number of line strings
 	 */
 	public int numLineStrings() {
 		return lineStrings.size();
+	}
+
+	/**
+	 * Returns the Nth line string
+	 * 
+	 * @param n
+	 *            nth line string to return
+	 * @return line string
+	 */
+	public LineString getLineString(int n) {
+		return lineStrings.get(n);
 	}
 
 	/**

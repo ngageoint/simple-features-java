@@ -118,12 +118,34 @@ public class CurvePolygon<T extends Curve> extends Surface {
 	}
 
 	/**
-	 * Get the number of rings
+	 * Add rings
+	 * 
+	 * @param rings
+	 *            rings
+	 */
+	public void addRings(List<T> rings) {
+		this.rings.addAll(rings);
+	}
+
+	/**
+	 * Get the number of rings including exterior and interior
 	 * 
 	 * @return number of rings
 	 */
 	public int numRings() {
 		return rings.size();
+	}
+
+	/**
+	 * Returns the Nth ring where the exterior ring is at 0, interior rings
+	 * begin at 1
+	 * 
+	 * @param n
+	 *            nth ring to return
+	 * @return ring
+	 */
+	public T getRing(int n) {
+		return rings.get(n);
 	}
 
 	/**
@@ -140,7 +162,7 @@ public class CurvePolygon<T extends Curve> extends Surface {
 	 * 
 	 * @return number of interior rings
 	 */
-	public int numInteriorRing() {
+	public int numInteriorRings() {
 		return rings.size() - 1;
 	}
 

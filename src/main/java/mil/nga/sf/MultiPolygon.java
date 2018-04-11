@@ -96,12 +96,33 @@ public class MultiPolygon extends MultiSurface<Polygon> {
 	}
 
 	/**
+	 * Add polygons
+	 * 
+	 * @param polygons
+	 *            polygons
+	 */
+	public void addPolygons(List<Polygon> polygons) {
+		addGeometries(polygons);
+	}
+
+	/**
 	 * Get the number of polygons
 	 * 
 	 * @return number of polygons
 	 */
 	public int numPolygons() {
 		return numGeometries();
+	}
+
+	/**
+	 * Returns the Nth polygon
+	 * 
+	 * @param n
+	 *            nth polygon to return
+	 * @return polygon
+	 */
+	public Polygon getPolygon(int n) {
+		return getGeometry(n);
 	}
 
 	/**

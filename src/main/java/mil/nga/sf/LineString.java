@@ -105,6 +105,16 @@ public class LineString extends Curve {
 	}
 
 	/**
+	 * Add points
+	 * 
+	 * @param points
+	 *            points
+	 */
+	public void addPoints(List<Point> points) {
+		this.points.addAll(points);
+	}
+
+	/**
 	 * Get the number of points
 	 * 
 	 * @return number of points

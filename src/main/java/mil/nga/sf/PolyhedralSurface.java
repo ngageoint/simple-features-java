@@ -95,6 +95,16 @@ public class PolyhedralSurface extends Surface {
 	}
 
 	/**
+	 * Get patches
+	 * 
+	 * @return patches
+	 * @see #getPolygons()
+	 */
+	public List<Polygon> getPatches() {
+		return getPolygons();
+	}
+
+	/**
 	 * Set polygons
 	 * 
 	 * @param polygons
@@ -105,6 +115,17 @@ public class PolyhedralSurface extends Surface {
 	}
 
 	/**
+	 * Set patches
+	 * 
+	 * @param patches
+	 *            patches
+	 * @see #setPolygons(List)
+	 */
+	public void setPatches(List<Polygon> patches) {
+		setPolygons(patches);
+	}
+
+	/**
 	 * Add polygon
 	 * 
 	 * @param polygon
@@ -112,6 +133,38 @@ public class PolyhedralSurface extends Surface {
 	 */
 	public void addPolygon(Polygon polygon) {
 		polygons.add(polygon);
+	}
+
+	/**
+	 * Add patch
+	 * 
+	 * @param patch
+	 *            patch
+	 * @see #addPolygon(Polygon)
+	 */
+	public void addPatch(Polygon patch) {
+		addPolygon(patch);
+	}
+
+	/**
+	 * Add polygons
+	 * 
+	 * @param polygons
+	 *            polygons
+	 */
+	public void addPolygons(List<Polygon> polygons) {
+		this.polygons.addAll(polygons);
+	}
+
+	/**
+	 * Add patches
+	 * 
+	 * @param patches
+	 *            patches
+	 * @see #addPolygons(List)
+	 */
+	public void addPatches(List<Polygon> patches) {
+		addPolygons(patches);
 	}
 
 	/**

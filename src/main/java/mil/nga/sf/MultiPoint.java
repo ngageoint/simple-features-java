@@ -98,12 +98,33 @@ public class MultiPoint extends GeometryCollection<Point> {
 	}
 
 	/**
+	 * Add points
+	 * 
+	 * @param points
+	 *            points
+	 */
+	public void addPoints(List<Point> points) {
+		addGeometries(points);
+	}
+
+	/**
 	 * Get the number of points
 	 * 
 	 * @return number of points
 	 */
 	public int numPoints() {
 		return numGeometries();
+	}
+
+	/**
+	 * Returns the Nth point
+	 * 
+	 * @param n
+	 *            nth point to return
+	 * @return point
+	 */
+	public Point getPoint(int n) {
+		return getGeometry(n);
 	}
 
 	/**
