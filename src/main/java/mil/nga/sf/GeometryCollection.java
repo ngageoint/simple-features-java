@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mil.nga.sf.util.GeometryUtils;
+import mil.nga.sf.util.SFException;
 
 /**
  * A collection of zero or more Geometry instances.
@@ -144,6 +145,255 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 	 */
 	public T getGeometry(int n) {
 		return geometries.get(n);
+	}
+
+	/**
+	 * Get the collection type by evaluating the geometries
+	 * 
+	 * @return collection geometry type, one of: {@link GeometryType#MULTIPOINT}
+	 *         , {@link GeometryType#MULTILINESTRING},
+	 *         {@link GeometryType#MULTIPOLYGON},
+	 *         {@link GeometryType#MULTICURVE},
+	 *         {@link GeometryType#MULTISURFACE},
+	 *         {@link GeometryType#GEOMETRYCOLLECTION}
+	 */
+	public GeometryType getCollectionType() {
+
+		GeometryType geometryType = getGeometryType();
+
+		switch (geometryType) {
+		case MULTIPOINT:
+		case MULTILINESTRING:
+		case MULTIPOLYGON:
+			break;
+		case GEOMETRYCOLLECTION:
+			if (isMultiPoint()) {
+				geometryType = GeometryType.MULTIPOINT;
+			} else if (isMultiLineString()) {
+				geometryType = GeometryType.MULTILINESTRING;
+			} else if (isMultiPolygon()) {
+				geometryType = GeometryType.MULTIPOLYGON;
+			} else if (isMultiCurve()) {
+				geometryType = GeometryType.MULTICURVE;
+			} else if (isMultiSurface()) {
+				geometryType = GeometryType.MULTISURFACE;
+			}
+			break;
+		default:
+			throw new SFException("Unexpected Geometry Collection Type: "
+					+ geometryType);
+		}
+
+		return geometryType;
+	}
+
+	/**
+	 * Determine if this geometry collection is a {@link MultiPoint} instance or
+	 * contains only {@link Point} geometries
+	 * 
+	 * @return true if a multi point or contains only points
+	 */
+	public boolean isMultiPoint() {
+		boolean isMultiPoint = this instanceof MultiPoint;
+		if (!isMultiPoint) {
+			isMultiPoint = isCollectionOfType(Point.class);
+		}
+		return isMultiPoint;
+	}
+
+	/**
+	 * Get as a {@link MultiPoint}, either the current instance or newly created
+	 * from the {@link Point} geometries
+	 * 
+	 * @return multi point
+	 */
+	public MultiPoint getAsMultiPoint() {
+		MultiPoint multiPoint;
+		if (this instanceof MultiPoint) {
+			multiPoint = (MultiPoint) this;
+		} else {
+			@SuppressWarnings("unchecked")
+			MultiPoint newMultiPoint = new MultiPoint((List<Point>) geometries);
+			multiPoint = newMultiPoint;
+		}
+		return multiPoint;
+	}
+
+	/**
+	 * Determine if this geometry collection is a {@link MultiLineString}
+	 * instance or contains only {@link LineString} geometries
+	 * 
+	 * @return true if a multi line string or contains only line strings
+	 */
+	public boolean isMultiLineString() {
+		boolean isMultiLineString = this instanceof MultiLineString;
+		if (!isMultiLineString) {
+			isMultiLineString = isCollectionOfType(LineString.class);
+		}
+		return isMultiLineString;
+	}
+
+	/**
+	 * Get as a {@link MultiLineString}, either the current instance or newly
+	 * created from the {@link LineString} geometries
+	 * 
+	 * @return multi line string
+	 */
+	public MultiLineString getAsMultiLineString() {
+		MultiLineString multiLineString;
+		if (this instanceof MultiLineString) {
+			multiLineString = (MultiLineString) this;
+		} else {
+			@SuppressWarnings("unchecked")
+			MultiLineString newMultiLineString = new MultiLineString(
+					(List<LineString>) geometries);
+			multiLineString = newMultiLineString;
+		}
+		return multiLineString;
+	}
+
+	/**
+	 * Determine if this geometry collection is a {@link MultiPolygon} instance
+	 * or contains only {@link Polygon} geometries
+	 * 
+	 * @return true if a multi polygon or contains only polygons
+	 */
+	public boolean isMultiPolygon() {
+		boolean isMultiPolygon = this instanceof MultiPolygon;
+		if (!isMultiPolygon) {
+			isMultiPolygon = isCollectionOfType(Polygon.class);
+		}
+		return isMultiPolygon;
+	}
+
+	/**
+	 * Get as a {@link MultiPolygon}, either the current instance or newly
+	 * created from the {@link Polygon} geometries
+	 * 
+	 * @return multi polygon
+	 */
+	public MultiPolygon getAsMultiPolygon() {
+		MultiPolygon multiPolygon;
+		if (this instanceof MultiPolygon) {
+			multiPolygon = (MultiPolygon) this;
+		} else {
+			@SuppressWarnings("unchecked")
+			MultiPolygon newMultiPolygon = new MultiPolygon(
+					(List<Polygon>) geometries);
+			multiPolygon = newMultiPolygon;
+		}
+		return multiPolygon;
+	}
+
+	/**
+	 * Determine if this geometry collection contains only {@link Curve}
+	 * geometries
+	 * 
+	 * @return true if contains only curves
+	 */
+	public boolean isMultiCurve() {
+		return isCollectionOfType(Curve.class);
+	}
+
+	/**
+	 * Get as a Multi Curve, a {@link Curve} typed Geometry Collection
+	 * 
+	 * @return multi curve
+	 */
+	public GeometryCollection<Curve> getAsMultiCurve() {
+		GeometryCollection<Curve> multiCurve;
+		if (this instanceof MultiLineString) {
+			@SuppressWarnings("unchecked")
+			GeometryCollection<Curve> castMultiCurve = (GeometryCollection<Curve>) new GeometryCollection<>(
+					getGeometries());
+			multiCurve = castMultiCurve;
+		} else {
+			@SuppressWarnings("unchecked")
+			GeometryCollection<Curve> castMultiCurve = (GeometryCollection<Curve>) this;
+			multiCurve = castMultiCurve;
+			if (!multiCurve.isEmpty()) {
+				@SuppressWarnings("unused")
+				Curve curve = multiCurve.getGeometry(0);
+			}
+		}
+		return multiCurve;
+	}
+
+	/**
+	 * Determine if this geometry collection contains only {@link Surface}
+	 * geometries
+	 * 
+	 * @return true if contains only surfaces
+	 */
+	public boolean isMultiSurface() {
+		return isCollectionOfType(Surface.class);
+	}
+
+	/**
+	 * Get as a Multi Surface, a {@link Surface} typed Geometry Collection
+	 * 
+	 * @return multi surface
+	 */
+	public GeometryCollection<Surface> getAsMultiSurface() {
+		GeometryCollection<Surface> multiSurface;
+		if (this instanceof MultiPolygon) {
+			@SuppressWarnings("unchecked")
+			GeometryCollection<Surface> castMultiSurface = (GeometryCollection<Surface>) new GeometryCollection<>(
+					getGeometries());
+			multiSurface = castMultiSurface;
+		} else {
+			@SuppressWarnings("unchecked")
+			GeometryCollection<Surface> castMultiSurface = (GeometryCollection<Surface>) this;
+			multiSurface = castMultiSurface;
+			if (!multiSurface.isEmpty()) {
+				@SuppressWarnings("unused")
+				Surface surface = multiSurface.getGeometry(0);
+			}
+		}
+		return multiSurface;
+	}
+
+	/**
+	 * Get as a top level Geometry Collection
+	 * 
+	 * @return geometry collection
+	 */
+	public GeometryCollection<Geometry> getAsGeometryCollection() {
+		GeometryCollection<Geometry> geometryCollection;
+		if (GeometryCollection.class.equals(this.getClass())) {
+			@SuppressWarnings("unchecked")
+			GeometryCollection<Geometry> castGeometryCollection = (GeometryCollection<Geometry>) this;
+			geometryCollection = castGeometryCollection;
+		} else {
+			@SuppressWarnings("unchecked")
+			GeometryCollection<Geometry> castGeometryCollection = (GeometryCollection<Geometry>) new GeometryCollection<>(
+					getGeometries());
+			geometryCollection = castGeometryCollection;
+		}
+		return geometryCollection;
+	}
+
+	/**
+	 * Determine if the geometries in this collection are made up only of the
+	 * provided geometry class type
+	 * 
+	 * @param type
+	 *            geometry class type
+	 * @return true if a collection of the type
+	 */
+	private <TType extends Geometry> boolean isCollectionOfType(
+			Class<TType> type) {
+
+		boolean isType = true;
+
+		for (T geometry : geometries) {
+			if (!type.isAssignableFrom(geometry.getClass())) {
+				isType = false;
+				break;
+			}
+		}
+
+		return isType;
 	}
 
 	/**

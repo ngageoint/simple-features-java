@@ -3,6 +3,7 @@ package mil.nga.sf.test;
 import junit.framework.TestCase;
 import mil.nga.sf.CircularString;
 import mil.nga.sf.CompoundCurve;
+import mil.nga.sf.Curve;
 import mil.nga.sf.CurvePolygon;
 import mil.nga.sf.Geometry;
 import mil.nga.sf.GeometryCollection;
@@ -588,7 +589,7 @@ public class SFTestUtils {
 
 		return geometryCollection;
 	}
-	
+
 	public static Point createPoint(double minX, double minY, double xRange,
 			double yRange) {
 
@@ -599,7 +600,66 @@ public class SFTestUtils {
 
 		return point;
 	}
-	
+
+	/**
+	 * Create a random compound curve
+	 * 
+	 * @param hasZ
+	 * @param hasM
+	 * @return compound curve
+	 */
+	public static CompoundCurve createCompoundCurve(boolean hasZ, boolean hasM) {
+		return createCompoundCurve(hasZ, hasM, false);
+	}
+
+	/**
+	 * Create a random compound curve
+	 * 
+	 * @param hasZ
+	 * @param hasM
+	 * @param ring
+	 * @return compound curve
+	 */
+	public static CompoundCurve createCompoundCurve(boolean hasZ, boolean hasM,
+			boolean ring) {
+
+		CompoundCurve compoundCurve = new CompoundCurve(hasZ, hasM);
+
+		int num = 2 + ((int) (Math.random() * 9));
+
+		for (int i = 0; i < num; i++) {
+			compoundCurve.addLineString(createLineString(hasZ, hasM));
+		}
+
+		if (ring) {
+			compoundCurve.getLineString(num - 1).addPoint(
+					compoundCurve.getLineString(0).startPoint());
+		}
+
+		return compoundCurve;
+	}
+
+	/**
+	 * Create a random curve polygon
+	 * 
+	 * @param hasZ
+	 * @param hasM
+	 * @return polygon
+	 */
+	public static CurvePolygon<Curve> createCurvePolygon(boolean hasZ,
+			boolean hasM) {
+
+		CurvePolygon<Curve> curvePolygon = new CurvePolygon<>(hasZ, hasM);
+
+		int num = 1 + ((int) (Math.random() * 5));
+
+		for (int i = 0; i < num; i++) {
+			curvePolygon.addRing(createCompoundCurve(hasZ, hasM, true));
+		}
+
+		return curvePolygon;
+	}
+
 	/**
 	 * Randomly return true or false
 	 * 
