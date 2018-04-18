@@ -11,7 +11,13 @@ Software source code previously released under an open source license and then m
 
 ### About ###
 
-[Simple Features](http://ngageoint.github.io/simple-features-java/) is a Java library of geometry objects and utilities.
+[Simple Features](http://ngageoint.github.io/simple-features-java/) is a Java library of geometry objects and utilities based upon the [OGC Simple Feature Access](http://www.opengeospatial.org/standards/sfa) standard.
+
+### Simple Feature Conversion Libraries ###
+
+* [simple-features-wkb-java](https://github.com/ngageoint/geopackage-wkb-java) - Well Known Binary
+* [simple-features-geojson-java](https://github.com/ngageoint/simple-features-geojson-java) - GeoJSON
+* [simple-features-proj-java](https://github.com/ngageoint/simple-features-proj-java) - Projection
 
 ### Usage ###
 
