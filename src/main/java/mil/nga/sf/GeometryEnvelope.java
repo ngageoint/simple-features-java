@@ -151,20 +151,20 @@ public class GeometryEnvelope {
 	/**
 	 * Copy Constructor
 	 * 
-	 * @param boundingBox
+	 * @param envelope
 	 *            Envelope to copy
 	 */
-	public GeometryEnvelope(GeometryEnvelope boundingBox) {
-		this.minX = boundingBox.minX;
-		this.maxX = boundingBox.maxX;
-		this.minY = boundingBox.minY;
-		this.maxY = boundingBox.maxY;
-		this.hasZ = boundingBox.hasZ;
-		this.minZ = boundingBox.minZ;
-		this.maxZ = boundingBox.maxZ;
-		this.hasM = boundingBox.hasM;
-		this.minM = boundingBox.minM;
-		this.maxM = boundingBox.maxM;
+	public GeometryEnvelope(GeometryEnvelope envelope) {
+		this.minX = envelope.minX;
+		this.maxX = envelope.maxX;
+		this.minY = envelope.minY;
+		this.maxY = envelope.maxY;
+		this.hasZ = envelope.hasZ;
+		this.minZ = envelope.minZ;
+		this.maxZ = envelope.maxZ;
+		this.hasM = envelope.hasM;
+		this.minM = envelope.minM;
+		this.maxM = envelope.maxM;
 	}
 
 	/**
@@ -396,47 +396,41 @@ public class GeometryEnvelope {
 	}
 
 	/**
-	 * Get the overlapping geometry envelope between the two envelopes
+	 * Get the overlapping geometry envelope with the provided envelope
 	 *
 	 * @param envelope
-	 *            envelope 1
-	 * @param envelope2
-	 *            envelope 2
+	 *            envelope
 	 * @return geometry envelope
 	 */
-	public static GeometryEnvelope overlap(GeometryEnvelope envelope,
-			GeometryEnvelope envelope2) {
+	public GeometryEnvelope overlap(GeometryEnvelope envelope) {
 
-		double minX = Math.max(envelope.getMinX(), envelope2.getMinX());
-		double maxX = Math.min(envelope.getMaxX(), envelope2.getMaxX());
-		double minY = Math.max(envelope.getMinY(), envelope2.getMinY());
-		double maxLatitude = Math.min(envelope.getMaxY(), envelope2.getMaxY());
+		double minX = Math.max(getMinX(), envelope.getMinX());
+		double maxX = Math.min(getMaxX(), envelope.getMaxX());
+		double minY = Math.max(getMinY(), envelope.getMinY());
+		double maxY = Math.min(getMaxY(), envelope.getMaxY());
 
 		GeometryEnvelope overlap = null;
 
-		if (minX < maxX && minY < maxLatitude) {
-			overlap = new GeometryEnvelope(minX, minY, maxX, maxLatitude);
+		if (minX < maxX && minY < maxY) {
+			overlap = new GeometryEnvelope(minX, minY, maxX, maxY);
 		}
 
 		return overlap;
 	}
 
 	/**
-	 * Get the union geometry envelope combining the two envelopes
+	 * Get the union geometry envelope combined with the provided envelope
 	 *
 	 * @param envelope
-	 *            envelope 1
-	 * @param envelope2
-	 *            envelope 2
+	 *            envelope
 	 * @return geometry envelope
 	 */
-	public static GeometryEnvelope union(GeometryEnvelope envelope,
-			GeometryEnvelope envelope2) {
+	public GeometryEnvelope union(GeometryEnvelope envelope) {
 
-		double minX = Math.min(envelope.getMinX(), envelope2.getMinX());
-		double maxX = Math.max(envelope.getMaxX(), envelope2.getMaxX());
-		double minY = Math.min(envelope.getMinY(), envelope2.getMinY());
-		double maxY = Math.max(envelope.getMaxY(), envelope2.getMaxY());
+		double minX = Math.min(getMinX(), envelope.getMinX());
+		double maxX = Math.max(getMaxX(), envelope.getMaxX());
+		double minY = Math.min(getMinY(), envelope.getMinY());
+		double maxY = Math.max(getMaxY(), envelope.getMaxY());
 
 		GeometryEnvelope union = null;
 
@@ -445,6 +439,15 @@ public class GeometryEnvelope {
 		}
 
 		return union;
+	}
+
+	/**
+	 * Copy the geometry envelope
+	 * 
+	 * @return geometry envelope copy
+	 */
+	public GeometryEnvelope copy() {
+		return new GeometryEnvelope(this);
 	}
 
 	/**
