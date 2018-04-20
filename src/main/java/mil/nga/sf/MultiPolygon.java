@@ -72,7 +72,7 @@ public class MultiPolygon extends MultiSurface<Polygon> {
 	 * @return polygons
 	 */
 	public List<Polygon> getPolygons() {
-		return getGeometries();
+		return getSurfaces();
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class MultiPolygon extends MultiSurface<Polygon> {
 	 *            polygons
 	 */
 	public void setPolygons(List<Polygon> polygons) {
-		setGeometries(polygons);
+		setSurfaces(polygons);
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class MultiPolygon extends MultiSurface<Polygon> {
 	 *            polygon
 	 */
 	public void addPolygon(Polygon polygon) {
-		addGeometry(polygon);
+		addSurface(polygon);
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class MultiPolygon extends MultiSurface<Polygon> {
 	 *            polygons
 	 */
 	public void addPolygons(List<Polygon> polygons) {
-		addGeometries(polygons);
+		addSurfaces(polygons);
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class MultiPolygon extends MultiSurface<Polygon> {
 	 * @return number of polygons
 	 */
 	public int numPolygons() {
-		return numGeometries();
+		return numSurfaces();
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class MultiPolygon extends MultiSurface<Polygon> {
 	 * @return polygon
 	 */
 	public Polygon getPolygon(int n) {
-		return getGeometry(n);
+		return getSurface(n);
 	}
 
 	/**

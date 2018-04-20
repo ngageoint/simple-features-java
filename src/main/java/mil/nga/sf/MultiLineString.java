@@ -72,7 +72,7 @@ public class MultiLineString extends MultiCurve<LineString> {
 	 * @return line strings
 	 */
 	public List<LineString> getLineStrings() {
-		return getGeometries();
+		return getCurves();
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class MultiLineString extends MultiCurve<LineString> {
 	 *            line strings
 	 */
 	public void setLineStrings(List<LineString> lineStrings) {
-		setGeometries(lineStrings);
+		setCurves(lineStrings);
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class MultiLineString extends MultiCurve<LineString> {
 	 *            line string
 	 */
 	public void addLineString(LineString lineString) {
-		addGeometry(lineString);
+		addCurve(lineString);
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class MultiLineString extends MultiCurve<LineString> {
 	 *            line strings
 	 */
 	public void addLineStrings(List<LineString> lineStrings) {
-		addGeometries(lineStrings);
+		addCurves(lineStrings);
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class MultiLineString extends MultiCurve<LineString> {
 	 * @return number of line strings
 	 */
 	public int numLineStrings() {
-		return numGeometries();
+		return numCurves();
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class MultiLineString extends MultiCurve<LineString> {
 	 * @return line string
 	 */
 	public LineString getLineString(int n) {
-		return getGeometry(n);
+		return getCurve(n);
 	}
 
 	/**

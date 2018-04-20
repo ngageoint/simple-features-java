@@ -1,5 +1,7 @@
 package mil.nga.sf;
 
+import java.util.List;
+
 /**
  * A restricted form of GeometryCollection where each Geometry in the collection
  * must be of type Curve.
@@ -20,6 +22,65 @@ public abstract class MultiCurve<T extends Curve> extends GeometryCollection<T> 
 	 */
 	protected MultiCurve(GeometryType type, boolean hasZ, boolean hasM) {
 		super(type, hasZ, hasM);
+	}
+
+	/**
+	 * Get the curves
+	 * 
+	 * @return curves
+	 */
+	public List<T> getCurves() {
+		return getGeometries();
+	}
+
+	/**
+	 * Set the curves
+	 * 
+	 * @param curves
+	 *            curves
+	 */
+	public void setCurves(List<T> curves) {
+		setGeometries(curves);
+	}
+
+	/**
+	 * Add a curve
+	 * 
+	 * @param curve
+	 *            curve
+	 */
+	public void addCurve(T curve) {
+		addGeometry(curve);
+	}
+
+	/**
+	 * Add curves
+	 * 
+	 * @param curves
+	 *            curves
+	 */
+	public void addCurves(List<T> curves) {
+		addGeometries(curves);
+	}
+
+	/**
+	 * Get the number of curves
+	 * 
+	 * @return number of curves
+	 */
+	public int numCurves() {
+		return numGeometries();
+	}
+
+	/**
+	 * Returns the Nth curve
+	 * 
+	 * @param n
+	 *            nth line curve to return
+	 * @return curve
+	 */
+	public T getCurve(int n) {
+		return getGeometry(n);
 	}
 
 	/**
