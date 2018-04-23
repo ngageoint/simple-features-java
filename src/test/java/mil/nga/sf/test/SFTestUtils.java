@@ -93,6 +93,8 @@ public class SFTestUtils {
 						(MultiPolygon) actual);
 				break;
 			case GEOMETRYCOLLECTION:
+			case MULTICURVE:
+			case MULTISURFACE:
 				compareGeometryCollection((GeometryCollection<?>) expected,
 						(GeometryCollection<?>) actual);
 				break;
@@ -108,12 +110,6 @@ public class SFTestUtils {
 				compareCurvePolygon((CurvePolygon<?>) expected,
 						(CurvePolygon<?>) actual);
 				break;
-			case MULTICURVE:
-				TestCase.fail("Unexpected Geometry Type of "
-						+ geometryType.name() + " which is abstract");
-			case MULTISURFACE:
-				TestCase.fail("Unexpected Geometry Type of "
-						+ geometryType.name() + " which is abstract");
 			case CURVE:
 				TestCase.fail("Unexpected Geometry Type of "
 						+ geometryType.name() + " which is abstract");

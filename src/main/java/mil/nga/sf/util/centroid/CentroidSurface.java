@@ -86,6 +86,8 @@ public class CentroidSurface {
 			add(polyhedralSurface.getPolygons());
 			break;
 		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
 			@SuppressWarnings("unchecked")
 			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
 			List<Geometry> geometries = geomCollection.getGeometries();
@@ -158,8 +160,7 @@ public class CentroidSurface {
 			add((LineString) curve);
 			break;
 		default:
-			throw new SFException("Unexpected Curve Type: "
-					+ curveGeometryType);
+			throw new SFException("Unexpected Curve Type: " + curveGeometryType);
 		}
 
 		for (int i = 1; i < rings.size(); i++) {
