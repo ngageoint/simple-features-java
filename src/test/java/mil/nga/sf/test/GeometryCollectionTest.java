@@ -286,12 +286,20 @@ public class GeometryCollectionTest {
 
 		ExtendedGeometryCollection<Geometry> extendedGeometryCollection = new ExtendedGeometryCollection<>(
 				geometryCollection);
+		ExtendedGeometryCollection<Curve> extendedGeometryCollection2 = new ExtendedGeometryCollection<>(
+				multiCurve);
 		TestCase.assertEquals(GeometryType.MULTICURVE,
 				extendedGeometryCollection.getGeometryType());
 		TestCase.assertEquals(GeometryType.MULTICURVE,
+				extendedGeometryCollection2.getGeometryType());
+		TestCase.assertEquals(GeometryType.MULTICURVE,
 				extendedGeometryCollection.getCollectionType());
+		TestCase.assertEquals(GeometryType.MULTICURVE,
+				extendedGeometryCollection2.getCollectionType());
 		TestCase.assertEquals(extendedGeometryCollection,
 				new ExtendedGeometryCollection<>(geometryCollection));
+		TestCase.assertEquals(extendedGeometryCollection,
+				extendedGeometryCollection2);
 
 	}
 
@@ -349,14 +357,22 @@ public class GeometryCollectionTest {
 		TestCase.assertEquals(geometryCollection2,
 				geometryCollection.getAsGeometryCollection());
 
-		ExtendedGeometryCollection<Surface> extendedGeometryCollection = new ExtendedGeometryCollection<>(
+		ExtendedGeometryCollection<Geometry> extendedGeometryCollection = new ExtendedGeometryCollection<>(
+				geometryCollection);
+		ExtendedGeometryCollection<Surface> extendedGeometryCollection2 = new ExtendedGeometryCollection<>(
 				multiSurface);
 		TestCase.assertEquals(GeometryType.MULTISURFACE,
 				extendedGeometryCollection.getGeometryType());
 		TestCase.assertEquals(GeometryType.MULTISURFACE,
+				extendedGeometryCollection2.getGeometryType());
+		TestCase.assertEquals(GeometryType.MULTISURFACE,
 				extendedGeometryCollection.getCollectionType());
+		TestCase.assertEquals(GeometryType.MULTISURFACE,
+				extendedGeometryCollection2.getCollectionType());
 		TestCase.assertEquals(extendedGeometryCollection,
 				new ExtendedGeometryCollection<>(geometryCollection));
+		TestCase.assertEquals(extendedGeometryCollection,
+				extendedGeometryCollection2);
 
 	}
 
