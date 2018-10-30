@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 import mil.nga.sf.Geometry;
@@ -547,6 +548,78 @@ public class GeometryUtilsTest {
 		TestCase.assertFalse(GeometryUtils.pointOnLine(new Point(5,
 				5.000000000000001), points));
 
+	}
+
+	/**
+	 * Test the geometry type parent and child hierarchy methods
+	 */
+	@Test
+	public void testHierarchy() {
+
+		for (GeometryType geometryType : GeometryType.values()) {
+
+			GeometryType parentType = GeometryUtils.parentType(geometryType);
+			List<GeometryType> parentHierarchy = GeometryUtils
+					.parentHierarchy(geometryType);
+
+			GeometryType previousParentType = null;
+
+			while (parentType != null) {
+				TestCase.assertEquals(parentType, parentHierarchy.get(0));
+
+				if (previousParentType != null) {
+					List<GeometryType> childTypes = GeometryUtils
+							.childTypes(parentType);
+					TestCase.assertTrue(childTypes.contains(previousParentType));
+					Map<GeometryType, Map<GeometryType, ?>> childHierarchy = GeometryUtils
+							.childHierarchy(parentType);
+					TestCase.assertTrue(childHierarchy
+							.containsKey(previousParentType));
+				}
+
+				previousParentType = parentType;
+				parentType = GeometryUtils.parentType(previousParentType);
+				parentHierarchy = GeometryUtils
+						.parentHierarchy(previousParentType);
+
+			}
+			TestCase.assertTrue(parentHierarchy.isEmpty());
+
+			Map<GeometryType, Map<GeometryType, ?>> childHierarchy = GeometryUtils
+					.childHierarchy(geometryType);
+			testChildHierarchy(geometryType, childHierarchy);
+
+		}
+
+	}
+
+	/**
+	 * Test the child hierarchy recursively
+	 * 
+	 * @param geometryType
+	 *            geometry type
+	 * @param childHierarchy
+	 *            child hierarchy
+	 */
+	private void testChildHierarchy(GeometryType geometryType,
+			Map<GeometryType, ?> childHierarchy) {
+		List<GeometryType> childTypes = GeometryUtils.childTypes(geometryType);
+		if (childTypes.isEmpty()) {
+			TestCase.assertNull(childHierarchy);
+		} else {
+			TestCase.assertEquals(childTypes.size(), childHierarchy.size());
+			for (GeometryType childType : childTypes) {
+				TestCase.assertTrue(childHierarchy.containsKey(childType));
+
+				TestCase.assertEquals(geometryType,
+						GeometryUtils.parentType(childType));
+				TestCase.assertEquals(geometryType, GeometryUtils
+						.parentHierarchy(childType).get(0));
+
+				testChildHierarchy(childType,
+						GeometryUtils.childHierarchy(childType));
+			}
+		}
 	}
 
 }

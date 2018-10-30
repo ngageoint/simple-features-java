@@ -1,7 +1,9 @@
 package mil.nga.sf.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mil.nga.sf.CircularString;
 import mil.nga.sf.CompoundCurve;
@@ -1133,6 +1135,206 @@ public class GeometryUtils {
 			}
 		}
 		return hasM;
+	}
+
+	/**
+	 * Get the parent type hierarchy of the provided geometry type starting with
+	 * the immediate parent. If the argument is GEOMETRY, an empty list is
+	 * returned, else the final type in the list will be GEOMETRY.
+	 * 
+	 * @param geometryType
+	 *            geometry type
+	 * @return list of increasing parent types
+	 * @since 2.0.1
+	 */
+	public static List<GeometryType> parentHierarchy(GeometryType geometryType) {
+
+		List<GeometryType> hierarchy = new ArrayList<>();
+
+		GeometryType parentType = parentType(geometryType);
+		while (parentType != null) {
+			hierarchy.add(parentType);
+			parentType = parentType(parentType);
+		}
+
+		return hierarchy;
+	}
+
+	/**
+	 * Get the parent Geometry Type of the provided geometry type
+	 * 
+	 * @param geometryType
+	 *            geometry type
+	 * @return parent geometry type or null if argument is GEOMETRY (no parent
+	 *         type)
+	 * @since 2.0.1
+	 */
+	public static GeometryType parentType(GeometryType geometryType) {
+
+		GeometryType parentType = null;
+
+		switch (geometryType) {
+
+		case GEOMETRY:
+			break;
+		case POINT:
+			parentType = GeometryType.GEOMETRY;
+			break;
+		case LINESTRING:
+			parentType = GeometryType.CURVE;
+			break;
+		case POLYGON:
+			parentType = GeometryType.CURVEPOLYGON;
+			break;
+		case MULTIPOINT:
+			parentType = GeometryType.GEOMETRYCOLLECTION;
+			break;
+		case MULTILINESTRING:
+			parentType = GeometryType.MULTICURVE;
+			break;
+		case MULTIPOLYGON:
+			parentType = GeometryType.MULTISURFACE;
+			break;
+		case GEOMETRYCOLLECTION:
+			parentType = GeometryType.GEOMETRY;
+			break;
+		case CIRCULARSTRING:
+			parentType = GeometryType.LINESTRING;
+			break;
+		case COMPOUNDCURVE:
+			parentType = GeometryType.CURVE;
+			break;
+		case CURVEPOLYGON:
+			parentType = GeometryType.SURFACE;
+			break;
+		case MULTICURVE:
+			parentType = GeometryType.GEOMETRYCOLLECTION;
+			break;
+		case MULTISURFACE:
+			parentType = GeometryType.GEOMETRYCOLLECTION;
+			break;
+		case CURVE:
+			parentType = GeometryType.GEOMETRY;
+			break;
+		case SURFACE:
+			parentType = GeometryType.GEOMETRY;
+			break;
+		case POLYHEDRALSURFACE:
+			parentType = GeometryType.SURFACE;
+			break;
+		case TIN:
+			parentType = GeometryType.POLYHEDRALSURFACE;
+			break;
+		case TRIANGLE:
+			parentType = GeometryType.POLYGON;
+			break;
+		default:
+			throw new SFException("Geometry Type not supported: "
+					+ geometryType);
+		}
+
+		return parentType;
+	}
+
+	/**
+	 * Get the child type hierarchy of the provided geometry type.
+	 * 
+	 * @param geometryType
+	 *            geometry type
+	 * @return child type hierarchy, null if no children
+	 * @since 2.0.1
+	 */
+	public static Map<GeometryType, Map<GeometryType, ?>> childHierarchy(
+			GeometryType geometryType) {
+
+		Map<GeometryType, Map<GeometryType, ?>> hierarchy = null;
+
+		List<GeometryType> childTypes = childTypes(geometryType);
+
+		if (!childTypes.isEmpty()) {
+			hierarchy = new HashMap<>();
+
+			for (GeometryType childType : childTypes) {
+				hierarchy.put(childType, childHierarchy(childType));
+			}
+		}
+
+		return hierarchy;
+	}
+
+	/**
+	 * Get the immediate child Geometry Types of the provided geometry type
+	 * 
+	 * @param geometryType
+	 *            geometry type
+	 * @return child geometry types, empty list if no child types
+	 * @since 2.0.1
+	 */
+	public static List<GeometryType> childTypes(GeometryType geometryType) {
+
+		List<GeometryType> childTypes = new ArrayList<>();
+
+		switch (geometryType) {
+
+		case GEOMETRY:
+			childTypes.add(GeometryType.POINT);
+			childTypes.add(GeometryType.GEOMETRYCOLLECTION);
+			childTypes.add(GeometryType.CURVE);
+			childTypes.add(GeometryType.SURFACE);
+			break;
+		case POINT:
+			break;
+		case LINESTRING:
+			childTypes.add(GeometryType.CIRCULARSTRING);
+			break;
+		case POLYGON:
+			childTypes.add(GeometryType.TRIANGLE);
+			break;
+		case MULTIPOINT:
+			break;
+		case MULTILINESTRING:
+			break;
+		case MULTIPOLYGON:
+			break;
+		case GEOMETRYCOLLECTION:
+			childTypes.add(GeometryType.MULTIPOINT);
+			childTypes.add(GeometryType.MULTICURVE);
+			childTypes.add(GeometryType.MULTISURFACE);
+			break;
+		case CIRCULARSTRING:
+			break;
+		case COMPOUNDCURVE:
+			break;
+		case CURVEPOLYGON:
+			childTypes.add(GeometryType.POLYGON);
+			break;
+		case MULTICURVE:
+			childTypes.add(GeometryType.MULTILINESTRING);
+			break;
+		case MULTISURFACE:
+			childTypes.add(GeometryType.MULTIPOLYGON);
+			break;
+		case CURVE:
+			childTypes.add(GeometryType.LINESTRING);
+			childTypes.add(GeometryType.COMPOUNDCURVE);
+			break;
+		case SURFACE:
+			childTypes.add(GeometryType.CURVEPOLYGON);
+			childTypes.add(GeometryType.POLYHEDRALSURFACE);
+			break;
+		case POLYHEDRALSURFACE:
+			childTypes.add(GeometryType.TIN);
+			break;
+		case TIN:
+			break;
+		case TRIANGLE:
+			break;
+		default:
+			throw new SFException("Geometry Type not supported: "
+					+ geometryType);
+		}
+
+		return childTypes;
 	}
 
 }
