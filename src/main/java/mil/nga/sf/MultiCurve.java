@@ -7,8 +7,15 @@ import java.util.List;
  * must be of type Curve.
  * 
  * @author osbornb
+ * @param <T>
+ *            curve type
  */
 public abstract class MultiCurve<T extends Curve> extends GeometryCollection<T> {
+
+	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor

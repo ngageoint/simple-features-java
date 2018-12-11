@@ -7,9 +7,16 @@ import java.util.List;
  * must be of type Surface.
  * 
  * @author osbornb
+ * @param <T>
+ *            surface type
  */
 public abstract class MultiSurface<T extends Surface> extends
 		GeometryCollection<T> {
+
+	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor

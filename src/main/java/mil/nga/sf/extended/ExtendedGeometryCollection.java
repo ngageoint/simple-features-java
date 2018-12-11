@@ -18,6 +18,11 @@ public class ExtendedGeometryCollection<T extends Geometry> extends
 		GeometryCollection<T> {
 
 	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Extended geometry collection geometry type
 	 */
 	private GeometryType geometryType = GeometryType.GEOMETRYCOLLECTION;
@@ -26,6 +31,7 @@ public class ExtendedGeometryCollection<T extends Geometry> extends
 	 * Constructor, wraps a geometry collection as extended
 	 * 
 	 * @param geometryCollection
+	 *            geometry collection
 	 */
 	public ExtendedGeometryCollection(GeometryCollection<T> geometryCollection) {
 		super(GeometryType.GEOMETRYCOLLECTION, geometryCollection.hasZ(),

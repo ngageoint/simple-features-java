@@ -76,6 +76,7 @@ public class ByteReader {
 	 *            number of bytes
 	 * @return String
 	 * @throws UnsupportedEncodingException
+	 *             upon error
 	 */
 	public String readString(int num) throws UnsupportedEncodingException {
 		verifyRemainingBytes(num);

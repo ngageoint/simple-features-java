@@ -14,6 +14,11 @@ import mil.nga.sf.util.sweep.ShamosHoey;
 public class LineString extends Curve {
 
 	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * List of points
 	 */
 	private List<Point> points = new ArrayList<Point>();

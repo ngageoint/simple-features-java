@@ -10,8 +10,15 @@ import mil.nga.sf.util.SFException;
  * A collection of zero or more Geometry instances.
  * 
  * @author osbornb
+ * @param <T>
+ *            geometry type
  */
 public class GeometryCollection<T extends Geometry> extends Geometry {
+
+	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * List of geometries

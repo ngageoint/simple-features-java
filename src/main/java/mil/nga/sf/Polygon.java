@@ -14,6 +14,11 @@ import mil.nga.sf.util.sweep.ShamosHoey;
 public class Polygon extends CurvePolygon<LineString> {
 
 	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Constructor
 	 */
 	public Polygon() {

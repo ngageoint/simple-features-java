@@ -1,5 +1,7 @@
 package mil.nga.sf;
 
+import java.io.Serializable;
+
 import mil.nga.sf.util.GeometryEnvelopeBuilder;
 import mil.nga.sf.util.GeometryUtils;
 
@@ -8,7 +10,12 @@ import mil.nga.sf.util.GeometryUtils;
  * 
  * @author osbornb
  */
-public abstract class Geometry {
+public abstract class Geometry implements Serializable {
+
+	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Geometry type

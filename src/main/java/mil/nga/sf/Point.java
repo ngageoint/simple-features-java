@@ -9,6 +9,11 @@ package mil.nga.sf;
 public class Point extends Geometry {
 
 	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * X coordinate
 	 */
 	private double x;

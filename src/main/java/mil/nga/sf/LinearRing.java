@@ -13,6 +13,11 @@ import mil.nga.sf.util.SFException;
 public class LinearRing extends LineString {
 
 	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Constructor
 	 */
 	public LinearRing() {

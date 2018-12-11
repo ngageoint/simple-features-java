@@ -12,6 +12,11 @@ import mil.nga.sf.util.GeometryUtils;
 public class Triangle extends Polygon {
 
 	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Constructor
 	 */
 	public Triangle() {

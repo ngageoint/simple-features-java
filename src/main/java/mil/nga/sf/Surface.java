@@ -9,6 +9,11 @@ package mil.nga.sf;
 public abstract class Surface extends Geometry {
 
 	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param type

@@ -1,9 +1,18 @@
 package mil.nga.sf.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import mil.nga.sf.CircularString;
 import mil.nga.sf.CompoundCurve;
@@ -32,6 +41,12 @@ import mil.nga.sf.util.centroid.CentroidSurface;
  * @since 1.0.3
  */
 public class GeometryUtils {
+
+	/**
+	 * Logger
+	 */
+	private static final Logger logger = Logger.getLogger(GeometryUtils.class
+			.getName());
 
 	/**
 	 * Default epsilon for line tolerance
@@ -1335,6 +1350,83 @@ public class GeometryUtils {
 		}
 
 		return childTypes;
+	}
+
+	/**
+	 * Serialize the geometry to bytes
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @return serialized bytes
+	 * @since 2.0.1
+	 */
+	public static byte[] serialize(Geometry geometry) {
+
+		byte[] bytes = null;
+
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutput out = null;
+		try {
+			out = new ObjectOutputStream(bos);
+			out.writeObject(geometry);
+			out.flush();
+			bytes = bos.toByteArray();
+		} catch (IOException e) {
+			throw new SFException("Failed to serialize geometry into bytes", e);
+		} finally {
+			try {
+				bos.close();
+			} catch (IOException e) {
+				logger.log(Level.WARNING, "Failed to close stream", e);
+			}
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					logger.log(Level.WARNING, "Failed to close stream", e);
+				}
+			}
+		}
+
+		return bytes;
+	}
+
+	/**
+	 * Deserialize the bytes into a geometry
+	 * 
+	 * @param bytes
+	 *            serialized bytes
+	 * @return geometry
+	 * @since 2.0.1
+	 */
+	public static Geometry deserialize(byte[] bytes) {
+
+		Geometry geometry = null;
+
+		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+		ObjectInput in = null;
+		try {
+			in = new ObjectInputStream(bis);
+			geometry = (Geometry) in.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			throw new SFException("Failed to deserialize geometry into bytes",
+					e);
+		} finally {
+			try {
+				bis.close();
+			} catch (IOException e) {
+				logger.log(Level.WARNING, "Failed to close stream", e);
+			}
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					logger.log(Level.WARNING, "Failed to close stream", e);
+				}
+			}
+		}
+
+		return geometry;
 	}
 
 }

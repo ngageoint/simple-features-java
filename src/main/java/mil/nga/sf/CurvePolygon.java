@@ -10,8 +10,15 @@ import mil.nga.sf.util.GeometryUtils;
  * Each ring is defined by a Curve instance.
  * 
  * @author osbornb
+ * @param <T>
+ *            curve type
  */
 public class CurvePolygon<T extends Curve> extends Surface {
+
+	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * List of rings

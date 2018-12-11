@@ -13,6 +13,11 @@ import mil.nga.sf.util.GeometryUtils;
 public class TIN extends PolyhedralSurface {
 
 	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Constructor
 	 */
 	public TIN() {

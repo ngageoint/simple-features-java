@@ -13,6 +13,11 @@ import mil.nga.sf.util.GeometryUtils;
 public class MultiLineString extends MultiCurve<LineString> {
 
 	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Constructor
 	 */
 	public MultiLineString() {

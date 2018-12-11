@@ -14,6 +14,11 @@ import mil.nga.sf.util.sweep.ShamosHoey;
 public class CompoundCurve extends Curve {
 
 	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * List of line strings
 	 */
 	private List<LineString> lineStrings = new ArrayList<LineString>();

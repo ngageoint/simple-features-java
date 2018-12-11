@@ -81,6 +81,7 @@ public class ByteWriter {
 	 * @param value
 	 *            string value
 	 * @throws IOException
+	 *             upon error
 	 */
 	public void writeString(String value) throws IOException {
 		byte[] valueBytes = value.getBytes();
@@ -101,8 +102,9 @@ public class ByteWriter {
 	 * Write an integer
 	 * 
 	 * @param value
-	 *            int
+	 *            int value
 	 * @throws IOException
+	 *             upon error
 	 */
 	public void writeInt(int value) throws IOException {
 		byte[] valueBytes = new byte[4];
@@ -119,6 +121,7 @@ public class ByteWriter {
 	 * @param value
 	 *            double
 	 * @throws IOException
+	 *             upon error
 	 */
 	public void writeDouble(double value) throws IOException {
 		byte[] valueBytes = new byte[8];

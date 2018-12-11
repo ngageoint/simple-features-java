@@ -23,6 +23,7 @@ public class SFException extends RuntimeException {
 	 * Constructor
 	 * 
 	 * @param message
+	 *            error message
 	 */
 	public SFException(String message) {
 		super(message);
@@ -32,7 +33,9 @@ public class SFException extends RuntimeException {
 	 * Constructor
 	 * 
 	 * @param message
+	 *            error message
 	 * @param throwable
+	 *            throwable
 	 */
 	public SFException(String message, Throwable throwable) {
 		super(message, throwable);
@@ -42,6 +45,7 @@ public class SFException extends RuntimeException {
 	 * Constructor
 	 * 
 	 * @param throwable
+	 *            throwable
 	 */
 	public SFException(Throwable throwable) {
 		super(throwable);
