@@ -396,13 +396,55 @@ public class GeometryEnvelope {
 	}
 
 	/**
+	 * Determine if intersects with the provided envelope
+	 *
+	 * @param envelope
+	 *            geometry envelope
+	 * @return true if intersects
+	 * @since 2.0.1
+	 */
+	public boolean intersects(GeometryEnvelope envelope) {
+		return overlap(envelope) != null;
+	}
+
+	/**
+	 * Determine if intersects with the provided envelope
+	 *
+	 * @param envelope
+	 *            geometry envelope
+	 * @param allowEmpty
+	 *            allow empty ranges when determining intersection
+	 *
+	 * @return true if intersects
+	 * @since 2.0.1
+	 */
+	public boolean intersects(GeometryEnvelope envelope, boolean allowEmpty) {
+		return overlap(envelope, allowEmpty) != null;
+	}
+
+	/**
 	 * Get the overlapping geometry envelope with the provided envelope
 	 *
 	 * @param envelope
-	 *            envelope
+	 *            geometry envelope
 	 * @return geometry envelope
 	 */
 	public GeometryEnvelope overlap(GeometryEnvelope envelope) {
+		return overlap(envelope, false);
+	}
+
+	/**
+	 * Get the overlapping geometry envelope with the provided envelope
+	 *
+	 * @param envelope
+	 *            geometry envelope
+	 * @param allowEmpty
+	 *            allow empty ranges when determining intersection
+	 * @return geometry envelope
+	 * @since 2.0.1
+	 */
+	public GeometryEnvelope overlap(GeometryEnvelope envelope,
+			boolean allowEmpty) {
 
 		double minX = Math.max(getMinX(), envelope.getMinX());
 		double maxX = Math.min(getMaxX(), envelope.getMaxX());
@@ -411,7 +453,8 @@ public class GeometryEnvelope {
 
 		GeometryEnvelope overlap = null;
 
-		if (minX < maxX && minY < maxY) {
+		if ((minX < maxX && minY < maxY)
+				|| (allowEmpty && minX <= maxX && minY <= maxY)) {
 			overlap = new GeometryEnvelope(minX, minY, maxX, maxY);
 		}
 
@@ -422,7 +465,7 @@ public class GeometryEnvelope {
 	 * Get the union geometry envelope combined with the provided envelope
 	 *
 	 * @param envelope
-	 *            envelope
+	 *            geometry envelope
 	 * @return geometry envelope
 	 */
 	public GeometryEnvelope union(GeometryEnvelope envelope) {
@@ -439,6 +482,21 @@ public class GeometryEnvelope {
 		}
 
 		return union;
+	}
+
+	/**
+	 * Determine if inclusively contains the provided envelope
+	 *
+	 * @param envelope
+	 *            geometry envelope
+	 * @return true if contains
+	 * @since 2.0.1
+	 */
+	public boolean contains(GeometryEnvelope envelope) {
+		return getMinX() <= envelope.getMinX()
+				&& getMaxX() >= envelope.getMaxX()
+				&& getMinY() <= envelope.getMinY()
+				&& getMaxY() >= envelope.getMaxY();
 	}
 
 	/**
