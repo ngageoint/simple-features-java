@@ -6,7 +6,11 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ## 2.0.1 (TBD)
 
-* TBD
+* Geometry Type parent and child hierarchy utility methods
+* Serializable geometries
+* Geometry Envelope intersects, contains, and overlap while allowing empty
+* 2D Centroid documentation clarification
+* Eclipse project cleanup
 
 ## [2.0.0](https://github.com/ngageoint/simple-features-java/releases/tag/2.0.0) (05-17-2018)
 
