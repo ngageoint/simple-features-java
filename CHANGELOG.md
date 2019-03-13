@@ -8,6 +8,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 * Geometry Type parent and child hierarchy utility methods
 * Serializable geometries
+* Serialize and deserialize geometry utility methods
 * Geometry Envelope intersects, contains, and overlap while allowing empty
 * 2D Centroid documentation clarification
 * Eclipse project cleanup
