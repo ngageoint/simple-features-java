@@ -133,4 +133,23 @@ public enum GeometryType {
 		return valueOf(name.toUpperCase(Locale.US));
 	}
 
+	/**
+	 * Find the Geometry Type from the name if it exists, ignoring case
+	 * 
+	 * @param name
+	 *            name
+	 * @return geometry type or null
+	 * @since 2.0.2
+	 */
+	public static GeometryType findName(String name) {
+		GeometryType type = null;
+		for (GeometryType geometryType : GeometryType.values()) {
+			if (geometryType.name().equalsIgnoreCase(name)) {
+				type = geometryType;
+				break;
+			}
+		}
+		return type;
+	}
+
 }
