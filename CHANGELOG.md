@@ -6,7 +6,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ## 2.0.2 (TBD)
 
-* TBD
+* Geometry Type find by name method
 
 ## [2.0.1](https://github.com/ngageoint/simple-features-java/releases/tag/2.0.1) (04-01-2019)
 
