@@ -45,8 +45,8 @@ public class GeometryUtils {
 	/**
 	 * Logger
 	 */
-	private static final Logger logger = Logger.getLogger(GeometryUtils.class
-			.getName());
+	private static final Logger logger = Logger
+			.getLogger(GeometryUtils.class.getName());
 
 	/**
 	 * Default epsilon for line tolerance
@@ -156,14 +156,14 @@ public class GeometryUtils {
 	/**
 	 * Minimize the geometry using the shortest x distance between each
 	 * connected set of points. The resulting geometry point x values will be in
-	 * the range: (3 * min value <= x <= 3 * max value
+	 * the range: (3 * min value &lt;= x &lt;= 3 * max value
 	 *
 	 * Example: For WGS84 provide a max x of 180.0. Resulting x values will be
-	 * in the range: -540.0 <= x <= 540.0
+	 * in the range: -540.0 &lt;= x &lt;= 540.0
 	 *
 	 * Example: For web mercator provide a world width of 20037508.342789244.
-	 * Resulting x values will be in the range: -60112525.028367732 <= x <=
-	 * 60112525.028367732
+	 * Resulting x values will be in the range: -60112525.028367732 &lt;= x
+	 * &lt;= 60112525.028367732
 	 *
 	 * @param geometry
 	 *            geometry
@@ -321,7 +321,8 @@ public class GeometryUtils {
 	 * @param maxX
 	 *            max positive x value in the geometry projection
 	 */
-	private static void minimize(CurvePolygon<Curve> curvePolygon, double maxX) {
+	private static void minimize(CurvePolygon<Curve> curvePolygon,
+			double maxX) {
 
 		for (Curve ring : curvePolygon.getRings()) {
 			minimizeGeometry(ring, maxX);
@@ -349,11 +350,11 @@ public class GeometryUtils {
 	 * range are adjusted to fall within the range.
 	 *
 	 * Example: For WGS84 provide a max x of 180.0. Resulting x values will be
-	 * in the range: -180.0 <= x <= 180.0.
+	 * in the range: -180.0 &lt;= x &lt;= 180.0.
 	 *
 	 * Example: For web mercator provide a world width of 20037508.342789244.
-	 * Resulting x values will be in the range: -20037508.342789244 <= x <=
-	 * 20037508.342789244.
+	 * Resulting x values will be in the range: -20037508.342789244 &lt;= x
+	 * &lt;= 20037508.342789244.
 	 *
 	 * @param geometry
 	 *            geometry
@@ -474,7 +475,8 @@ public class GeometryUtils {
 	 * @param maxX
 	 *            max positive x value in the geometry projection
 	 */
-	private static void normalize(MultiLineString multiLineString, double maxX) {
+	private static void normalize(MultiLineString multiLineString,
+			double maxX) {
 
 		List<LineString> lineStrings = multiLineString.getLineStrings();
 		for (LineString lineString : lineStrings) {
@@ -536,7 +538,8 @@ public class GeometryUtils {
 	 * @param maxX
 	 *            max positive x value in the geometry projection
 	 */
-	private static void normalize(CurvePolygon<Curve> curvePolygon, double maxX) {
+	private static void normalize(CurvePolygon<Curve> curvePolygon,
+			double maxX) {
 
 		for (Curve ring : curvePolygon.getRings()) {
 			normalizeGeometry(ring, maxX);
@@ -814,7 +817,8 @@ public class GeometryUtils {
 					.getY()))
 					&& (point.getX() < (point2.getX() - point1.getX())
 							* (point.getY() - point1.getY())
-							/ (point2.getY() - point1.getY()) + point1.getX())) {
+							/ (point2.getY() - point1.getY())
+							+ point1.getX())) {
 				contains = !contains;
 			}
 		}
@@ -855,8 +859,8 @@ public class GeometryUtils {
 	 */
 	public static boolean pointOnPolygonEdge(Point point, Polygon polygon,
 			double epsilon) {
-		return polygon.numRings() > 0
-				&& pointOnPolygonEdge(point, polygon.getRings().get(0), epsilon);
+		return polygon.numRings() > 0 && pointOnPolygonEdge(point,
+				polygon.getRings().get(0), epsilon);
 	}
 
 	/**
@@ -1125,6 +1129,8 @@ public class GeometryUtils {
 	 * 
 	 * @param geometries
 	 *            list of geometries
+	 * @param <T>
+	 *            geometry type
 	 * @return true if has z
 	 */
 	public static <T extends Geometry> boolean hasZ(List<T> geometries) {
@@ -1143,6 +1149,8 @@ public class GeometryUtils {
 	 * 
 	 * @param geometries
 	 *            list of geometries
+	 * @param <T>
+	 *            geometry type
 	 * @return true if has m
 	 */
 	public static <T extends Geometry> boolean hasM(List<T> geometries) {
@@ -1166,7 +1174,8 @@ public class GeometryUtils {
 	 * @return list of increasing parent types
 	 * @since 2.0.1
 	 */
-	public static List<GeometryType> parentHierarchy(GeometryType geometryType) {
+	public static List<GeometryType> parentHierarchy(
+			GeometryType geometryType) {
 
 		List<GeometryType> hierarchy = new ArrayList<>();
 
@@ -1248,8 +1257,8 @@ public class GeometryUtils {
 			parentType = GeometryType.POLYGON;
 			break;
 		default:
-			throw new SFException("Geometry Type not supported: "
-					+ geometryType);
+			throw new SFException(
+					"Geometry Type not supported: " + geometryType);
 		}
 
 		return parentType;
@@ -1349,8 +1358,8 @@ public class GeometryUtils {
 		case TRIANGLE:
 			break;
 		default:
-			throw new SFException("Geometry Type not supported: "
-					+ geometryType);
+			throw new SFException(
+					"Geometry Type not supported: " + geometryType);
 		}
 
 		return childTypes;

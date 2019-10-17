@@ -287,7 +287,7 @@ public class SweepLine {
 	 *            point 1
 	 * @param point2
 	 *            point 2
-	 * @return +1 if p1 > p2, -1 if p1 < p2, 0 if equal
+	 * @return +1 if p1 &gt; p2, -1 if p1 &lt; p2, 0 if equal
 	 */
 	public static int xyOrder(Point point1, Point point2) {
 		int value = 0;
