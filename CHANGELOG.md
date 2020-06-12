@@ -6,7 +6,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ## 2.0.3 (TBD)
 
-* TBD
+* Geometry Filter interface and Point Finite Filter implementation
 
 ## [2.0.2](https://github.com/ngageoint/simple-features-java/releases/tag/2.0.2) (07-08-2019)
 
