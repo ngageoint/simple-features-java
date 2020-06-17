@@ -2,8 +2,11 @@ package mil.nga.sf.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Write a byte array
@@ -13,9 +16,15 @@ import java.nio.ByteOrder;
 public class ByteWriter {
 
 	/**
+	 * Logger
+	 */
+	private static final Logger logger = Logger
+			.getLogger(ByteWriter.class.getName());
+
+	/**
 	 * Output stream to write bytes to
 	 */
-	private final ByteArrayOutputStream os = new ByteArrayOutputStream();
+	private final OutputStream outputStream;
 
 	/**
 	 * Byte order
@@ -26,6 +35,46 @@ public class ByteWriter {
 	 * Constructor
 	 */
 	public ByteWriter() {
+		outputStream = new ByteArrayOutputStream();
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param outputStream
+	 *            output stream
+	 * 
+	 * @since 2.0.3
+	 */
+	public ByteWriter(OutputStream outputStream) {
+		this.outputStream = outputStream;
+	}
+
+	/**
+	 * Get the output stream
+	 * 
+	 * @return output stream
+	 * 
+	 * @since 2.0.3
+	 */
+	public OutputStream getOutputStream() {
+		return outputStream;
+	}
+
+	/**
+	 * Get the output stream
+	 * 
+	 * @return output stream
+	 * 
+	 * @since 2.0.3
+	 */
+	public ByteArrayOutputStream getByteArrayOutputStream() {
+		if (!(outputStream instanceof ByteArrayOutputStream)) {
+			throw new SFException(
+					"Output Stream is not a ByteArrayOutputStream: "
+							+ outputStream.getClass().getName());
+		}
+		return (ByteArrayOutputStream) outputStream;
 	}
 
 	/**
@@ -33,8 +82,10 @@ public class ByteWriter {
 	 */
 	public void close() {
 		try {
-			os.close();
+			outputStream.close();
 		} catch (IOException e) {
+			logger.log(Level.WARNING,
+					"Failed to close byte writer output stream", e);
 		}
 	}
 
@@ -63,7 +114,7 @@ public class ByteWriter {
 	 * @return written bytes
 	 */
 	public byte[] getBytes() {
-		return os.toByteArray();
+		return getByteArrayOutputStream().toByteArray();
 	}
 
 	/**
@@ -72,7 +123,7 @@ public class ByteWriter {
 	 * @return bytes written
 	 */
 	public int size() {
-		return os.size();
+		return getByteArrayOutputStream().size();
 	}
 
 	/**
@@ -85,7 +136,7 @@ public class ByteWriter {
 	 */
 	public void writeString(String value) throws IOException {
 		byte[] valueBytes = value.getBytes();
-		os.write(valueBytes);
+		outputStream.write(valueBytes);
 	}
 
 	/**
@@ -93,9 +144,11 @@ public class ByteWriter {
 	 * 
 	 * @param value
 	 *            byte
+	 * @throws IOException
+	 *             upon error
 	 */
-	public void writeByte(byte value) {
-		os.write(value);
+	public void writeByte(byte value) throws IOException {
+		outputStream.write(value);
 	}
 
 	/**
@@ -112,7 +165,7 @@ public class ByteWriter {
 				.putInt(value);
 		byteBuffer.flip();
 		byteBuffer.get(valueBytes);
-		os.write(valueBytes);
+		outputStream.write(valueBytes);
 	}
 
 	/**
@@ -129,7 +182,7 @@ public class ByteWriter {
 				.putDouble(value);
 		byteBuffer.flip();
 		byteBuffer.get(valueBytes);
-		os.write(valueBytes);
+		outputStream.write(valueBytes);
 	}
 
 }
