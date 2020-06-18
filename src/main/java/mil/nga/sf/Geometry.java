@@ -25,12 +25,12 @@ public abstract class Geometry implements Serializable {
 	/**
 	 * Has z coordinates
 	 */
-	private final boolean hasZ;
+	private boolean hasZ;
 
 	/**
 	 * Has m values
 	 */
-	private final boolean hasM;
+	private boolean hasM;
 
 	/**
 	 * Constructor
@@ -67,6 +67,17 @@ public abstract class Geometry implements Serializable {
 	}
 
 	/**
+	 * Set if the geometry has z coordinates
+	 * 
+	 * @param hasZ
+	 *            true if has z coordinates
+	 * @since 2.0.3
+	 */
+	public void setHasZ(boolean hasZ) {
+		this.hasZ = hasZ;
+	}
+
+	/**
 	 * Does the geometry have z coordinates
 	 * 
 	 * @return true if has z coordinates
@@ -83,6 +94,33 @@ public abstract class Geometry implements Serializable {
 	 */
 	public boolean hasM() {
 		return hasM;
+	}
+
+	/**
+	 * Set if the geometry has m coordinates
+	 * 
+	 * @param hasM
+	 *            true if has m coordinates
+	 * @since 2.0.3
+	 */
+	public void setHasM(boolean hasM) {
+		this.hasM = hasM;
+	}
+
+	/**
+	 * Update currently false hasZ and hasM values using the provided geometry
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @since 2.0.3
+	 */
+	protected void updateZM(Geometry geometry) {
+		if (!hasZ()) {
+			setHasZ(geometry.hasZ());
+		}
+		if (!hasM()) {
+			setHasM(geometry.hasM());
+		}
 	}
 
 	/**
