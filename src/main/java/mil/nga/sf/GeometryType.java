@@ -1,6 +1,8 @@
 package mil.nga.sf;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Geometry Type enumeration
@@ -114,6 +116,16 @@ public enum GeometryType {
 	TRIANGLE;
 
 	/**
+	 * Name to type mapping for fast find attempts
+	 */
+	private static final Map<String, GeometryType> types = new HashMap<>();
+	static {
+		for (GeometryType type : values()) {
+			types.put(type.name(), type);
+		}
+	}
+
+	/**
 	 * Get the name, just use the enum name since they are the same
 	 * 
 	 * @return geometry type name
@@ -142,14 +154,7 @@ public enum GeometryType {
 	 * @since 2.0.2
 	 */
 	public static GeometryType findName(String name) {
-		GeometryType type = null;
-		for (GeometryType geometryType : GeometryType.values()) {
-			if (geometryType.name().equalsIgnoreCase(name)) {
-				type = geometryType;
-				break;
-			}
-		}
-		return type;
+		return types.get(name.toUpperCase(Locale.US));
 	}
 
 }
