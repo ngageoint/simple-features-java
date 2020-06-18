@@ -104,6 +104,7 @@ public class CompoundCurve extends Curve {
 	 */
 	public void addLineString(LineString lineString) {
 		lineStrings.add(lineString);
+		updateZM(lineString);
 	}
 
 	/**
@@ -113,7 +114,9 @@ public class CompoundCurve extends Curve {
 	 *            line strings
 	 */
 	public void addLineStrings(List<LineString> lineStrings) {
-		this.lineStrings.addAll(lineStrings);
+		for (LineString lineString : lineStrings) {
+			addLineString(lineString);
+		}
 	}
 
 	/**

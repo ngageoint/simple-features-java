@@ -171,6 +171,7 @@ public class Point extends Geometry {
 	 */
 	public void setZ(Double z) {
 		this.z = z;
+		setHasZ(z != null);
 	}
 
 	/**
@@ -190,6 +191,7 @@ public class Point extends Geometry {
 	 */
 	public void setM(Double m) {
 		this.m = m;
+		setHasM(m != null);
 	}
 
 	/**

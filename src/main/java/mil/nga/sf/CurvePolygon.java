@@ -122,6 +122,7 @@ public class CurvePolygon<T extends Curve> extends Surface {
 	 */
 	public void addRing(T ring) {
 		rings.add(ring);
+		updateZM(ring);
 	}
 
 	/**
@@ -131,7 +132,9 @@ public class CurvePolygon<T extends Curve> extends Surface {
 	 *            rings
 	 */
 	public void addRings(List<T> rings) {
-		this.rings.addAll(rings);
+		for (T ring : rings) {
+			addRing(ring);
+		}
 	}
 
 	/**

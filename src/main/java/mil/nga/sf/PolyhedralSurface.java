@@ -138,6 +138,7 @@ public class PolyhedralSurface extends Surface {
 	 */
 	public void addPolygon(Polygon polygon) {
 		polygons.add(polygon);
+		updateZM(polygon);
 	}
 
 	/**
@@ -158,7 +159,9 @@ public class PolyhedralSurface extends Surface {
 	 *            polygons
 	 */
 	public void addPolygons(List<Polygon> polygons) {
-		this.polygons.addAll(polygons);
+		for (Polygon polygon : polygons) {
+			addPolygon(polygon);
+		}
 	}
 
 	/**

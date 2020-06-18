@@ -107,6 +107,7 @@ public class LineString extends Curve {
 	 */
 	public void addPoint(Point point) {
 		points.add(point);
+		updateZM(point);
 	}
 
 	/**
@@ -116,7 +117,9 @@ public class LineString extends Curve {
 	 *            points
 	 */
 	public void addPoints(List<Point> points) {
-		this.points.addAll(points);
+		for (Point point : points) {
+			addPoint(point);
+		}
 	}
 
 	/**

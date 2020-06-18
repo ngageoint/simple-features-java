@@ -91,7 +91,8 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 	 * @param hasM
 	 *            has m
 	 */
-	protected GeometryCollection(GeometryType type, boolean hasZ, boolean hasM) {
+	protected GeometryCollection(GeometryType type, boolean hasZ,
+			boolean hasM) {
 		super(type, hasZ, hasM);
 	}
 
@@ -122,6 +123,7 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 	 */
 	public void addGeometry(T geometry) {
 		geometries.add(geometry);
+		updateZM(geometry);
 	}
 
 	/**
@@ -131,7 +133,9 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 	 *            geometries
 	 */
 	public void addGeometries(List<T> geometries) {
-		this.geometries.addAll(geometries);
+		for (T geometry : geometries) {
+			addGeometry(geometry);
+		}
 	}
 
 	/**
@@ -189,8 +193,8 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 			}
 			break;
 		default:
-			throw new SFException("Unexpected Geometry Collection Type: "
-					+ geometryType);
+			throw new SFException(
+					"Unexpected Geometry Collection Type: " + geometryType);
 		}
 
 		return geometryType;
