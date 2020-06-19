@@ -22,6 +22,13 @@ public class ByteReader {
 			.getLogger(ByteReader.class.getName());
 
 	/**
+	 * Default read byte order
+	 * 
+	 * @since 2.0.3
+	 */
+	public static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
+
+	/**
 	 * Character set
 	 */
 	private static final String CHAR_SET = "UTF-8";
@@ -44,7 +51,7 @@ public class ByteReader {
 	/**
 	 * Byte order
 	 */
-	private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
+	private ByteOrder byteOrder = DEFAULT_BYTE_ORDER;
 
 	/**
 	 * Constructor

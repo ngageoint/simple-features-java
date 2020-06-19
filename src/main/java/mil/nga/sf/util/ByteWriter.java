@@ -22,6 +22,13 @@ public class ByteWriter {
 			.getLogger(ByteWriter.class.getName());
 
 	/**
+	 * Default write byte order
+	 * 
+	 * @since 2.0.3
+	 */
+	public static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
+
+	/**
 	 * Output stream to write bytes to
 	 */
 	private final OutputStream outputStream;
@@ -29,7 +36,7 @@ public class ByteWriter {
 	/**
 	 * Byte order
 	 */
-	private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
+	private ByteOrder byteOrder = DEFAULT_BYTE_ORDER;
 
 	/**
 	 * Constructor
@@ -43,7 +50,6 @@ public class ByteWriter {
 	 * 
 	 * @param outputStream
 	 *            output stream
-	 * 
 	 * @since 2.0.3
 	 */
 	public ByteWriter(OutputStream outputStream) {
@@ -51,10 +57,35 @@ public class ByteWriter {
 	}
 
 	/**
+	 * Constructor
+	 * 
+	 * @param byteOrder
+	 *            byte order
+	 * @since 2.0.3
+	 */
+	public ByteWriter(ByteOrder byteOrder) {
+		this();
+		this.byteOrder = byteOrder;
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param outputStream
+	 *            output stream
+	 * @param byteOrder
+	 *            byte order
+	 * @since 2.0.3
+	 */
+	public ByteWriter(OutputStream outputStream, ByteOrder byteOrder) {
+		this(outputStream);
+		this.byteOrder = byteOrder;
+	}
+
+	/**
 	 * Get the output stream
 	 * 
 	 * @return output stream
-	 * 
 	 * @since 2.0.3
 	 */
 	public OutputStream getOutputStream() {
@@ -65,7 +96,6 @@ public class ByteWriter {
 	 * Get the output stream
 	 * 
 	 * @return output stream
-	 * 
 	 * @since 2.0.3
 	 */
 	public ByteArrayOutputStream getByteArrayOutputStream() {
