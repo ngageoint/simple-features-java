@@ -45,6 +45,11 @@ public class GeometryEnvelopeBuilder {
 
 		buildEnvelope(geometry, envelope);
 
+		if (envelope.getMinX() > envelope.getMaxX()
+				|| envelope.getMinY() > envelope.getMaxY()) {
+			envelope = null;
+		}
+
 		return envelope;
 	}
 
