@@ -16,6 +16,7 @@ Software source code previously released under an open source license and then m
 ### Simple Feature Conversion Libraries ###
 
 * [simple-features-wkb-java](https://github.com/ngageoint/simple-features-wkb-java) - Well Known Binary
+* [simple-features-wkt-java](https://github.com/ngageoint/simple-features-wkt-java) - Well Known Text
 * [simple-features-geojson-java](https://github.com/ngageoint/simple-features-geojson-java) - GeoJSON
 * [simple-features-proj-java](https://github.com/ngageoint/simple-features-proj-java) - Projection
 
