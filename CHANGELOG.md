@@ -4,9 +4,12 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## 2.0.3 (TBD)
+## [2.0.3](https://github.com/ngageoint/simple-features-java/releases/tag/2.0.3) (07-13-2020)
 
 * Geometry Filter interface and Point Finite Filter implementation
+* Manual and automatic z and m has value updates
+* Byte Reader/Writer Input/Output stream backing
+* Text token reader
 
 ## [2.0.2](https://github.com/ngageoint/simple-features-java/releases/tag/2.0.2) (07-08-2019)
 

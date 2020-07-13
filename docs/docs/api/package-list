@@ -2,4 +2,5 @@ mil.nga.sf
 mil.nga.sf.extended
 mil.nga.sf.util
 mil.nga.sf.util.centroid
+mil.nga.sf.util.filter
 mil.nga.sf.util.sweep
