@@ -4,6 +4,10 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
+## 2.0.5 (TBD)
+
+* TBD
+
 ## [2.0.4](https://github.com/ngageoint/simple-features-java/releases/tag/2.0.4) (03-03-2021)
 
 * Text token reader support for '+'
