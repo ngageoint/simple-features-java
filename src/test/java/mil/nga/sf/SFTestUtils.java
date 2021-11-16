@@ -1,4 +1,4 @@
-package mil.nga.sf.test;
+package mil.nga.sf;
 
 import junit.framework.TestCase;
 import mil.nga.sf.CircularString;

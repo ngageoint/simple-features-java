@@ -1,4 +1,4 @@
-package mil.nga.sf.test;
+package mil.nga.sf;
 
 import java.io.IOException;
 import java.util.ArrayList;

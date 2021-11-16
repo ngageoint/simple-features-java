@@ -1,4 +1,4 @@
-package mil.nga.sf.test.util.sweep;
+package mil.nga.sf.util.sweep;
 
 import java.io.IOException;
 import java.util.ArrayList;
