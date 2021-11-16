@@ -2,10 +2,9 @@ package mil.nga.sf;
 
 import java.io.IOException;
 
-import mil.nga.sf.Geometry;
-import mil.nga.sf.util.GeometryUtils;
-
 import org.junit.Test;
+
+import mil.nga.sf.util.GeometryUtils;
 
 /**
  * Geometry Collection tests
@@ -39,8 +38,8 @@ public class GeometrySerializableTest {
 	}
 
 	@Test
-	public void testGeometryCollection() throws ClassNotFoundException,
-			IOException {
+	public void testGeometryCollection()
+			throws ClassNotFoundException, IOException {
 
 		testSerializable(SFTestUtils.createGeometryCollection(
 				Math.random() < .5, Math.random() < .5));
@@ -56,8 +55,8 @@ public class GeometrySerializableTest {
 	}
 
 	@Test
-	public void testMultiLineString() throws ClassNotFoundException,
-			IOException {
+	public void testMultiLineString()
+			throws ClassNotFoundException, IOException {
 
 		testSerializable(SFTestUtils.createMultiLineString(Math.random() < .5,
 				Math.random() < .5));
@@ -88,8 +87,8 @@ public class GeometrySerializableTest {
 
 	}
 
-	private void testSerializable(Geometry geometry) throws IOException,
-			ClassNotFoundException {
+	private void testSerializable(Geometry geometry)
+			throws IOException, ClassNotFoundException {
 
 		byte[] bytes = GeometryUtils.serialize(geometry);
 		Geometry deserializedGeometry = GeometryUtils.deserialize(bytes);

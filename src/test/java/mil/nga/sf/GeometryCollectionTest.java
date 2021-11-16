@@ -4,21 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-import mil.nga.sf.Curve;
-import mil.nga.sf.Geometry;
-import mil.nga.sf.GeometryCollection;
-import mil.nga.sf.GeometryType;
-import mil.nga.sf.LineString;
-import mil.nga.sf.MultiLineString;
-import mil.nga.sf.MultiPoint;
-import mil.nga.sf.MultiPolygon;
-import mil.nga.sf.Point;
-import mil.nga.sf.Polygon;
-import mil.nga.sf.Surface;
-import mil.nga.sf.extended.ExtendedGeometryCollection;
-
 import org.junit.Test;
+
+import junit.framework.TestCase;
+import mil.nga.sf.extended.ExtendedGeometryCollection;
 
 /**
  * Geometry Collection tests
@@ -99,8 +88,8 @@ public class GeometryCollectionTest {
 
 		List<LineString> lineStrings = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
-			lineStrings.add(SFTestUtils.createLineString(
-					SFTestUtils.coinFlip(), SFTestUtils.coinFlip()));
+			lineStrings.add(SFTestUtils.createLineString(SFTestUtils.coinFlip(),
+					SFTestUtils.coinFlip()));
 		}
 
 		List<Geometry> geometries = new ArrayList<>();

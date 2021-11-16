@@ -1,23 +1,6 @@
 package mil.nga.sf;
 
 import junit.framework.TestCase;
-import mil.nga.sf.CircularString;
-import mil.nga.sf.CompoundCurve;
-import mil.nga.sf.Curve;
-import mil.nga.sf.CurvePolygon;
-import mil.nga.sf.Geometry;
-import mil.nga.sf.GeometryCollection;
-import mil.nga.sf.GeometryEnvelope;
-import mil.nga.sf.GeometryType;
-import mil.nga.sf.LineString;
-import mil.nga.sf.MultiLineString;
-import mil.nga.sf.MultiPoint;
-import mil.nga.sf.MultiPolygon;
-import mil.nga.sf.Point;
-import mil.nga.sf.Polygon;
-import mil.nga.sf.PolyhedralSurface;
-import mil.nga.sf.TIN;
-import mil.nga.sf.Triangle;
 
 /**
  * SF test utils
@@ -127,8 +110,8 @@ public class SFTestUtils {
 				compareTriangle((Triangle) expected, (Triangle) actual);
 				break;
 			default:
-				throw new RuntimeException("Geometry Type not supported: "
-						+ geometryType);
+				throw new RuntimeException(
+						"Geometry Type not supported: " + geometryType);
 			}
 		}
 	}
@@ -168,12 +151,14 @@ public class SFTestUtils {
 	 * @param expected
 	 * @param actual
 	 */
-	public static void compareLineString(LineString expected, LineString actual) {
+	public static void compareLineString(LineString expected,
+			LineString actual) {
 
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numPoints(), actual.numPoints());
 		for (int i = 0; i < expected.numPoints(); i++) {
-			comparePoint(expected.getPoints().get(i), actual.getPoints().get(i));
+			comparePoint(expected.getPoints().get(i),
+					actual.getPoints().get(i));
 		}
 	}
 
@@ -188,8 +173,8 @@ public class SFTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numRings(), actual.numRings());
 		for (int i = 0; i < expected.numRings(); i++) {
-			compareLineString(expected.getRings().get(i), actual.getRings()
-					.get(i));
+			compareLineString(expected.getRings().get(i),
+					actual.getRings().get(i));
 		}
 	}
 
@@ -199,12 +184,14 @@ public class SFTestUtils {
 	 * @param expected
 	 * @param actual
 	 */
-	public static void compareMultiPoint(MultiPoint expected, MultiPoint actual) {
+	public static void compareMultiPoint(MultiPoint expected,
+			MultiPoint actual) {
 
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numPoints(), actual.numPoints());
 		for (int i = 0; i < expected.numPoints(); i++) {
-			comparePoint(expected.getPoints().get(i), actual.getPoints().get(i));
+			comparePoint(expected.getPoints().get(i),
+					actual.getPoints().get(i));
 		}
 	}
 
@@ -221,8 +208,8 @@ public class SFTestUtils {
 		TestCase.assertEquals(expected.numLineStrings(),
 				actual.numLineStrings());
 		for (int i = 0; i < expected.numLineStrings(); i++) {
-			compareLineString(expected.getLineStrings().get(i), actual
-					.getLineStrings().get(i));
+			compareLineString(expected.getLineStrings().get(i),
+					actual.getLineStrings().get(i));
 		}
 	}
 
@@ -238,8 +225,8 @@ public class SFTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numPolygons(), actual.numPolygons());
 		for (int i = 0; i < expected.numPolygons(); i++) {
-			comparePolygon(expected.getPolygons().get(i), actual.getPolygons()
-					.get(i));
+			comparePolygon(expected.getPolygons().get(i),
+					actual.getPolygons().get(i));
 		}
 	}
 
@@ -249,14 +236,14 @@ public class SFTestUtils {
 	 * @param expected
 	 * @param actual
 	 */
-	public static void compareGeometryCollection(
-			GeometryCollection<?> expected, GeometryCollection<?> actual) {
+	public static void compareGeometryCollection(GeometryCollection<?> expected,
+			GeometryCollection<?> actual) {
 
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numGeometries(), actual.numGeometries());
 		for (int i = 0; i < expected.numGeometries(); i++) {
-			compareGeometries(expected.getGeometries().get(i), actual
-					.getGeometries().get(i));
+			compareGeometries(expected.getGeometries().get(i),
+					actual.getGeometries().get(i));
 		}
 	}
 
@@ -272,7 +259,8 @@ public class SFTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numPoints(), actual.numPoints());
 		for (int i = 0; i < expected.numPoints(); i++) {
-			comparePoint(expected.getPoints().get(i), actual.getPoints().get(i));
+			comparePoint(expected.getPoints().get(i),
+					actual.getPoints().get(i));
 		}
 	}
 
@@ -289,8 +277,8 @@ public class SFTestUtils {
 		TestCase.assertEquals(expected.numLineStrings(),
 				actual.numLineStrings());
 		for (int i = 0; i < expected.numLineStrings(); i++) {
-			compareLineString(expected.getLineStrings().get(i), actual
-					.getLineStrings().get(i));
+			compareLineString(expected.getLineStrings().get(i),
+					actual.getLineStrings().get(i));
 		}
 	}
 
@@ -306,8 +294,8 @@ public class SFTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numRings(), actual.numRings());
 		for (int i = 0; i < expected.numRings(); i++) {
-			compareGeometries(expected.getRings().get(i), actual.getRings()
-					.get(i));
+			compareGeometries(expected.getRings().get(i),
+					actual.getRings().get(i));
 		}
 	}
 
@@ -323,8 +311,8 @@ public class SFTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numPolygons(), actual.numPolygons());
 		for (int i = 0; i < expected.numPolygons(); i++) {
-			compareGeometries(expected.getPolygons().get(i), actual
-					.getPolygons().get(i));
+			compareGeometries(expected.getPolygons().get(i),
+					actual.getPolygons().get(i));
 		}
 	}
 
@@ -339,8 +327,8 @@ public class SFTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numPolygons(), actual.numPolygons());
 		for (int i = 0; i < expected.numPolygons(); i++) {
-			compareGeometries(expected.getPolygons().get(i), actual
-					.getPolygons().get(i));
+			compareGeometries(expected.getPolygons().get(i),
+					actual.getPolygons().get(i));
 		}
 	}
 
@@ -355,8 +343,8 @@ public class SFTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numRings(), actual.numRings());
 		for (int i = 0; i < expected.numRings(); i++) {
-			compareLineString(expected.getRings().get(i), actual.getRings()
-					.get(i));
+			compareLineString(expected.getRings().get(i),
+					actual.getRings().get(i));
 		}
 	}
 
@@ -604,7 +592,8 @@ public class SFTestUtils {
 	 * @param hasM
 	 * @return compound curve
 	 */
-	public static CompoundCurve createCompoundCurve(boolean hasZ, boolean hasM) {
+	public static CompoundCurve createCompoundCurve(boolean hasZ,
+			boolean hasM) {
 		return createCompoundCurve(hasZ, hasM, false);
 	}
 
@@ -628,8 +617,8 @@ public class SFTestUtils {
 		}
 
 		if (ring) {
-			compoundCurve.getLineString(num - 1).addPoint(
-					compoundCurve.getLineString(0).startPoint());
+			compoundCurve.getLineString(num - 1)
+					.addPoint(compoundCurve.getLineString(0).startPoint());
 		}
 
 		return compoundCurve;

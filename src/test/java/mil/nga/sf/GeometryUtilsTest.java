@@ -6,21 +6,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
-import mil.nga.sf.Geometry;
-import mil.nga.sf.GeometryCollection;
-import mil.nga.sf.GeometryEnvelope;
-import mil.nga.sf.GeometryType;
-import mil.nga.sf.LineString;
-import mil.nga.sf.MultiLineString;
-import mil.nga.sf.MultiPoint;
-import mil.nga.sf.MultiPolygon;
-import mil.nga.sf.Point;
-import mil.nga.sf.Polygon;
 import mil.nga.sf.util.GeometryEnvelopeBuilder;
 import mil.nga.sf.util.GeometryUtils;
-
-import org.junit.Test;
 
 /**
  * Test Geometry Utilities
@@ -101,9 +91,8 @@ public class GeometryUtilsTest {
 
 		for (int i = 0; i < GEOMETRIES_PER_TEST; i++) {
 			// Create and test a multi line string
-			MultiLineString multiLineString = SFTestUtils
-					.createMultiLineString(SFTestUtils.coinFlip(),
-							SFTestUtils.coinFlip());
+			MultiLineString multiLineString = SFTestUtils.createMultiLineString(
+					SFTestUtils.coinFlip(), SFTestUtils.coinFlip());
 			TestCase.assertEquals(1,
 					GeometryUtils.getDimension(multiLineString));
 			TestCase.assertEquals(1, multiLineString.getDimension());
@@ -387,8 +376,8 @@ public class GeometryUtilsTest {
 		Point firstPoint = points.get(0);
 		Point lastPoint = points.get(points.size() - 1);
 		Point firstSimplifiedPoint = simplifiedPoints.get(0);
-		Point lastSimplifiedPoint = simplifiedPoints.get(simplifiedPoints
-				.size() - 1);
+		Point lastSimplifiedPoint = simplifiedPoints
+				.get(simplifiedPoints.size() - 1);
 
 		TestCase.assertEquals(firstPoint.getX(), firstSimplifiedPoint.getX());
 		TestCase.assertEquals(firstPoint.getY(), firstSimplifiedPoint.getY());
@@ -398,8 +387,8 @@ public class GeometryUtilsTest {
 		int pointIndex = 0;
 		for (int i = 1; i < simplifiedPoints.size(); i++) {
 			Point simplifiedPoint = simplifiedPoints.get(i);
-			double simplifiedDistance = GeometryUtils.distance(
-					simplifiedPoints.get(i - 1), simplifiedPoint);
+			double simplifiedDistance = GeometryUtils
+					.distance(simplifiedPoints.get(i - 1), simplifiedPoint);
 			TestCase.assertTrue(simplifiedDistance >= tolerance);
 
 			for (pointIndex++; pointIndex < points.size(); pointIndex++) {
@@ -431,57 +420,57 @@ public class GeometryUtilsTest {
 			TestCase.assertTrue(GeometryUtils.pointInPolygon(point, points));
 		}
 
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(
-				0 + deviation, 5), points));
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(5,
-				0 + deviation), points));
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(
-				10 - deviation, 5), points));
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(5,
-				10 - deviation), points));
+		TestCase.assertTrue(GeometryUtils
+				.pointInPolygon(new Point(0 + deviation, 5), points));
+		TestCase.assertTrue(GeometryUtils
+				.pointInPolygon(new Point(5, 0 + deviation), points));
+		TestCase.assertTrue(GeometryUtils
+				.pointInPolygon(new Point(10 - deviation, 5), points));
+		TestCase.assertTrue(GeometryUtils
+				.pointInPolygon(new Point(5, 10 - deviation), points));
 
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(5, 5),
-				points));
+		TestCase.assertTrue(
+				GeometryUtils.pointInPolygon(new Point(5, 5), points));
 
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(
-				2.5 + deviation, 7.5 - deviation), points));
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(
-				2.5 + deviation, 2.5 + deviation), points));
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(
-				7.5 - deviation, 2.5 + deviation), points));
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(
-				7.5 - deviation, 7.5 - deviation), points));
+		TestCase.assertTrue(GeometryUtils.pointInPolygon(
+				new Point(2.5 + deviation, 7.5 - deviation), points));
+		TestCase.assertTrue(GeometryUtils.pointInPolygon(
+				new Point(2.5 + deviation, 2.5 + deviation), points));
+		TestCase.assertTrue(GeometryUtils.pointInPolygon(
+				new Point(7.5 - deviation, 2.5 + deviation), points));
+		TestCase.assertTrue(GeometryUtils.pointInPolygon(
+				new Point(7.5 - deviation, 7.5 - deviation), points));
 
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(2.5, 7.5),
-				points));
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(2.5, 2.5),
-				points));
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(7.5, 2.5),
-				points));
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(7.5, 7.5),
-				points));
+		TestCase.assertTrue(
+				GeometryUtils.pointInPolygon(new Point(2.5, 7.5), points));
+		TestCase.assertTrue(
+				GeometryUtils.pointInPolygon(new Point(2.5, 2.5), points));
+		TestCase.assertTrue(
+				GeometryUtils.pointInPolygon(new Point(7.5, 2.5), points));
+		TestCase.assertTrue(
+				GeometryUtils.pointInPolygon(new Point(7.5, 7.5), points));
 
 		deviation = .0000001;
 
-		TestCase.assertFalse(GeometryUtils.pointInPolygon(new Point(0, 0),
-				points));
-		TestCase.assertFalse(GeometryUtils.pointInPolygon(new Point(
-				0 - deviation, 5), points));
-		TestCase.assertFalse(GeometryUtils.pointInPolygon(new Point(5,
-				0 - deviation), points));
-		TestCase.assertFalse(GeometryUtils.pointInPolygon(new Point(
-				10 + deviation, 5), points));
-		TestCase.assertFalse(GeometryUtils.pointInPolygon(new Point(5,
-				10 + deviation), points));
+		TestCase.assertFalse(
+				GeometryUtils.pointInPolygon(new Point(0, 0), points));
+		TestCase.assertFalse(GeometryUtils
+				.pointInPolygon(new Point(0 - deviation, 5), points));
+		TestCase.assertFalse(GeometryUtils
+				.pointInPolygon(new Point(5, 0 - deviation), points));
+		TestCase.assertFalse(GeometryUtils
+				.pointInPolygon(new Point(10 + deviation, 5), points));
+		TestCase.assertFalse(GeometryUtils
+				.pointInPolygon(new Point(5, 10 + deviation), points));
 
-		TestCase.assertFalse(GeometryUtils.pointInPolygon(new Point(
-				2.5 - deviation, 7.5 + deviation), points));
-		TestCase.assertFalse(GeometryUtils.pointInPolygon(new Point(
-				2.5 - deviation, 2.5 - deviation), points));
-		TestCase.assertFalse(GeometryUtils.pointInPolygon(new Point(
-				7.5 + deviation, 2.5 - deviation), points));
-		TestCase.assertFalse(GeometryUtils.pointInPolygon(new Point(
-				7.5 + deviation, 7.5 + deviation), points));
+		TestCase.assertFalse(GeometryUtils.pointInPolygon(
+				new Point(2.5 - deviation, 7.5 + deviation), points));
+		TestCase.assertFalse(GeometryUtils.pointInPolygon(
+				new Point(2.5 - deviation, 2.5 - deviation), points));
+		TestCase.assertFalse(GeometryUtils.pointInPolygon(
+				new Point(7.5 + deviation, 2.5 - deviation), points));
+		TestCase.assertFalse(GeometryUtils.pointInPolygon(
+				new Point(7.5 + deviation, 7.5 + deviation), points));
 
 		Point firstPoint = points.get(0);
 		points.add(new Point(firstPoint.getX(), firstPoint.getY()));
@@ -491,12 +480,12 @@ public class GeometryUtilsTest {
 		for (Point point : points) {
 			TestCase.assertTrue(GeometryUtils.pointInPolygon(point, points));
 		}
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(
-				2.5 + deviation, 7.5 - deviation), points));
-		TestCase.assertTrue(GeometryUtils.pointInPolygon(new Point(2.5, 7.5),
-				points));
-		TestCase.assertFalse(GeometryUtils.pointInPolygon(new Point(
-				2.5 - deviation, 7.5 + deviation), points));
+		TestCase.assertTrue(GeometryUtils.pointInPolygon(
+				new Point(2.5 + deviation, 7.5 - deviation), points));
+		TestCase.assertTrue(
+				GeometryUtils.pointInPolygon(new Point(2.5, 7.5), points));
+		TestCase.assertFalse(GeometryUtils.pointInPolygon(
+				new Point(2.5 - deviation, 7.5 + deviation), points));
 
 	}
 
@@ -527,26 +516,26 @@ public class GeometryUtilsTest {
 		for (Point point : points) {
 			TestCase.assertTrue(GeometryUtils.pointOnLine(point, points));
 		}
+		TestCase.assertTrue(
+				GeometryUtils.pointOnLine(new Point(2.5, 0), points));
+		TestCase.assertTrue(
+				GeometryUtils.pointOnLine(new Point(5, 2.5), points));
+		TestCase.assertTrue(
+				GeometryUtils.pointOnLine(new Point(2.5, 0.00000001), points));
+		TestCase.assertFalse(
+				GeometryUtils.pointOnLine(new Point(2.5, 0.0000001), points));
+		TestCase.assertTrue(
+				GeometryUtils.pointOnLine(new Point(5, 2.500000001), points));
+		TestCase.assertFalse(
+				GeometryUtils.pointOnLine(new Point(5, 2.50000001), points));
 		TestCase.assertTrue(GeometryUtils
-				.pointOnLine(new Point(2.5, 0), points));
+				.pointOnLine(new Point(-0.0000000000000001, 0), points));
+		TestCase.assertFalse(GeometryUtils
+				.pointOnLine(new Point(-0.000000000000001, 0), points));
 		TestCase.assertTrue(GeometryUtils
-				.pointOnLine(new Point(5, 2.5), points));
-		TestCase.assertTrue(GeometryUtils.pointOnLine(
-				new Point(2.5, 0.00000001), points));
-		TestCase.assertFalse(GeometryUtils.pointOnLine(
-				new Point(2.5, 0.0000001), points));
-		TestCase.assertTrue(GeometryUtils.pointOnLine(
-				new Point(5, 2.500000001), points));
-		TestCase.assertFalse(GeometryUtils.pointOnLine(
-				new Point(5, 2.50000001), points));
-		TestCase.assertTrue(GeometryUtils.pointOnLine(new Point(
-				-0.0000000000000001, 0), points));
-		TestCase.assertFalse(GeometryUtils.pointOnLine(new Point(
-				-0.000000000000001, 0), points));
-		TestCase.assertTrue(GeometryUtils.pointOnLine(new Point(5,
-				5.0000000000000001), points));
-		TestCase.assertFalse(GeometryUtils.pointOnLine(new Point(5,
-				5.000000000000001), points));
+				.pointOnLine(new Point(5, 5.0000000000000001), points));
+		TestCase.assertFalse(GeometryUtils
+				.pointOnLine(new Point(5, 5.000000000000001), points));
 
 	}
 
@@ -570,11 +559,12 @@ public class GeometryUtilsTest {
 				if (previousParentType != null) {
 					List<GeometryType> childTypes = GeometryUtils
 							.childTypes(parentType);
-					TestCase.assertTrue(childTypes.contains(previousParentType));
+					TestCase.assertTrue(
+							childTypes.contains(previousParentType));
 					Map<GeometryType, Map<GeometryType, ?>> childHierarchy = GeometryUtils
 							.childHierarchy(parentType);
-					TestCase.assertTrue(childHierarchy
-							.containsKey(previousParentType));
+					TestCase.assertTrue(
+							childHierarchy.containsKey(previousParentType));
 				}
 
 				previousParentType = parentType;
@@ -613,8 +603,8 @@ public class GeometryUtilsTest {
 
 				TestCase.assertEquals(geometryType,
 						GeometryUtils.parentType(childType));
-				TestCase.assertEquals(geometryType, GeometryUtils
-						.parentHierarchy(childType).get(0));
+				TestCase.assertEquals(geometryType,
+						GeometryUtils.parentHierarchy(childType).get(0));
 
 				testChildHierarchy(childType,
 						GeometryUtils.childHierarchy(childType));
