@@ -188,6 +188,13 @@ public class GeometryUtilsTest {
 		TestCase.assertTrue(point.getY() >= envelope.getMinY());
 		TestCase.assertTrue(point.getY() <= envelope.getMaxY());
 
+		Point envelopeCentroid1 = envelope.buildGeometry().getCentroid();
+		Point envelopeCentroid2 = envelope.getCentroid();
+		TestCase.assertEquals(envelopeCentroid1.getX(),
+				envelopeCentroid2.getX(), 0.0000000000001);
+		TestCase.assertEquals(envelopeCentroid1.getY(),
+				envelopeCentroid2.getY(), 0.0000000000001);
+
 		return point;
 	}
 

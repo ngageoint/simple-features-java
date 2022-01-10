@@ -1,5 +1,7 @@
 package mil.nga.sf;
 
+import mil.nga.sf.util.GeometryEnvelopeBuilder;
+
 /**
  * Geometry envelope
  * 
@@ -89,7 +91,8 @@ public class GeometryEnvelope {
 	 * @param maxY
 	 *            max y
 	 */
-	public GeometryEnvelope(double minX, double minY, double maxX, double maxY) {
+	public GeometryEnvelope(double minX, double minY, double maxX,
+			double maxY) {
 		this(minX, minY, null, null, maxX, maxY, null, null);
 	}
 
@@ -396,6 +399,75 @@ public class GeometryEnvelope {
 	}
 
 	/**
+	 * Get the x range
+	 * 
+	 * @return x range
+	 * @since 2.0.5
+	 */
+	public double getXRange() {
+		return maxX - minX;
+	}
+
+	/**
+	 * Get the y range
+	 * 
+	 * @return y range
+	 * @since 2.0.5
+	 */
+	public double getYRange() {
+		return maxY - minY;
+	}
+
+	/**
+	 * Get the z range
+	 * 
+	 * @return z range
+	 * @since 2.0.5
+	 */
+	public Double getZRange() {
+		Double range = null;
+		if (minZ != null && maxZ != null) {
+			range = maxZ - minZ;
+		}
+		return range;
+	}
+
+	/**
+	 * Get the m range
+	 * 
+	 * @return m range
+	 * @since 2.0.5
+	 */
+	public Double getMRange() {
+		Double range = null;
+		if (minM != null && maxM != null) {
+			range = maxM - minM;
+		}
+		return range;
+	}
+
+	/**
+	 * Determine if the envelope is of a single point
+	 * 
+	 * @return true if a single point bounds
+	 * @since 2.0.5
+	 */
+	public boolean isPoint() {
+		return Double.compare(minX, maxX) == 0
+				&& Double.compare(minY, maxY) == 0;
+	}
+
+	/**
+	 * Get the envelope centroid point
+	 * 
+	 * @return centroid point
+	 * @since 2.0.5
+	 */
+	public Point getCentroid() {
+		return new Point((minX + maxX) / 2.0, (minY + maxY) / 2.0);
+	}
+
+	/**
 	 * Determine if intersects with the provided envelope
 	 *
 	 * @param envelope
@@ -497,6 +569,16 @@ public class GeometryEnvelope {
 				&& getMaxX() >= envelope.getMaxX()
 				&& getMinY() <= envelope.getMinY()
 				&& getMaxY() >= envelope.getMaxY();
+	}
+
+	/**
+	 * Build a geometry representation of the geometry envelope
+	 * 
+	 * @return geometry
+	 * @since 2.0.5
+	 */
+	public Geometry buildGeometry() {
+		return GeometryEnvelopeBuilder.buildGeometry(this);
 	}
 
 	/**

@@ -338,4 +338,30 @@ public class GeometryEnvelopeBuilder {
 		}
 	}
 
+	/**
+	 * Build a geometry representation of the geometry envelope
+	 * 
+	 * @param envelope
+	 *            geometry envelope
+	 * 
+	 * @return geometry, polygon or point
+	 * @since 2.0.5
+	 */
+	public static Geometry buildGeometry(GeometryEnvelope envelope) {
+		Geometry geometry = null;
+		if (envelope.isPoint()) {
+			geometry = new Point(envelope.getMinX(), envelope.getMinY());
+		} else {
+			Polygon polygon = new Polygon();
+			LineString ring = new LineString();
+			ring.addPoint(new Point(envelope.getMinX(), envelope.getMinY()));
+			ring.addPoint(new Point(envelope.getMaxX(), envelope.getMinY()));
+			ring.addPoint(new Point(envelope.getMaxX(), envelope.getMaxY()));
+			ring.addPoint(new Point(envelope.getMinX(), envelope.getMaxY()));
+			polygon.addRing(ring);
+			geometry = polygon;
+		}
+		return geometry;
+	}
+
 }

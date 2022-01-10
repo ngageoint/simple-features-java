@@ -6,6 +6,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ## 2.0.5 (TBD)
 
+* GeometryEnvelope range, point check, centroid, and build geometry utilities
 * Java 11
 
 ## [2.0.4](https://github.com/ngageoint/simple-features-java/releases/tag/2.0.4) (03-03-2021)
