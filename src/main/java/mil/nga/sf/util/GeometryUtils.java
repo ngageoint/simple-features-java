@@ -33,6 +33,7 @@ import mil.nga.sf.Triangle;
 import mil.nga.sf.util.centroid.CentroidCurve;
 import mil.nga.sf.util.centroid.CentroidPoint;
 import mil.nga.sf.util.centroid.CentroidSurface;
+import mil.nga.sf.util.centroid.DegreesCentroid;
 
 /**
  * Utilities for Geometry objects
@@ -151,6 +152,18 @@ public class GeometryUtils {
 			break;
 		}
 		return centroid;
+	}
+
+	/**
+	 * Get the centroid point of a Geometry in degrees
+	 * 
+	 * @param geometry
+	 *            geometry object
+	 * @return centroid point
+	 * @since 2.0.5
+	 */
+	public static Point getDegreesCentroid(Geometry geometry) {
+		return DegreesCentroid.getCentroid(geometry);
 	}
 
 	/**

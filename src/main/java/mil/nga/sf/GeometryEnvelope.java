@@ -574,7 +574,7 @@ public class GeometryEnvelope {
 	/**
 	 * Build a geometry representation of the geometry envelope
 	 * 
-	 * @return geometry
+	 * @return geometry, polygon or point
 	 * @since 2.0.5
 	 */
 	public Geometry buildGeometry() {
