@@ -627,12 +627,12 @@ public class GeometryUtilsTest {
 
 		Point point = new Point(15, 35);
 
-		Point centroid = GeometryUtils.getCentroid(point);
+		Point centroid = point.getCentroid();
 
 		TestCase.assertEquals(15.0, centroid.getX());
 		TestCase.assertEquals(35.0, centroid.getY());
 
-		Point degreesCentroid = GeometryUtils.getDegreesCentroid(point);
+		Point degreesCentroid = point.getDegreesCentroid();
 
 		TestCase.assertEquals(15.0, degreesCentroid.getX());
 		TestCase.assertEquals(35.0, degreesCentroid.getY());
@@ -641,36 +641,36 @@ public class GeometryUtilsTest {
 		lineString.addPoint(new Point(0, 5));
 		lineString.addPoint(point);
 
-		centroid = GeometryUtils.getCentroid(lineString);
+		centroid = lineString.getCentroid();
 
 		TestCase.assertEquals(7.5, centroid.getX());
 		TestCase.assertEquals(20.0, centroid.getY());
 
-		degreesCentroid = GeometryUtils.getDegreesCentroid(lineString);
+		degreesCentroid = lineString.getDegreesCentroid();
 
 		TestCase.assertEquals(6.764392425440724, degreesCentroid.getX());
 		TestCase.assertEquals(20.157209770845522, degreesCentroid.getY());
 
 		lineString.addPoint(new Point(2, 65));
 
-		centroid = GeometryUtils.getCentroid(lineString);
+		centroid = lineString.getCentroid();
 
 		TestCase.assertEquals(7.993617921179541, centroid.getX());
 		TestCase.assertEquals(34.808537635386266, centroid.getY());
 
-		degreesCentroid = GeometryUtils.getDegreesCentroid(lineString);
+		degreesCentroid = lineString.getDegreesCentroid();
 
 		TestCase.assertEquals(5.85897989020252, degreesCentroid.getX());
 		TestCase.assertEquals(35.20025371999032, degreesCentroid.getY());
 
 		Polygon polygon = new Polygon(lineString);
 
-		centroid = GeometryUtils.getCentroid(polygon);
+		centroid = polygon.getCentroid();
 
 		TestCase.assertEquals(5.666666666666667, centroid.getX());
 		TestCase.assertEquals(35.0, centroid.getY());
 
-		degreesCentroid = GeometryUtils.getDegreesCentroid(polygon);
+		degreesCentroid = polygon.getDegreesCentroid();
 
 		TestCase.assertEquals(5.85897989020252, degreesCentroid.getX());
 		TestCase.assertEquals(35.20025371999032, degreesCentroid.getY());
@@ -678,12 +678,12 @@ public class GeometryUtilsTest {
 		lineString.addPoint(new Point(-20, 40));
 		lineString.addPoint(new Point(0, 5));
 
-		centroid = GeometryUtils.getCentroid(polygon);
+		centroid = polygon.getCentroid();
 
 		TestCase.assertEquals(-1.3554502369668247, centroid.getX());
 		TestCase.assertEquals(36.00315955766193, centroid.getY());
 
-		degreesCentroid = GeometryUtils.getDegreesCentroid(polygon);
+		degreesCentroid = polygon.getDegreesCentroid();
 
 		TestCase.assertEquals(-0.6891904581641471, degreesCentroid.getX());
 		TestCase.assertEquals(37.02524099014426, degreesCentroid.getY());

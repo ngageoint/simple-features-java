@@ -155,7 +155,10 @@ public class GeometryUtils {
 	}
 
 	/**
-	 * Get the centroid point of a Geometry in degrees
+	 * Get the geographic centroid point of a 2 dimensional representation of
+	 * the degree unit Geometry. Only the x and y coordinate of the resulting
+	 * point are calculated and populated. The resulting {@link Point#getZ()}
+	 * and {@link Point#getM()} methods will always return null.
 	 * 
 	 * @param geometry
 	 *            geometry object

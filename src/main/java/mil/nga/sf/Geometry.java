@@ -165,6 +165,19 @@ public abstract class Geometry implements Serializable {
 	}
 
 	/**
+	 * Get the geographic centroid point of a 2 dimensional representation of
+	 * the degree unit Geometry. Only the x and y coordinate of the resulting
+	 * point are calculated and populated. The resulting {@link Point#getZ()}
+	 * and {@link Point#getM()} methods will always return null.
+	 * 
+	 * @return centroid point
+	 * @since 2.0.5
+	 */
+	public Point getDegreesCentroid() {
+		return GeometryUtils.getDegreesCentroid(this);
+	}
+
+	/**
 	 * Copy the geometry
 	 * 
 	 * @return geometry copy
