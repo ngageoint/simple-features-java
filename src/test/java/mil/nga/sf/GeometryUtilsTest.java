@@ -9,7 +9,6 @@ import java.util.Map;
 import org.junit.Test;
 
 import junit.framework.TestCase;
-import mil.nga.sf.util.GeometryEnvelopeBuilder;
 import mil.nga.sf.util.GeometryUtils;
 
 /**
@@ -173,8 +172,7 @@ public class GeometryUtilsTest {
 		Point point = GeometryUtils.getCentroid(geometry);
 		TestCase.assertEquals(point, geometry.getCentroid());
 
-		GeometryEnvelope envelope = GeometryEnvelopeBuilder
-				.buildEnvelope(geometry);
+		GeometryEnvelope envelope = geometry.getEnvelope();
 
 		if (geometry.getGeometryType() == GeometryType.POINT) {
 			TestCase.assertEquals(envelope.getMinX(), point.getX());

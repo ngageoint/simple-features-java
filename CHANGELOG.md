@@ -7,6 +7,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 ## 2.0.5 (TBD)
 
 * GeometryEnvelope range, point check, centroid, and build geometry utilities
+* Geometry expand envelope method
 * Centroid geometry utility for geometries in degrees
 * Java 11
 

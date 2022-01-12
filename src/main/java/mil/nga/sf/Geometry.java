@@ -143,6 +143,17 @@ public abstract class Geometry implements Serializable {
 	}
 
 	/**
+	 * Expand the envelope with the minimum bounding box for this Geometry
+	 * 
+	 * @param envelope
+	 *            geometry envelope to expand
+	 * @since 2.0.5
+	 */
+	public void expandEnvelope(GeometryEnvelope envelope) {
+		GeometryEnvelopeBuilder.buildEnvelope(this, envelope);
+	}
+
+	/**
 	 * Get the inherent dimension (0, 1, or 2) for this Geometry
 	 * 
 	 * @return dimension
