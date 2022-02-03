@@ -4,7 +4,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## 2.0.5 (TBD)
+## [2.0.5](https://github.com/ngageoint/simple-features-java/releases/tag/2.0.5) (02-03-2022)
 
 * GeometryEnvelope range, point check, centroid, and build geometry utilities
 * Geometry expand envelope method
