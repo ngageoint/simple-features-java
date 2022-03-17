@@ -119,13 +119,13 @@ public class TextReader {
 					} else {
 						// Complete the token before this character and cache
 						// the character
-						if (!Character.isWhitespace(character)) {
+						if (!isWhitespace(character)) {
 							nextCharacterNum = characterNum;
 						}
 						break;
 					}
 
-				} else if (!Character.isWhitespace(character)) {
+				} else if (!isWhitespace(character)) {
 
 					// First non whitespace character in the token
 					builder = new StringBuilder();
@@ -189,6 +189,17 @@ public class TextReader {
 	private static boolean isTokenCharacter(char c) {
 		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
 				|| (c >= '0' && c <= '9') || c == '-' || c == '.' || c == '+';
+	}
+
+	/**
+	 * Check if the character is whitespace or a space character
+	 * 
+	 * @param c
+	 *            character
+	 * @return true if whitespace
+	 */
+	private static boolean isWhitespace(char c) {
+		return Character.isWhitespace(c) || Character.isSpaceChar(c);
 	}
 
 }
