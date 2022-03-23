@@ -10,12 +10,14 @@ import mil.nga.sf.util.GeometryUtils;
 
 /**
  * Shamos-Hoey simple polygon detection
- * 
+ * <p>
  * Based upon C++ implementation:
- * http://geomalgorithms.com/a09-_intersect-3.html
- * 
+ * <p>
+ * <a href=
+ * "http://geomalgorithms.com/a09-_intersect-3.html">http://geomalgorithms.com/a09-_intersect-3.html</a>
+ * <p>
  * C++ implementation license:
- * 
+ * <p>
  * Copyright 2001 softSurfer, 2012 Dan Sunday This code may be freely used and
  * modified for any purpose providing that this copyright notice is included
  * with it. SoftSurfer makes no warranty for this code, and cannot be held
@@ -58,7 +60,8 @@ public class ShamosHoey {
 	 *            polygon point rings
 	 * @return true if simple, false if intersects
 	 */
-	public static boolean simplePolygonRingPoints(List<List<Point>> pointRings) {
+	public static boolean simplePolygonRingPoints(
+			List<List<Point>> pointRings) {
 		List<LineString> rings = new ArrayList<>();
 		for (List<Point> points : pointRings) {
 			LineString ring = new LineString();
@@ -107,7 +110,8 @@ public class ShamosHoey {
 			if (ringCopyPoints.size() >= 3) {
 				Point first = ringCopyPoints.get(0);
 				Point last = ringCopyPoints.get(ringCopyPoints.size() - 1);
-				if (first.getX() == last.getX() && first.getY() == last.getY()) {
+				if (first.getX() == last.getX()
+						&& first.getY() == last.getY()) {
 					ringCopyPoints.remove(ringCopyPoints.size() - 1);
 				}
 			}
@@ -151,7 +155,8 @@ public class ShamosHoey {
 				if (event.getType() == EventType.LEFT) {
 					Segment segment = sweepLine.add(event);
 					if (sweepLine.intersect(segment, segment.getAbove())
-							|| sweepLine.intersect(segment, segment.getBelow())) {
+							|| sweepLine.intersect(segment,
+									segment.getBelow())) {
 						simple = false;
 						break;
 					}
