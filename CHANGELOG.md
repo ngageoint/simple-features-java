@@ -4,6 +4,10 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
+## 2.0.7 (TBD)
+
+* TBD
+
 ## [2.0.6](https://github.com/ngageoint/simple-features-java/releases/tag/2.0.6) (04-18-2022)
 
 * Text token reader handling of non whitespace space characters such as 'NO-BREAK SPACE'
