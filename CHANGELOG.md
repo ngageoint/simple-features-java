@@ -6,7 +6,8 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ## 2.0.7 (TBD)
 
-* TBD
+* Line intersection geometry utility
+* GeometryEnvelope is empty and contains methods
 
 ## [2.0.6](https://github.com/ngageoint/simple-features-java/releases/tag/2.0.6) (04-18-2022)
 

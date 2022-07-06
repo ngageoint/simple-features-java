@@ -21,6 +21,7 @@ import mil.nga.sf.CurvePolygon;
 import mil.nga.sf.Geometry;
 import mil.nga.sf.GeometryCollection;
 import mil.nga.sf.GeometryType;
+import mil.nga.sf.Line;
 import mil.nga.sf.LineString;
 import mil.nga.sf.MultiLineString;
 import mil.nga.sf.MultiPoint;
@@ -1138,6 +1139,59 @@ public class GeometryUtils {
 		}
 
 		return onPath;
+	}
+
+	/**
+	 * Get the point intersection between two lines
+	 * 
+	 * @param line1
+	 *            first line
+	 * @param line2
+	 *            second line
+	 * @return intersection point or null if no intersection
+	 * @since 2.0.7
+	 */
+	public static Point intersection(Line line1, Line line2) {
+		return intersection(line1.startPoint(), line1.endPoint(),
+				line2.startPoint(), line2.endPoint());
+	}
+
+	/**
+	 * Get the point intersection between end points of two lines
+	 * 
+	 * @param line1Point1
+	 *            first point of the first line
+	 * @param line1Point2
+	 *            second point of the first line
+	 * @param line2Point1
+	 *            first point of the second line
+	 * @param line2Point2
+	 *            second point of the second line
+	 * @return intersection point or null if no intersection
+	 * @since 2.0.7
+	 */
+	public static Point intersection(Point line1Point1, Point line1Point2,
+			Point line2Point1, Point line2Point2) {
+
+		Point intersection = null;
+
+		double a1 = line1Point2.getY() - line1Point1.getY();
+		double b1 = line1Point1.getX() - line1Point2.getX();
+		double c1 = a1 * (line1Point1.getX()) + b1 * (line1Point1.getY());
+
+		double a2 = line2Point2.getY() - line2Point1.getY();
+		double b2 = line2Point1.getX() - line2Point2.getX();
+		double c2 = a2 * (line2Point1.getX()) + b2 * (line2Point1.getY());
+
+		double determinant = a1 * b2 - a2 * b1;
+
+		if (determinant != 0) {
+			double x = (b2 * c1 - b1 * c2) / determinant;
+			double y = (a1 * c2 - a2 * c1) / determinant;
+			intersection = new Point(x, y);
+		}
+
+		return intersection;
 	}
 
 	/**

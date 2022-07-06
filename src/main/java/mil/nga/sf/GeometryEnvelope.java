@@ -1,5 +1,7 @@
 package mil.nga.sf;
 
+import java.io.Serializable;
+
 import mil.nga.sf.util.GeometryEnvelopeBuilder;
 
 /**
@@ -7,7 +9,12 @@ import mil.nga.sf.util.GeometryEnvelopeBuilder;
  * 
  * @author osbornb
  */
-public class GeometryEnvelope {
+public class GeometryEnvelope implements Serializable {
+
+	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Min X
@@ -468,6 +475,16 @@ public class GeometryEnvelope {
 	}
 
 	/**
+	 * Determine if the envelope is empty
+	 * 
+	 * @return true if empty
+	 * @since 2.0.7
+	 */
+	public boolean isEmpty() {
+		return getXRange() <= 0.0 || getYRange() <= 0.0;
+	}
+
+	/**
 	 * Determine if intersects with the provided envelope
 	 *
 	 * @param envelope
@@ -554,6 +571,33 @@ public class GeometryEnvelope {
 		}
 
 		return union;
+	}
+
+	/**
+	 * Determine if contains the point
+	 *
+	 * @param point
+	 *            point
+	 * @return true if contains
+	 * @since 2.0.7
+	 */
+	public boolean contains(Point point) {
+		return contains(point.getX(), point.getY());
+	}
+
+	/**
+	 * Determine if contains the coordinate
+	 *
+	 * @param x
+	 *            x value
+	 * @param y
+	 *            y value
+	 * @return true if contains
+	 * @since 2.0.7
+	 */
+	public boolean contains(double x, double y) {
+		return x >= getMinX() && x <= getMaxX() && y >= getMinY()
+				&& y <= getMaxY();
 	}
 
 	/**
