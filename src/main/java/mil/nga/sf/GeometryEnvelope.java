@@ -465,13 +465,33 @@ public class GeometryEnvelope implements Serializable {
 	}
 
 	/**
+	 * Get the envelope mid x
+	 * 
+	 * @return mid x
+	 * @since 2.0.7
+	 */
+	public double getMidX() {
+		return (minX + maxX) / 2.0;
+	}
+
+	/**
+	 * Get the envelope mid y
+	 * 
+	 * @return mid y
+	 * @since 2.0.7
+	 */
+	public double getMidY() {
+		return (minY + maxY) / 2.0;
+	}
+
+	/**
 	 * Get the envelope centroid point
 	 * 
 	 * @return centroid point
 	 * @since 2.0.5
 	 */
 	public Point getCentroid() {
-		return new Point((minX + maxX) / 2.0, (minY + maxY) / 2.0);
+		return new Point(getMidX(), getMidY());
 	}
 
 	/**
