@@ -468,7 +468,7 @@ public class GeometryEnvelope implements Serializable {
 	 * Get the envelope mid x
 	 * 
 	 * @return mid x
-	 * @since 2.0.7
+	 * @since 2.1.0
 	 */
 	public double getMidX() {
 		return (minX + maxX) / 2.0;
@@ -478,7 +478,7 @@ public class GeometryEnvelope implements Serializable {
 	 * Get the envelope mid y
 	 * 
 	 * @return mid y
-	 * @since 2.0.7
+	 * @since 2.1.0
 	 */
 	public double getMidY() {
 		return (minY + maxY) / 2.0;
@@ -498,7 +498,7 @@ public class GeometryEnvelope implements Serializable {
 	 * Determine if the envelope is empty
 	 * 
 	 * @return true if empty
-	 * @since 2.0.7
+	 * @since 2.1.0
 	 */
 	public boolean isEmpty() {
 		return getXRange() <= 0.0 || getYRange() <= 0.0;
@@ -599,7 +599,7 @@ public class GeometryEnvelope implements Serializable {
 	 * @param point
 	 *            point
 	 * @return true if contains
-	 * @since 2.0.7
+	 * @since 2.1.0
 	 */
 	public boolean contains(Point point) {
 		return contains(point.getX(), point.getY());
@@ -613,7 +613,7 @@ public class GeometryEnvelope implements Serializable {
 	 * @param y
 	 *            y value
 	 * @return true if contains
-	 * @since 2.0.7
+	 * @since 2.1.0
 	 */
 	public boolean contains(double x, double y) {
 		return x >= getMinX() && x <= getMaxX() && y >= getMinY()

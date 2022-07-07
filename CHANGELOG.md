@@ -4,10 +4,10 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## 2.0.7 (TBD)
+## 2.1.0 (TBD)
 
-* Line intersection geometry utility
-* GeometryEnvelope is empty and contains methods
+* Geometry utilities for line intersections and degree to/from meter conversions
+* GeometryEnvelope serializable and methods for mid values, is empty, and contains
 
 ## [2.0.6](https://github.com/ngageoint/simple-features-java/releases/tag/2.0.6) (04-18-2022)
 

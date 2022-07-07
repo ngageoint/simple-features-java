@@ -58,6 +58,13 @@ public class GeometryUtils {
 	public static final double DEFAULT_EPSILON = 0.000000000000001;
 
 	/**
+	 * Half the world distance in either direction
+	 * 
+	 * @since 2.1.0
+	 */
+	public static final double WEB_MERCATOR_HALF_WORLD_WIDTH = 20037508.342789244;
+
+	/**
 	 * Get the dimension of the Geometry, 0 for points, 1 for curves, 2 for
 	 * surfaces. If a collection, the largest dimension is returned.
 	 * 
@@ -178,9 +185,10 @@ public class GeometryUtils {
 	 * Example: For WGS84 provide a max x of 180.0. Resulting x values will be
 	 * in the range: -540.0 &lt;= x &lt;= 540.0
 	 *
-	 * Example: For web mercator provide a world width of 20037508.342789244.
-	 * Resulting x values will be in the range: -60112525.028367732 &lt;= x
-	 * &lt;= 60112525.028367732
+	 * Example: For web mercator provide a world width of
+	 * {@link GeometryUtils#WEB_MERCATOR_HALF_WORLD_WIDTH}. Resulting x values
+	 * will be in the range: -60112525.028367732 &lt;= x &lt;=
+	 * 60112525.028367732
 	 *
 	 * @param geometry
 	 *            geometry
@@ -369,9 +377,10 @@ public class GeometryUtils {
 	 * Example: For WGS84 provide a max x of 180.0. Resulting x values will be
 	 * in the range: -180.0 &lt;= x &lt;= 180.0.
 	 *
-	 * Example: For web mercator provide a world width of 20037508.342789244.
-	 * Resulting x values will be in the range: -20037508.342789244 &lt;= x
-	 * &lt;= 20037508.342789244.
+	 * Example: For web mercator provide a world width of
+	 * {@link GeometryUtils#WEB_MERCATOR_HALF_WORLD_WIDTH}. Resulting x values
+	 * will be in the range: -20037508.342789244 &lt;= x &lt;=
+	 * 20037508.342789244.
 	 *
 	 * @param geometry
 	 *            geometry
@@ -1149,7 +1158,7 @@ public class GeometryUtils {
 	 * @param line2
 	 *            second line
 	 * @return intersection point or null if no intersection
-	 * @since 2.0.7
+	 * @since 2.1.0
 	 */
 	public static Point intersection(Line line1, Line line2) {
 		return intersection(line1.startPoint(), line1.endPoint(),
@@ -1168,7 +1177,7 @@ public class GeometryUtils {
 	 * @param line2Point2
 	 *            second point of the second line
 	 * @return intersection point or null if no intersection
-	 * @since 2.0.7
+	 * @since 2.1.0
 	 */
 	public static Point intersection(Point line1Point1, Point line1Point2,
 			Point line2Point1, Point line2Point2) {
@@ -1192,6 +1201,72 @@ public class GeometryUtils {
 		}
 
 		return intersection;
+	}
+
+	/**
+	 * Convert a point in degrees to a point in meters
+	 * 
+	 * @param point
+	 *            point in degrees
+	 * @return point in meters
+	 * @since 2.1.0
+	 */
+	public static Point degreesToMeters(Point point) {
+		Point value = degreesToMeters(point.getX(), point.getY());
+		value.setZ(point.getZ());
+		value.setM(point.getM());
+		return value;
+	}
+
+	/**
+	 * Convert a coordinate in degrees to a point in meters
+	 * 
+	 * @param x
+	 *            x value in degrees
+	 * @param y
+	 *            y value in degrees
+	 * @return point in meters
+	 * @since 2.1.0
+	 */
+	public static Point degreesToMeters(double x, double y) {
+		double xValue = x * WEB_MERCATOR_HALF_WORLD_WIDTH / 180;
+		double yValue = Math.log(Math.tan((90 + y) * Math.PI / 360))
+				/ (Math.PI / 180);
+		yValue = yValue * WEB_MERCATOR_HALF_WORLD_WIDTH / 180;
+		return new Point(xValue, yValue);
+	}
+
+	/**
+	 * Convert a point in meters to a point in degrees
+	 * 
+	 * @param point
+	 *            point in meters
+	 * @return point in degrees
+	 * @since 2.1.0
+	 */
+	public static Point metersToDegrees(Point point) {
+		Point value = metersToDegrees(point.getX(), point.getY());
+		value.setZ(point.getZ());
+		value.setM(point.getM());
+		return value;
+	}
+
+	/**
+	 * Convert a coordinate in meters to a point in degrees
+	 * 
+	 * @param x
+	 *            x value in meters
+	 * @param y
+	 *            y value in meters
+	 * @return point in degrees
+	 * @since 2.1.0
+	 */
+	public static Point metersToDegrees(double x, double y) {
+		double xValue = x * 180 / WEB_MERCATOR_HALF_WORLD_WIDTH;
+		double yValue = y * 180 / WEB_MERCATOR_HALF_WORLD_WIDTH;
+		yValue = Math.atan(Math.exp(yValue * (Math.PI / 180))) / Math.PI * 360
+				- 90;
+		return new Point(xValue, yValue);
 	}
 
 	/**
