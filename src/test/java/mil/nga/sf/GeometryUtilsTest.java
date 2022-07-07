@@ -338,7 +338,7 @@ public class GeometryUtilsTest {
 	@Test
 	public void testSimplifyPoints() {
 
-		final double halfWorldWidth = 20037508.342789244;
+		final double halfWorldWidth = GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH;
 
 		List<Point> points = new ArrayList<>();
 		List<Double> distances = new ArrayList<>();
