@@ -1,5 +1,8 @@
 package mil.nga.sf;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -541,6 +544,381 @@ public class GeometryUtilsTest {
 				.pointOnLine(new Point(5, 5.0000000000000001), points));
 		TestCase.assertFalse(GeometryUtils
 				.pointOnLine(new Point(5, 5.000000000000001), points));
+
+	}
+
+	/**
+	 * Test line intersection
+	 */
+	@Test
+	public void testIntersection() {
+
+		Line line1 = new Line(new Point(-40.0, -40.0), new Point(40.0, 40.0));
+		Line line2 = new Line(new Point(-40.0, 40.0), new Point(40.0, -40.0));
+
+		Point point = GeometryUtils.intersection(line1, line2);
+		assertEquals(0.0, point.getX(), 0.0);
+		assertEquals(0.0, point.getY(), 0.0);
+
+		line1 = new Line(GeometryUtils.degreesToMeters(line1).getPoints());
+		line2 = new Line(GeometryUtils.degreesToMeters(line2).getPoints());
+
+		point = GeometryUtils.intersection(line1, line2);
+		assertEquals(0.0, point.getX(), 0.0);
+		assertEquals(0.0, point.getY(), 0.0);
+
+		line1 = new Line(new Point(-40.0, -10.0), new Point(20.0, 70.0));
+		line2 = new Line(new Point(-40.0, 70.0), new Point(20.0, -10.0));
+
+		point = GeometryUtils.intersection(line1, line2);
+		assertEquals(-10.0, point.getX(), 0.0);
+		assertEquals(30.0, point.getY(), 0.0);
+
+		line1 = GeometryUtils.degreesToMeters(line1);
+		line2 = GeometryUtils.degreesToMeters(line2);
+
+		point = GeometryUtils.intersection(line1, line2);
+		assertEquals(-1113194.9079327362, point.getX(), 0.0);
+		assertEquals(4974912.842260765, point.getY(), 0.0);
+
+		point = GeometryUtils.metersToDegrees(point);
+		assertEquals(-10.0, point.getX(), 0.00000000000001);
+		assertEquals(40.745756618323014, point.getY(), 0.0);
+
+		line1 = new Line(
+				new Point(-GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
+						GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH / 2),
+				new Point(-GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH / 2,
+						GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH));
+		line2 = new Line(
+				new Point(-GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
+						GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH),
+				new Point(-GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH / 2,
+						GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH / 2));
+
+		point = GeometryUtils.intersection(line1, line2);
+		assertEquals(0.75 * -GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				point.getX(), 0.00000001);
+		assertEquals(0.75 * GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				point.getY(), 0.00000001);
+
+		point = GeometryUtils.metersToDegrees(point);
+		assertEquals(-135.0, point.getX(), 0.0);
+		assertEquals(79.17133464081945, point.getY(), 0.0);
+
+	}
+
+	/**
+	 * Test point conversion
+	 */
+	@Test
+	public void testConversion() {
+
+		Point point = new Point(-112.500003, 21.943049);
+
+		Point point2 = GeometryUtils.degreesToMeters(point);
+		assertEquals(-12523443.048201751, point2.getX(), 0.0);
+		assertEquals(2504688.958883909, point2.getY(), 0.0);
+
+		Point point3 = GeometryUtils.metersToDegrees(point2);
+		assertEquals(-112.500003, point3.getX(), 0.0000000000001);
+		assertEquals(21.943049, point3.getY(), 0.0000000000001);
+
+	}
+
+	/**
+	 * Test crop
+	 */
+	@Test
+	public void testCrop() {
+
+		double side = 40;
+		double sideC = Math.sqrt(2 * Math.pow(side, 2));
+
+		double min = 10;
+		double max = min + side;
+		double mid = (min + max) / 2;
+
+		double extraWidth = (sideC - side) / 2;
+		double starLength = 11.7157287525381;
+
+		// Test with two squares forming a star (Star of Lakshmi)
+		// Polygon as the diamond, square as the crop bounds
+
+		Polygon polygon = new Polygon();
+		LineString ring = new LineString();
+		ring.addPoint(new Point(min - extraWidth, mid));
+		ring.addPoint(new Point(mid, min - extraWidth));
+		ring.addPoint(new Point(max + extraWidth, mid));
+		ring.addPoint(new Point(mid, max + extraWidth));
+		polygon.addRing(ring);
+
+		GeometryEnvelope envelope = new GeometryEnvelope(min, min, max, max);
+
+		Polygon crop = GeometryUtils.crop(polygon, envelope);
+
+		LineString cropRing = crop.getRing(0);
+		assertEquals(9, cropRing.numPoints());
+		assertTrue(cropRing.isClosed());
+
+		assertEquals(min, cropRing.getPoint(0).getX(), 0.0);
+		assertEquals(min + starLength, cropRing.getPoint(0).getY(),
+				0.00000000001);
+
+		assertEquals(min + starLength, cropRing.getPoint(1).getX(),
+				0.00000000001);
+		assertEquals(min, cropRing.getPoint(1).getY(), 0.000001);
+
+		assertEquals(max - starLength, cropRing.getPoint(2).getX(),
+				0.00000000001);
+		assertEquals(min, cropRing.getPoint(2).getY(), 0.000001);
+
+		assertEquals(max, cropRing.getPoint(3).getX(), 0.0);
+		assertEquals(min + starLength, cropRing.getPoint(3).getY(),
+				0.00000000001);
+
+		assertEquals(max, cropRing.getPoint(4).getX(), 0.0);
+		assertEquals(max - starLength, cropRing.getPoint(4).getY(),
+				0.00000000001);
+
+		assertEquals(max - starLength, cropRing.getPoint(5).getX(),
+				0.00000000001);
+		assertEquals(max, cropRing.getPoint(5).getY(), 0.0);
+
+		assertEquals(min + starLength, cropRing.getPoint(6).getX(),
+				0.00000000001);
+		assertEquals(max, cropRing.getPoint(6).getY(), 0.0);
+
+		assertEquals(min, cropRing.getPoint(7).getX(), 0.0);
+		assertEquals(max - starLength, cropRing.getPoint(7).getY(),
+				0.00000000001);
+
+		assertEquals(min, cropRing.getPoint(8).getX(), 0.0);
+		assertEquals(min + starLength, cropRing.getPoint(8).getY(),
+				0.00000000001);
+
+		crop = GeometryUtils.crop(GeometryUtils.degreesToMeters(polygon),
+				GeometryUtils.degreesToMeters(envelope.buildGeometry())
+						.getEnvelope());
+		crop = GeometryUtils.metersToDegrees(crop);
+
+		cropRing = crop.getRing(0);
+		assertEquals(9, cropRing.numPoints());
+		assertTrue(cropRing.isClosed());
+
+		assertEquals(min, cropRing.getPoint(0).getX(), 0.0);
+		assertEquals(22.181521688501903, cropRing.getPoint(0).getY(), 0.0);
+
+		assertEquals(22.077332337134834, cropRing.getPoint(1).getX(), 0.0);
+		assertEquals(min, cropRing.getPoint(1).getY(), 0.000001);
+
+		assertEquals(37.922667662865166, cropRing.getPoint(2).getX(), 0.0);
+		assertEquals(min, cropRing.getPoint(2).getY(), 0.000001);
+
+		assertEquals(max, cropRing.getPoint(3).getX(), 0.0);
+		assertEquals(22.181521688501903, cropRing.getPoint(3).getY(), 0.0);
+
+		assertEquals(max, cropRing.getPoint(4).getX(), 0.0);
+		assertEquals(39.74197667744292, cropRing.getPoint(4).getY(), 0.0);
+
+		assertEquals(39.88507567296453, cropRing.getPoint(5).getX(), 0.0);
+		assertEquals(max, cropRing.getPoint(5).getY(), 0.0);
+
+		assertEquals(20.114924327035485, cropRing.getPoint(6).getX(), 0.0);
+		assertEquals(max, cropRing.getPoint(6).getY(), 0.0);
+
+		assertEquals(min, cropRing.getPoint(7).getX(), 0.0);
+		assertEquals(39.74197667744289, cropRing.getPoint(7).getY(), 0.0);
+
+		assertEquals(min, cropRing.getPoint(8).getX(), 0.0);
+		assertEquals(22.181521688501903, cropRing.getPoint(8).getY(), 0.0);
+
+		// Test with a diamond fully fitting within the crop bounds
+
+		polygon = new Polygon();
+		ring = new LineString();
+		ring.addPoint(new Point(min, mid));
+		ring.addPoint(new Point(mid, min));
+		ring.addPoint(new Point(max, mid));
+		ring.addPoint(new Point(mid, max));
+		polygon.addRing(ring);
+
+		crop = GeometryUtils.crop(polygon, envelope);
+
+		cropRing = crop.getRing(0);
+		assertEquals(5, cropRing.numPoints());
+		assertTrue(cropRing.isClosed());
+
+		assertEquals(min, cropRing.getPoint(0).getX(), 0.0);
+		assertEquals(mid, cropRing.getPoint(0).getY(), 0.0);
+
+		assertEquals(mid, cropRing.getPoint(1).getX(), 0.0);
+		assertEquals(min, cropRing.getPoint(1).getY(), 0.0);
+
+		assertEquals(max, cropRing.getPoint(2).getX(), 0.0);
+		assertEquals(mid, cropRing.getPoint(2).getY(), 0.0);
+
+		assertEquals(mid, cropRing.getPoint(3).getX(), 0.0);
+		assertEquals(max, cropRing.getPoint(3).getY(), 0.0);
+
+		assertEquals(min, cropRing.getPoint(4).getX(), 0.0);
+		assertEquals(mid, cropRing.getPoint(4).getY(), 0.0);
+
+		crop = GeometryUtils.crop(GeometryUtils.degreesToMeters(polygon),
+				GeometryUtils.degreesToMeters(envelope.buildGeometry())
+						.getEnvelope());
+		crop = GeometryUtils.metersToDegrees(crop);
+
+		cropRing = crop.getRing(0);
+		assertEquals(5, cropRing.numPoints());
+		assertTrue(cropRing.isClosed());
+
+		assertEquals(min, cropRing.getPoint(0).getX(), 0.0);
+		assertEquals(mid, cropRing.getPoint(0).getY(), 0.0);
+
+		assertEquals(mid, cropRing.getPoint(1).getX(), 0.0);
+		assertEquals(min, cropRing.getPoint(1).getY(), 0.0);
+
+		assertEquals(max, cropRing.getPoint(2).getX(), 0.0);
+		assertEquals(mid, cropRing.getPoint(2).getY(), 0.0);
+
+		assertEquals(mid, cropRing.getPoint(3).getX(), 0.0);
+		assertEquals(max, cropRing.getPoint(3).getY(), 0.0);
+
+		assertEquals(min, cropRing.getPoint(4).getX(), 0.0);
+		assertEquals(mid, cropRing.getPoint(4).getY(), 0.0);
+
+		// Test with a star (Star of Lakshmi outer border) polygon and square as
+		// the crop bounds
+
+		polygon = new Polygon();
+		ring = new LineString();
+		ring.addPoint(new Point(min - extraWidth, mid));
+		ring.addPoint(new Point(min, min + extraWidth));
+		ring.addPoint(new Point(min, min));
+		ring.addPoint(new Point(min + extraWidth, min));
+		ring.addPoint(new Point(mid, min - extraWidth));
+		ring.addPoint(new Point(max - extraWidth, min));
+		ring.addPoint(new Point(max, min));
+		ring.addPoint(new Point(max, min + extraWidth));
+		ring.addPoint(new Point(max + extraWidth, mid));
+		ring.addPoint(new Point(max, max - extraWidth));
+		ring.addPoint(new Point(max, max));
+		ring.addPoint(new Point(max - extraWidth, max));
+		ring.addPoint(new Point(mid, max + extraWidth));
+		ring.addPoint(new Point(min + extraWidth, max));
+		ring.addPoint(new Point(min, max));
+		ring.addPoint(new Point(min, max - extraWidth));
+		polygon.addRing(ring);
+
+		crop = GeometryUtils.crop(polygon, envelope);
+
+		cropRing = crop.getRing(0);
+		assertEquals(6, cropRing.numPoints());
+		assertTrue(cropRing.isClosed());
+
+		assertEquals(min, cropRing.getPoint(0).getX(), 0.0);
+		assertEquals(min + extraWidth, cropRing.getPoint(0).getY(), 0.0);
+
+		assertEquals(min, cropRing.getPoint(1).getX(), 0.0);
+		assertEquals(min, cropRing.getPoint(1).getY(), 0.0);
+
+		assertEquals(max, cropRing.getPoint(2).getX(), 0.0);
+		assertEquals(min, cropRing.getPoint(2).getY(), 0.0);
+
+		assertEquals(max, cropRing.getPoint(3).getX(), 0.0);
+		assertEquals(max, cropRing.getPoint(3).getY(), 0.0);
+
+		assertEquals(min, cropRing.getPoint(4).getX(), 0.0);
+		assertEquals(max, cropRing.getPoint(4).getY(), 0.0);
+
+		assertEquals(min, cropRing.getPoint(5).getX(), 0.0);
+		assertEquals(min + extraWidth, cropRing.getPoint(5).getY(), 0.0);
+
+		crop = GeometryUtils.crop(GeometryUtils.degreesToMeters(polygon),
+				GeometryUtils.degreesToMeters(envelope.buildGeometry())
+						.getEnvelope());
+		crop = GeometryUtils.metersToDegrees(crop);
+
+		cropRing = crop.getRing(0);
+		assertEquals(9, cropRing.numPoints());
+		assertTrue(cropRing.isClosed());
+
+		assertEquals(min, cropRing.getPoint(0).getX(), 0.0);
+		assertEquals(min + extraWidth, cropRing.getPoint(0).getY(),
+				0.00000000001);
+
+		assertEquals(min, cropRing.getPoint(1).getX(), 0.0);
+		assertEquals(min, cropRing.getPoint(1).getY(), 0.0);
+
+		assertEquals(max - extraWidth, cropRing.getPoint(2).getX(), 0.0);
+		assertEquals(min, cropRing.getPoint(2).getY(), 0.0);
+
+		assertEquals(max, cropRing.getPoint(3).getX(), 0.0);
+		assertEquals(min, cropRing.getPoint(3).getY(), 0.0);
+
+		assertEquals(max, cropRing.getPoint(4).getX(), 0.0);
+		assertEquals(max - extraWidth, cropRing.getPoint(4).getY(), 0.0);
+
+		assertEquals(max, cropRing.getPoint(5).getX(), 0.0);
+		assertEquals(max, cropRing.getPoint(5).getY(), 0.0);
+
+		assertEquals(min + extraWidth, cropRing.getPoint(6).getX(), 0.0);
+		assertEquals(max, cropRing.getPoint(6).getY(), 0.0);
+
+		assertEquals(min, cropRing.getPoint(7).getX(), 0.0);
+		assertEquals(max, cropRing.getPoint(7).getY(), 0.0);
+
+		assertEquals(min, cropRing.getPoint(8).getX(), 0.0);
+		assertEquals(min + extraWidth, cropRing.getPoint(8).getY(),
+				0.00000000001);
+
+	}
+
+	/**
+	 * Test crop
+	 */
+	@Test
+	public void testCrop2() {
+
+		Polygon polygon = new Polygon();
+		LineString ring = new LineString();
+		ring.addPoint(new Point(-168.967, 67.0));
+		ring.addPoint(new Point(-168.967, 90.0));
+		ring.addPoint(new Point(-180.0000000001, 90.0000001148));
+		ring.addPoint(new Point(-180.0000000001, 67.0));
+		ring.addPoint(new Point(-168.967, 67.0));
+		polygon.addRing(ring);
+
+		GeometryEnvelope envelope = new GeometryEnvelope(
+				-GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				-GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH);
+
+		Polygon meters = GeometryUtils.degreesToMeters(polygon);
+		Polygon crop = GeometryUtils.crop(meters, envelope);
+		Polygon degrees = GeometryUtils.metersToDegrees(crop);
+
+		LineString cropRing = degrees.getRing(0);
+		assertEquals(5, cropRing.numPoints());
+		assertTrue(cropRing.isClosed());
+
+		assertEquals(-168.967, cropRing.getPoint(0).getX(), 0.0);
+		assertEquals(67.0, cropRing.getPoint(0).getY(), 0.00000000001);
+
+		assertEquals(-168.967, cropRing.getPoint(1).getX(), 0.0);
+		assertEquals(85.05112877980659, cropRing.getPoint(1).getY(), 0.0);
+
+		// assertEquals(-180.0000000001, cropRing.getPoint(2).getX(),
+		// 0.00000000001);
+		assertEquals(85.05112877980659, cropRing.getPoint(2).getY(), 0.0);
+
+		// assertEquals(-180.0000000001, cropRing.getPoint(3).getX(), 0.0);
+		assertEquals(67.0, cropRing.getPoint(3).getY(), 0.00000000001);
+
+		assertEquals(-168.967, cropRing.getPoint(4).getX(), 0.0);
+		assertEquals(67.0, cropRing.getPoint(4).getY(), 0.00000000001);
 
 	}
 
