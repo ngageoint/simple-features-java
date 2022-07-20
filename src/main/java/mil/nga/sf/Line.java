@@ -48,6 +48,21 @@ public class Line extends LineString {
 	}
 
 	/**
+	 * Constructor
+	 * 
+	 * @param point1
+	 *            first point
+	 * @param point2
+	 *            second point
+	 * @since 2.1.1
+	 */
+	public Line(Point point1, Point point2) {
+		this(point1.hasZ() || point2.hasZ(), point1.hasM() || point2.hasM());
+		addPoint(point1);
+		addPoint(point2);
+	}
+
+	/**
 	 * Copy Constructor
 	 * 
 	 * @param line
