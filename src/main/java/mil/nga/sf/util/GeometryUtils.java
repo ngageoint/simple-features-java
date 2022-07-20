@@ -20,6 +20,7 @@ import mil.nga.sf.Curve;
 import mil.nga.sf.CurvePolygon;
 import mil.nga.sf.Geometry;
 import mil.nga.sf.GeometryCollection;
+import mil.nga.sf.GeometryEnvelope;
 import mil.nga.sf.GeometryType;
 import mil.nga.sf.Line;
 import mil.nga.sf.LineString;
@@ -58,11 +59,31 @@ public class GeometryUtils {
 	public static final double DEFAULT_EPSILON = 0.000000000000001;
 
 	/**
+	 * Default epsilon for point equality
+	 */
+	public static final double DEFAULT_EQUAL_EPSILON = 0.00000001;
+
+	/**
 	 * Half the world distance in either direction
 	 * 
 	 * @since 2.1.0
 	 */
 	public static final double WEB_MERCATOR_HALF_WORLD_WIDTH = 20037508.342789244;
+
+	/**
+	 * Half the world longitude width for WGS84
+	 */
+	public static double WGS84_HALF_WORLD_LON_WIDTH = 180.0;
+
+	/**
+	 * Half the world latitude height for WGS84
+	 */
+	public static double WGS84_HALF_WORLD_LAT_HEIGHT = 90.0;
+
+	/**
+	 * Minimum latitude degrees value convertible to meters
+	 */
+	public static double DEGREES_TO_METERS_MIN_LAT = -89.99999999999999;
 
 	/**
 	 * Get the dimension of the Geometry, 0 for points, 1 for curves, 2 for
@@ -131,6 +152,24 @@ public class GeometryUtils {
 		return distance;
 	}
 
+	public static double distance(Line line) {
+		return distance(line.startPoint(), line.endPoint());
+	}
+
+	public static double bearing(Point point1, Point point2) {
+		double y1 = Math.toRadians(point1.getY());
+		double y2 = Math.toRadians(point2.getY());
+		double xDiff = Math.toRadians(point2.getX() - point1.getX());
+		double y = Math.sin(xDiff) * Math.cos(y2);
+		double x = Math.cos(y1) * Math.sin(y2)
+				- Math.sin(y1) * Math.cos(y2) * Math.cos(xDiff);
+		return (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
+	}
+
+	public static double bearing(Line line) {
+		return bearing(line.startPoint(), line.endPoint());
+	}
+
 	/**
 	 * Get the centroid point of a 2 dimensional representation of the Geometry
 	 * (balancing point of a 2d cutout of the geometry). Only the x and y
@@ -182,13 +221,13 @@ public class GeometryUtils {
 	 * connected set of points. The resulting geometry point x values will be in
 	 * the range: (3 * min value &lt;= x &lt;= 3 * max value
 	 *
-	 * Example: For WGS84 provide a max x of 180.0. Resulting x values will be
-	 * in the range: -540.0 &lt;= x &lt;= 540.0
+	 * Example: For WGS84 provide a max x of
+	 * {@link #WGS84_HALF_WORLD_LON_WIDTH}. Resulting x values will be in the
+	 * range: -540.0 &lt;= x &lt;= 540.0
 	 *
 	 * Example: For web mercator provide a world width of
-	 * {@link GeometryUtils#WEB_MERCATOR_HALF_WORLD_WIDTH}. Resulting x values
-	 * will be in the range: -60112525.028367732 &lt;= x &lt;=
-	 * 60112525.028367732
+	 * {@link #WEB_MERCATOR_HALF_WORLD_WIDTH}. Resulting x values will be in the
+	 * range: -60112525.028367732 &lt;= x &lt;= 60112525.028367732
 	 *
 	 * @param geometry
 	 *            geometry
@@ -374,13 +413,13 @@ public class GeometryUtils {
 	 * Normalize the geometry so all points outside of the min and max value
 	 * range are adjusted to fall within the range.
 	 *
-	 * Example: For WGS84 provide a max x of 180.0. Resulting x values will be
-	 * in the range: -180.0 &lt;= x &lt;= 180.0.
+	 * Example: For WGS84 provide a max x of
+	 * {@link #WGS84_HALF_WORLD_LON_WIDTH}. Resulting x values will be in the
+	 * range: -180.0 &lt;= x &lt;= 180.0.
 	 *
 	 * Example: For web mercator provide a world width of
-	 * {@link GeometryUtils#WEB_MERCATOR_HALF_WORLD_WIDTH}. Resulting x values
-	 * will be in the range: -20037508.342789244 &lt;= x &lt;=
-	 * 20037508.342789244.
+	 * {@link #WEB_MERCATOR_HALF_WORLD_WIDTH}. Resulting x values will be in the
+	 * range: -20037508.342789244 &lt;= x &lt;= 20037508.342789244.
 	 *
 	 * @param geometry
 	 *            geometry
@@ -454,12 +493,24 @@ public class GeometryUtils {
 	 *            max positive x value in the geometry projection
 	 */
 	private static void normalize(Point point, double maxX) {
+		point.setX(normalize(point.getX(), maxX));
+	}
 
-		if (point.getX() < -maxX) {
-			point.setX(point.getX() + (maxX * 2.0));
-		} else if (point.getX() > maxX) {
-			point.setX(point.getX() - (maxX * 2.0));
+	/**
+	 * Normalize the x value
+	 * 
+	 * @param x
+	 *            x value
+	 * @param maxX
+	 *            max positive x value in the geometry projection
+	 */
+	private static double normalize(double x, double maxX) {
+		if (x < -maxX) {
+			x = x + (maxX * 2.0);
+		} else if (x > maxX) {
+			x = x - (maxX * 2.0);
 		}
+		return x;
 	}
 
 	/**
@@ -1203,6 +1254,67 @@ public class GeometryUtils {
 		return intersection;
 	}
 
+	public static Geometry degreesToMeters(Geometry geometry) {
+
+		Geometry meters = null;
+
+		switch (geometry.getGeometryType()) {
+		case POINT:
+			meters = degreesToMeters((Point) geometry);
+			break;
+		case LINESTRING:
+			meters = degreesToMeters((LineString) geometry);
+			break;
+		case POLYGON:
+			meters = degreesToMeters((Polygon) geometry);
+			break;
+		case MULTIPOINT:
+			meters = degreesToMeters((MultiPoint) geometry);
+			break;
+		case MULTILINESTRING:
+			meters = degreesToMeters((MultiLineString) geometry);
+			break;
+		case MULTIPOLYGON:
+			meters = degreesToMeters((MultiPolygon) geometry);
+			break;
+		case CIRCULARSTRING:
+			meters = degreesToMeters((CircularString) geometry);
+			break;
+		case COMPOUNDCURVE:
+			meters = degreesToMeters((CompoundCurve) geometry);
+			break;
+		case CURVEPOLYGON:
+			@SuppressWarnings("unchecked")
+			CurvePolygon<Curve> curvePolygon = (CurvePolygon<Curve>) geometry;
+			meters = degreesToMeters(curvePolygon);
+			break;
+		case POLYHEDRALSURFACE:
+			meters = degreesToMeters((PolyhedralSurface) geometry);
+			break;
+		case TIN:
+			meters = degreesToMeters((TIN) geometry);
+			break;
+		case TRIANGLE:
+			meters = degreesToMeters((Triangle) geometry);
+			break;
+		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
+			GeometryCollection<Geometry> metersCollection = new GeometryCollection<>();
+			@SuppressWarnings("unchecked")
+			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
+			for (Geometry subGeometry : geomCollection.getGeometries()) {
+				metersCollection.addGeometry(degreesToMeters(subGeometry));
+			}
+			break;
+		default:
+			break;
+
+		}
+
+		return meters;
+	}
+
 	/**
 	 * Convert a point in degrees to a point in meters
 	 * 
@@ -1229,11 +1341,183 @@ public class GeometryUtils {
 	 * @since 2.1.0
 	 */
 	public static Point degreesToMeters(double x, double y) {
+		x = normalize(x, WGS84_HALF_WORLD_LON_WIDTH);
+		y = Math.min(y, WGS84_HALF_WORLD_LAT_HEIGHT);
+		y = Math.max(y, DEGREES_TO_METERS_MIN_LAT);
 		double xValue = x * WEB_MERCATOR_HALF_WORLD_WIDTH / 180;
 		double yValue = Math.log(Math.tan((90 + y) * Math.PI / 360))
 				/ (Math.PI / 180);
 		yValue = yValue * WEB_MERCATOR_HALF_WORLD_WIDTH / 180;
 		return new Point(xValue, yValue);
+	}
+
+	public static MultiPoint degreesToMeters(MultiPoint multiPoint) {
+		MultiPoint meters = new MultiPoint(multiPoint.hasZ(),
+				multiPoint.hasM());
+		for (Point point : multiPoint.getPoints()) {
+			meters.addPoint(degreesToMeters(point));
+		}
+		return meters;
+	}
+
+	public static LineString degreesToMeters(LineString lineString) {
+		LineString meters = new LineString(lineString.hasZ(),
+				lineString.hasM());
+		for (Point point : lineString.getPoints()) {
+			meters.addPoint(degreesToMeters(point));
+		}
+		return meters;
+	}
+
+	public static Line degreesToMeters(Line line) {
+		Line meters = new Line(line.hasZ(), line.hasM());
+		for (Point point : line.getPoints()) {
+			meters.addPoint(degreesToMeters(point));
+		}
+		return meters;
+	}
+
+	public static MultiLineString degreesToMeters(
+			MultiLineString multiLineString) {
+		MultiLineString meters = new MultiLineString(multiLineString.hasZ(),
+				multiLineString.hasM());
+		for (LineString lineString : multiLineString.getLineStrings()) {
+			meters.addLineString(degreesToMeters(lineString));
+		}
+		return meters;
+	}
+
+	public static Polygon degreesToMeters(Polygon polygon) {
+		Polygon meters = new Polygon(polygon.hasZ(), polygon.hasM());
+		for (LineString ring : polygon.getRings()) {
+			meters.addRing(degreesToMeters(ring));
+		}
+		return meters;
+	}
+
+	public static MultiPolygon degreesToMeters(MultiPolygon multiPolygon) {
+		MultiPolygon meters = new MultiPolygon(multiPolygon.hasZ(),
+				multiPolygon.hasM());
+		for (Polygon polygon : multiPolygon.getPolygons()) {
+			meters.addPolygon(degreesToMeters(polygon));
+		}
+		return meters;
+	}
+
+	public static CircularString degreesToMeters(
+			CircularString circularString) {
+		CircularString meters = new CircularString(circularString.hasZ(),
+				circularString.hasM());
+		for (Point point : circularString.getPoints()) {
+			meters.addPoint(degreesToMeters(point));
+		}
+		return meters;
+	}
+
+	public static CompoundCurve degreesToMeters(CompoundCurve compoundCurve) {
+		CompoundCurve meters = new CompoundCurve(compoundCurve.hasZ(),
+				compoundCurve.hasM());
+		for (LineString lineString : compoundCurve.getLineStrings()) {
+			meters.addLineString(degreesToMeters(lineString));
+		}
+		return meters;
+	}
+
+	public static CurvePolygon<Curve> degreesToMeters(
+			CurvePolygon<Curve> curvePolygon) {
+		CurvePolygon<Curve> meters = new CurvePolygon<>(curvePolygon.hasZ(),
+				curvePolygon.hasM());
+		for (Curve ring : curvePolygon.getRings()) {
+			meters.addRing((Curve) degreesToMeters(ring));
+		}
+		return meters;
+	}
+
+	public static PolyhedralSurface degreesToMeters(
+			PolyhedralSurface polyhedralSurface) {
+		PolyhedralSurface meters = new PolyhedralSurface(
+				polyhedralSurface.hasZ(), polyhedralSurface.hasM());
+		for (Polygon polygon : polyhedralSurface.getPolygons()) {
+			meters.addPolygon(degreesToMeters(polygon));
+		}
+		return meters;
+	}
+
+	public static TIN degreesToMeters(TIN tin) {
+		TIN degrees = new TIN(tin.hasZ(), tin.hasM());
+		for (Polygon polygon : tin.getPolygons()) {
+			degrees.addPolygon(degreesToMeters(polygon));
+		}
+		return degrees;
+	}
+
+	public static Triangle degreesToMeters(Triangle triangle) {
+		Triangle degrees = new Triangle(triangle.hasZ(), triangle.hasM());
+		for (LineString ring : degrees.getRings()) {
+			degrees.addRing(degreesToMeters(ring));
+		}
+		return degrees;
+	}
+
+	public static Geometry metersToDegrees(Geometry geometry) {
+
+		Geometry degrees = null;
+
+		switch (geometry.getGeometryType()) {
+		case POINT:
+			degrees = metersToDegrees((Point) geometry);
+			break;
+		case LINESTRING:
+			degrees = metersToDegrees((LineString) geometry);
+			break;
+		case POLYGON:
+			degrees = metersToDegrees((Polygon) geometry);
+			break;
+		case MULTIPOINT:
+			degrees = metersToDegrees((MultiPoint) geometry);
+			break;
+		case MULTILINESTRING:
+			degrees = metersToDegrees((MultiLineString) geometry);
+			break;
+		case MULTIPOLYGON:
+			degrees = metersToDegrees((MultiPolygon) geometry);
+			break;
+		case CIRCULARSTRING:
+			degrees = metersToDegrees((CircularString) geometry);
+			break;
+		case COMPOUNDCURVE:
+			degrees = metersToDegrees((CompoundCurve) geometry);
+			break;
+		case CURVEPOLYGON:
+			@SuppressWarnings("unchecked")
+			CurvePolygon<Curve> curvePolygon = (CurvePolygon<Curve>) geometry;
+			degrees = metersToDegrees(curvePolygon);
+			break;
+		case POLYHEDRALSURFACE:
+			degrees = metersToDegrees((PolyhedralSurface) geometry);
+			break;
+		case TIN:
+			degrees = metersToDegrees((TIN) geometry);
+			break;
+		case TRIANGLE:
+			degrees = metersToDegrees((Triangle) geometry);
+			break;
+		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
+			GeometryCollection<Geometry> metersCollection = new GeometryCollection<>();
+			@SuppressWarnings("unchecked")
+			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
+			for (Geometry subGeometry : geomCollection.getGeometries()) {
+				metersCollection.addGeometry(metersToDegrees(subGeometry));
+			}
+			break;
+		default:
+			break;
+
+		}
+
+		return degrees;
 	}
 
 	/**
@@ -1267,6 +1551,542 @@ public class GeometryUtils {
 		yValue = Math.atan(Math.exp(yValue * (Math.PI / 180))) / Math.PI * 360
 				- 90;
 		return new Point(xValue, yValue);
+	}
+
+	public static MultiPoint metersToDegrees(MultiPoint multiPoint) {
+		MultiPoint degrees = new MultiPoint(multiPoint.hasZ(),
+				multiPoint.hasM());
+		for (Point point : multiPoint.getPoints()) {
+			degrees.addPoint(metersToDegrees(point));
+		}
+		return degrees;
+	}
+
+	public static LineString metersToDegrees(LineString lineString) {
+		LineString degrees = new LineString(lineString.hasZ(),
+				lineString.hasM());
+		for (Point point : lineString.getPoints()) {
+			degrees.addPoint(metersToDegrees(point));
+		}
+		return degrees;
+	}
+
+	public static Line metersToDegrees(Line line) {
+		Line degrees = new Line(line.hasZ(), line.hasM());
+		for (Point point : line.getPoints()) {
+			degrees.addPoint(metersToDegrees(point));
+		}
+		return degrees;
+	}
+
+	public static MultiLineString metersToDegrees(
+			MultiLineString multiLineString) {
+		MultiLineString degrees = new MultiLineString(multiLineString.hasZ(),
+				multiLineString.hasM());
+		for (LineString lineString : multiLineString.getLineStrings()) {
+			degrees.addLineString(metersToDegrees(lineString));
+		}
+		return degrees;
+	}
+
+	public static Polygon metersToDegrees(Polygon polygon) {
+		Polygon degrees = new Polygon(polygon.hasZ(), polygon.hasM());
+		for (LineString ring : polygon.getRings()) {
+			degrees.addRing(metersToDegrees(ring));
+		}
+		return degrees;
+	}
+
+	public static MultiPolygon metersToDegrees(MultiPolygon multiPolygon) {
+		MultiPolygon degrees = new MultiPolygon(multiPolygon.hasZ(),
+				multiPolygon.hasM());
+		for (Polygon polygon : multiPolygon.getPolygons()) {
+			degrees.addPolygon(metersToDegrees(polygon));
+		}
+		return degrees;
+	}
+
+	public static CircularString metersToDegrees(
+			CircularString circularString) {
+		CircularString degrees = new CircularString(circularString.hasZ(),
+				circularString.hasM());
+		for (Point point : circularString.getPoints()) {
+			degrees.addPoint(metersToDegrees(point));
+		}
+		return degrees;
+	}
+
+	public static CompoundCurve metersToDegrees(CompoundCurve compoundCurve) {
+		CompoundCurve degrees = new CompoundCurve(compoundCurve.hasZ(),
+				compoundCurve.hasM());
+		for (LineString lineString : compoundCurve.getLineStrings()) {
+			degrees.addLineString(metersToDegrees(lineString));
+		}
+		return degrees;
+	}
+
+	public static CurvePolygon<Curve> metersToDegrees(
+			CurvePolygon<Curve> curvePolygon) {
+		CurvePolygon<Curve> degrees = new CurvePolygon<>(curvePolygon.hasZ(),
+				curvePolygon.hasM());
+		for (Curve ring : curvePolygon.getRings()) {
+			degrees.addRing((Curve) metersToDegrees(ring));
+		}
+		return degrees;
+	}
+
+	public static PolyhedralSurface metersToDegrees(
+			PolyhedralSurface polyhedralSurface) {
+		PolyhedralSurface degrees = new PolyhedralSurface(
+				polyhedralSurface.hasZ(), polyhedralSurface.hasM());
+		for (Polygon polygon : polyhedralSurface.getPolygons()) {
+			degrees.addPolygon(metersToDegrees(polygon));
+		}
+		return degrees;
+	}
+
+	public static TIN metersToDegrees(TIN tin) {
+		TIN degrees = new TIN(tin.hasZ(), tin.hasM());
+		for (Polygon polygon : tin.getPolygons()) {
+			degrees.addPolygon(metersToDegrees(polygon));
+		}
+		return degrees;
+	}
+
+	public static Triangle metersToDegrees(Triangle triangle) {
+		Triangle degrees = new Triangle(triangle.hasZ(), triangle.hasM());
+		for (LineString ring : degrees.getRings()) {
+			degrees.addRing(metersToDegrees(ring));
+		}
+		return degrees;
+	}
+
+	public static Geometry crop(Geometry geometry, GeometryEnvelope envelope) {
+
+		Geometry crop = null;
+
+		if (envelope.contains(geometry.getEnvelope())) {
+			crop = geometry;
+		} else {
+
+			switch (geometry.getGeometryType()) {
+			case POINT:
+				crop = crop((Point) geometry, envelope);
+				break;
+			case LINESTRING:
+				crop = crop((LineString) geometry, envelope);
+				break;
+			case POLYGON:
+				crop = crop((Polygon) geometry, envelope);
+				break;
+			case MULTIPOINT:
+				crop = crop((MultiPoint) geometry, envelope);
+				break;
+			case MULTILINESTRING:
+				crop = crop((MultiLineString) geometry, envelope);
+				break;
+			case MULTIPOLYGON:
+				crop = crop((MultiPolygon) geometry, envelope);
+				break;
+			case CIRCULARSTRING:
+				crop = crop((CircularString) geometry, envelope);
+				break;
+			case COMPOUNDCURVE:
+				crop = crop((CompoundCurve) geometry, envelope);
+				break;
+			case CURVEPOLYGON:
+				@SuppressWarnings("unchecked")
+				CurvePolygon<Curve> curvePolygon = (CurvePolygon<Curve>) geometry;
+				crop = crop(curvePolygon, envelope);
+				break;
+			case POLYHEDRALSURFACE:
+				crop = crop((PolyhedralSurface) geometry, envelope);
+				break;
+			case TIN:
+				crop = crop((TIN) geometry, envelope);
+				break;
+			case TRIANGLE:
+				crop = crop((Triangle) geometry, envelope);
+				break;
+			case GEOMETRYCOLLECTION:
+			case MULTICURVE:
+			case MULTISURFACE:
+				GeometryCollection<Geometry> metersCollection = new GeometryCollection<>();
+				@SuppressWarnings("unchecked")
+				GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
+				for (Geometry subGeometry : geomCollection.getGeometries()) {
+					metersCollection.addGeometry(crop(subGeometry, envelope));
+				}
+				break;
+			default:
+				break;
+
+			}
+
+		}
+
+		return crop;
+	}
+
+	public static Point crop(Point point, GeometryEnvelope envelope) {
+		Point crop = null;
+		if (envelope.contains(point)) {
+			crop = new Point(point);
+		}
+		return crop;
+	}
+
+	public static List<Point> crop(List<Point> points,
+			GeometryEnvelope envelope) {
+
+		List<Point> crop = new ArrayList<>();
+
+		Line west = new Line(new Point(envelope.getMinX(), envelope.getMaxY()),
+				new Point(envelope.getMinX(), envelope.getMinY()));
+
+		Line south = new Line(new Point(envelope.getMinX(), envelope.getMinY()),
+				new Point(envelope.getMaxX(), envelope.getMinY()));
+
+		Line east = new Line(new Point(envelope.getMaxX(), envelope.getMinY()),
+				new Point(envelope.getMaxX(), envelope.getMaxY()));
+
+		Line north = new Line(new Point(envelope.getMaxX(), envelope.getMaxY()),
+				new Point(envelope.getMinX(), envelope.getMaxY()));
+
+		Point previousPoint = null;
+		boolean previousContains = false;
+		for (Point point : points) {
+			boolean contains = envelope.contains(point);
+			// TODO
+			// contains = point.getY() >= envelope.getMinY()
+			// && point.getY() <= envelope.getMaxY();
+
+			if (previousPoint != null && (!contains || !previousContains)) {
+
+				Line line = new Line(previousPoint, point);
+				double bearing = bearing(metersToDegrees(line));
+
+				Line vertLine = null;
+
+				boolean westBearing = bearing > 180.0 && bearing < 360.0;
+				boolean eastBearing = bearing > 0.0 && bearing < 180.0;
+
+				if (point.getX() > envelope.getMaxX()) {
+					if (eastBearing) {
+						vertLine = east;
+					}
+				} else if (point.getX() < envelope.getMinX()) {
+					if (westBearing) {
+						vertLine = west;
+					}
+				} else if (eastBearing) {
+					vertLine = west;
+				} else if (westBearing) {
+					vertLine = east;
+				}
+				// TODO
+				// vertLine = null;
+
+				Line horizLine = null;
+
+				boolean southBearing = bearing > 90.0 && bearing < 270.0;
+				boolean northBearing = bearing < 90.0 || bearing > 270.0;
+
+				if (point.getY() > envelope.getMaxY()) {
+					if (northBearing) {
+						horizLine = north;
+					}
+				} else if (point.getY() < envelope.getMinY()) {
+					if (southBearing) {
+						horizLine = south;
+					}
+				} else if (northBearing) {
+					horizLine = south;
+				} else if (southBearing) {
+					horizLine = north;
+				}
+
+				Point vertIntersection = null;
+				if (vertLine != null) {
+					vertIntersection = intersection(line, vertLine);
+				}
+
+				Point horizIntersection = null;
+				if (horizLine != null) {
+					horizIntersection = intersection(line, horizLine);
+				}
+
+				Point intersection1 = null;
+				Point intersection2 = null;
+				if (vertIntersection != null && horizIntersection != null) {
+					double vertDistance = distance(previousPoint,
+							vertIntersection);
+					double horizDistance = distance(previousPoint,
+							horizIntersection);
+					if (vertDistance <= horizDistance) {
+						intersection1 = vertIntersection;
+						intersection2 = horizIntersection;
+					} else {
+						intersection1 = horizIntersection;
+						intersection2 = vertIntersection;
+					}
+				} else if (vertIntersection != null) {
+					intersection1 = vertIntersection;
+				} else {
+					intersection1 = horizIntersection;
+				}
+
+				if (intersection1 != null && !isEqual(intersection1, point)
+						&& !isEqual(intersection1, previousPoint)) {
+
+					crop.add(intersection1);
+
+					if (!contains && !previousContains && intersection2 != null
+							&& !isEqual(intersection2, intersection1)) {
+						crop.add(intersection2);
+					}
+				}
+
+			}
+
+			if (contains) {
+				crop.add(point);
+			}
+
+			previousPoint = point;
+			previousContains = contains;
+		}
+
+		if (crop.isEmpty()) {
+			crop = null;
+		} else {
+
+			if (points.get(0).equals(points.get(points.size() - 1))
+					&& !crop.get(0).equals(crop.get(crop.size() - 1))) {
+				crop.add(new Point(crop.get(0)));
+			}
+
+			List<Point> simplified = new ArrayList<>();
+			simplified.add(crop.get(0));
+			for (int i = 1; i < crop.size() - 1; i++) {
+				Point previous = simplified.get(simplified.size() - 1);
+				Point point = crop.get(i);
+				Point next = crop.get(i + 1);
+				if (!pointOnPath(point, previous, next)) {
+					simplified.add(point);
+				}
+			}
+			simplified.add(crop.get(crop.size() - 1));
+			crop = simplified;
+		}
+		return crop;
+	}
+
+	public static boolean isEqual(Point point1, Point point2) {
+		return isEqual(point1, point2, DEFAULT_EQUAL_EPSILON);
+	}
+
+	public static boolean isEqual(Point point1, Point point2, double delta) {
+		return Math.abs(point1.getX() - point2.getX()) <= delta
+				&& Math.abs(point1.getY() - point2.getY()) <= delta;
+	}
+
+	public static MultiPoint crop(MultiPoint multiPoint,
+			GeometryEnvelope envelope) {
+		MultiPoint crop = null;
+		List<Point> cropPoints = new ArrayList<>();
+		for (Point point : multiPoint.getPoints()) {
+			Point cropPoint = crop(point, envelope);
+			if (cropPoint != null) {
+				cropPoints.add(cropPoint);
+			}
+		}
+		if (!cropPoints.isEmpty()) {
+			crop = new MultiPoint(multiPoint.hasZ(), multiPoint.hasM());
+			crop.setPoints(cropPoints);
+		}
+		return crop;
+	}
+
+	public static LineString crop(LineString lineString,
+			GeometryEnvelope envelope) {
+		LineString crop = null;
+		List<Point> cropPoints = crop(lineString.getPoints(), envelope);
+		if (cropPoints != null) {
+			crop = new LineString(lineString.hasZ(), lineString.hasM());
+			crop.setPoints(cropPoints);
+		}
+		return crop;
+	}
+
+	public static Line crop(Line line, GeometryEnvelope envelope) {
+		Line crop = null;
+		List<Point> cropPoints = crop(line.getPoints(), envelope);
+		if (cropPoints != null) {
+			crop = new Line(line.hasZ(), line.hasM());
+			crop.setPoints(cropPoints);
+		}
+		return crop;
+	}
+
+	public static MultiLineString crop(MultiLineString multiLineString,
+			GeometryEnvelope envelope) {
+		MultiLineString crop = null;
+		List<LineString> cropLineStrings = new ArrayList<>();
+		for (LineString lineString : multiLineString.getLineStrings()) {
+			LineString cropLineString = crop(lineString, envelope);
+			if (cropLineString != null) {
+				cropLineStrings.add(cropLineString);
+			}
+		}
+		if (!cropLineStrings.isEmpty()) {
+			crop = new MultiLineString(multiLineString.hasZ(),
+					multiLineString.hasM());
+			crop.setLineStrings(cropLineStrings);
+		}
+		return crop;
+	}
+
+	public static Polygon crop(Polygon polygon, GeometryEnvelope envelope) {
+		Polygon crop = null;
+		List<LineString> cropRings = new ArrayList<>();
+		for (LineString ring : polygon.getRings()) {
+			List<Point> points = ring.getPoints();
+			if (!ring.isClosed()) {
+				points.add(new Point(points.get(0)));
+			}
+			List<Point> cropPoints = crop(points, envelope);
+			if (cropPoints != null) {
+				LineString cropRing = new LineString(ring.hasZ(), ring.hasM());
+				cropRing.setPoints(cropPoints);
+				cropRings.add(cropRing);
+			}
+		}
+		if (!cropRings.isEmpty()) {
+			crop = new Polygon(polygon.hasZ(), polygon.hasM());
+			crop.setRings(cropRings);
+		}
+		return crop;
+	}
+
+	public static MultiPolygon crop(MultiPolygon multiPolygon,
+			GeometryEnvelope envelope) {
+		MultiPolygon crop = null;
+		List<Polygon> cropPolygons = new ArrayList<>();
+		for (Polygon polygon : multiPolygon.getPolygons()) {
+			Polygon cropPolygon = crop(polygon, envelope);
+			if (cropPolygon != null) {
+				cropPolygons.add(cropPolygon);
+			}
+		}
+		if (!cropPolygons.isEmpty()) {
+			crop = new MultiPolygon(multiPolygon.hasZ(), multiPolygon.hasM());
+			crop.setPolygons(cropPolygons);
+		}
+		return crop;
+	}
+
+	public static CircularString crop(CircularString circularString,
+			GeometryEnvelope envelope) {
+		CircularString crop = null;
+		List<Point> cropPoints = crop(circularString.getPoints(), envelope);
+		if (cropPoints != null) {
+			crop = new CircularString(circularString.hasZ(),
+					circularString.hasM());
+			crop.setPoints(cropPoints);
+		}
+		return crop;
+	}
+
+	public static CompoundCurve crop(CompoundCurve compoundCurve,
+			GeometryEnvelope envelope) {
+		CompoundCurve crop = null;
+		List<LineString> cropLineStrings = new ArrayList<>();
+		for (LineString lineString : compoundCurve.getLineStrings()) {
+			LineString cropLineString = crop(lineString, envelope);
+			if (cropLineString != null) {
+				cropLineStrings.add(cropLineString);
+			}
+		}
+		if (!cropLineStrings.isEmpty()) {
+			crop = new CompoundCurve(compoundCurve.hasZ(),
+					compoundCurve.hasM());
+			crop.setLineStrings(cropLineStrings);
+		}
+		return crop;
+	}
+
+	public static CurvePolygon<Curve> crop(CurvePolygon<Curve> curvePolygon,
+			GeometryEnvelope envelope) {
+		CurvePolygon<Curve> crop = null;
+		List<Curve> cropRings = new ArrayList<>();
+		for (Curve ring : curvePolygon.getRings()) {
+			Geometry cropRing = crop(ring, envelope);
+			if (cropRing != null) {
+				cropRings.add((Curve) cropRing);
+			}
+		}
+		if (!cropRings.isEmpty()) {
+			crop = new CurvePolygon<>(curvePolygon.hasZ(), curvePolygon.hasM());
+			crop.setRings(cropRings);
+		}
+		return crop;
+	}
+
+	public static PolyhedralSurface crop(PolyhedralSurface polyhedralSurface,
+			GeometryEnvelope envelope) {
+		PolyhedralSurface crop = null;
+		List<Polygon> cropPolygons = new ArrayList<>();
+		for (Polygon polygon : polyhedralSurface.getPolygons()) {
+			Polygon cropPolygon = crop(polygon, envelope);
+			if (cropPolygon != null) {
+				cropPolygons.add(cropPolygon);
+			}
+		}
+		if (!cropPolygons.isEmpty()) {
+			crop = new PolyhedralSurface(polyhedralSurface.hasZ(),
+					polyhedralSurface.hasM());
+			crop.setPolygons(cropPolygons);
+		}
+		return crop;
+	}
+
+	public static TIN crop(TIN tin, GeometryEnvelope envelope) {
+		TIN crop = null;
+		List<Polygon> cropPolygons = new ArrayList<>();
+		for (Polygon polygon : tin.getPolygons()) {
+			Polygon cropPolygon = crop(polygon, envelope);
+			if (cropPolygon != null) {
+				cropPolygons.add(cropPolygon);
+			}
+		}
+		if (!cropPolygons.isEmpty()) {
+			crop = new TIN(tin.hasZ(), tin.hasM());
+			crop.setPolygons(cropPolygons);
+		}
+		return crop;
+	}
+
+	public static Triangle crop(Triangle triangle, GeometryEnvelope envelope) {
+		Triangle crop = null;
+		List<LineString> cropRings = new ArrayList<>();
+		for (LineString ring : triangle.getRings()) {
+			List<Point> points = ring.getPoints();
+			if (!ring.isClosed()) {
+				points.add(new Point(points.get(0)));
+			}
+			List<Point> cropPoints = crop(points, envelope);
+			if (cropPoints != null) {
+				LineString cropRing = new LineString(ring.hasZ(), ring.hasM());
+				cropRing.setPoints(cropPoints);
+				cropRings.add(cropRing);
+			}
+		}
+		if (!cropRings.isEmpty()) {
+			crop = new Triangle(triangle.hasZ(), triangle.hasM());
+			crop.setRings(cropRings);
+		}
+		return crop;
 	}
 
 	/**
