@@ -682,7 +682,21 @@ public class GeometryEnvelope implements Serializable {
 	 * @since 2.1.0
 	 */
 	public boolean contains(Point point) {
-		return contains(point.getX(), point.getY());
+		return contains(point, 0.0);
+	}
+
+	/**
+	 * Determine if contains the point
+	 *
+	 * @param point
+	 *            point
+	 * @param epsilon
+	 *            epsilon equality tolerance
+	 * @return true if contains
+	 * @since 2.2.0
+	 */
+	public boolean contains(Point point, double epsilon) {
+		return contains(point.getX(), point.getY(), epsilon);
 	}
 
 	/**
@@ -696,8 +710,24 @@ public class GeometryEnvelope implements Serializable {
 	 * @since 2.1.0
 	 */
 	public boolean contains(double x, double y) {
-		return x >= getMinX() && x <= getMaxX() && y >= getMinY()
-				&& y <= getMaxY();
+		return contains(x, y, 0.0);
+	}
+
+	/**
+	 * Determine if contains the coordinate
+	 *
+	 * @param x
+	 *            x value
+	 * @param y
+	 *            y value
+	 * @param epsilon
+	 *            epsilon equality tolerance
+	 * @return true if contains
+	 * @since 2.2.0
+	 */
+	public boolean contains(double x, double y, double epsilon) {
+		return x >= getMinX() - epsilon && x <= getMaxX() + epsilon
+				&& y >= getMinY() - epsilon && y <= getMaxY() + epsilon;
 	}
 
 	/**
@@ -709,10 +739,24 @@ public class GeometryEnvelope implements Serializable {
 	 * @since 2.0.1
 	 */
 	public boolean contains(GeometryEnvelope envelope) {
-		return getMinX() <= envelope.getMinX()
-				&& getMaxX() >= envelope.getMaxX()
-				&& getMinY() <= envelope.getMinY()
-				&& getMaxY() >= envelope.getMaxY();
+		return contains(envelope, 0.0);
+	}
+
+	/**
+	 * Determine if inclusively contains the provided envelope
+	 *
+	 * @param envelope
+	 *            geometry envelope
+	 * @param epsilon
+	 *            epsilon equality tolerance
+	 * @return true if contains
+	 * @since 2.2.0
+	 */
+	public boolean contains(GeometryEnvelope envelope, double epsilon) {
+		return getMinX() - epsilon <= envelope.getMinX()
+				&& getMaxX() + epsilon >= envelope.getMaxX()
+				&& getMinY() - epsilon <= envelope.getMinY()
+				&& getMaxY() + epsilon >= envelope.getMaxY();
 	}
 
 	/**

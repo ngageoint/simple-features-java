@@ -1058,6 +1058,88 @@ public class GeometryUtilsTest {
 		assertEquals(10156058.722522344, cropRing.getPoint(4).getY(),
 				0.00000000001);
 
+		polygon = new Polygon();
+		ring = new LineString();
+		ring.addPoint(new Point(-120.0, -90.0));
+		ring.addPoint(new Point(-120.0, 0.0));
+		ring.addPoint(new Point(-180.0, 0.0));
+		ring.addPoint(new Point(-180.0, -90.0));
+		ring.addPoint(new Point(-120.0, -90.0));
+		polygon.addRing(ring);
+
+		envelope = new GeometryEnvelope(
+				-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH);
+
+		meters = GeometryUtils.degreesToMeters(polygon);
+		crop = GeometryUtils.crop(meters, envelope);
+		degrees = GeometryUtils.metersToDegrees(crop);
+		GeometryUtils.minimizeWGS84Geometry(degrees);
+
+		cropRing = degrees.getRing(0);
+		assertEquals(5, cropRing.numPoints());
+		assertTrue(cropRing.isClosed());
+
+		assertEquals(-120.0, cropRing.getPoint(0).getX(), 0.00000000001);
+		assertEquals(GeometryConstants.WEB_MERCATOR_MIN_LAT_RANGE,
+				cropRing.getPoint(0).getY(), 0.0);
+
+		assertEquals(-120.0, cropRing.getPoint(1).getX(), 0.0);
+		assertEquals(0.0, cropRing.getPoint(1).getY(), 0.0);
+
+		assertEquals(-180.0, cropRing.getPoint(2).getX(), 0.0);
+		assertEquals(0.0, cropRing.getPoint(2).getY(), 0.0);
+
+		assertEquals(-180.0, cropRing.getPoint(3).getX(), 0.0);
+		assertEquals(GeometryConstants.WEB_MERCATOR_MIN_LAT_RANGE,
+				cropRing.getPoint(3).getY(), 0.0);
+
+		assertEquals(-120.0, cropRing.getPoint(4).getX(), 0.00000000001);
+		assertEquals(GeometryConstants.WEB_MERCATOR_MIN_LAT_RANGE,
+				cropRing.getPoint(4).getY(), 0.0);
+
+		polygon = new Polygon();
+		ring = new LineString();
+		ring.addPoint(new Point(-13358338.89519283, -233606567.09255272));
+		ring.addPoint(new Point(-13358338.89519283, 0.0));
+		ring.addPoint(new Point(
+				-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH, 0.0));
+		ring.addPoint(
+				new Point(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+						-233606567.09255272));
+		ring.addPoint(new Point(-13358338.89519283, -233606567.09255272));
+		polygon.addRing(ring);
+
+		crop = GeometryUtils.crop(polygon, envelope);
+
+		cropRing = crop.getRing(0);
+		assertEquals(5, cropRing.numPoints());
+		assertTrue(cropRing.isClosed());
+
+		assertEquals(-13358338.89519283, cropRing.getPoint(0).getX(),
+				0.00000001);
+		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				cropRing.getPoint(0).getY(), 0.00000001);
+
+		assertEquals(-13358338.89519283, cropRing.getPoint(1).getX(), 0.0);
+		assertEquals(0.0, cropRing.getPoint(1).getY(), 0.0);
+
+		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				cropRing.getPoint(2).getX(), 0.0);
+		assertEquals(0.0, cropRing.getPoint(2).getY(), 0.0);
+
+		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				cropRing.getPoint(3).getX(), 0.0);
+		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				cropRing.getPoint(3).getY(), 0.00000001);
+
+		assertEquals(-13358338.89519283, cropRing.getPoint(4).getX(),
+				0.00000001);
+		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				cropRing.getPoint(4).getY(), 0.00000001);
+
 	}
 
 	/**

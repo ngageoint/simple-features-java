@@ -2027,7 +2027,7 @@ public class GeometryUtils {
 
 		Geometry crop = null;
 
-		if (envelope.contains(geometry.getEnvelope())) {
+		if (contains(envelope, geometry.getEnvelope())) {
 			crop = geometry;
 		} else {
 
@@ -2102,7 +2102,7 @@ public class GeometryUtils {
 	 */
 	public static Point crop(Point point, GeometryEnvelope envelope) {
 		Point crop = null;
-		if (envelope.contains(point)) {
+		if (contains(envelope, point)) {
 			crop = new Point(point);
 		}
 		return crop;
@@ -2133,7 +2133,7 @@ public class GeometryUtils {
 		Point previousPoint = null;
 		boolean previousContains = false;
 		for (Point point : points) {
-			boolean contains = envelope.contains(point);
+			boolean contains = contains(envelope, point);
 
 			if (previousPoint != null && (!contains || !previousContains)) {
 
@@ -2179,7 +2179,7 @@ public class GeometryUtils {
 				if (vertLine != null) {
 					vertIntersection = intersection(line, vertLine);
 					if (vertIntersection != null
-							&& !envelope.contains(vertIntersection)) {
+							&& !contains(envelope, vertIntersection)) {
 						vertIntersection = null;
 					}
 				}
@@ -2188,7 +2188,7 @@ public class GeometryUtils {
 				if (horizLine != null) {
 					horizIntersection = intersection(line, horizLine);
 					if (horizIntersection != null
-							&& !envelope.contains(horizIntersection)) {
+							&& !contains(envelope, horizIntersection)) {
 						horizIntersection = null;
 					}
 				}
@@ -2647,6 +2647,41 @@ public class GeometryUtils {
 			}
 		}
 		return equal;
+	}
+
+	/**
+	 * Determine if the envelope contains the point within the default tolerance
+	 * of {@link GeometryConstants#DEFAULT_EQUAL_EPSILON}. For exact equality,
+	 * use {@link GeometryEnvelope#contains(Point)}.
+	 * 
+	 * @param envelope
+	 *            envelope
+	 * @param point
+	 *            point
+	 * @return true if contains
+	 * @since 2.2.0
+	 */
+	public static boolean contains(GeometryEnvelope envelope, Point point) {
+		return envelope.contains(point,
+				GeometryConstants.DEFAULT_EQUAL_EPSILON);
+	}
+
+	/**
+	 * Determine if the first envelope contains the second within the default
+	 * tolerance of {@link GeometryConstants#DEFAULT_EQUAL_EPSILON}. For exact
+	 * equality, use {@link GeometryEnvelope#contains(GeometryEnvelope)}.
+	 * 
+	 * @param envelope1
+	 *            envelope 1
+	 * @param envelope2
+	 *            envelope 2
+	 * @return true if contains
+	 * @since 2.2.0
+	 */
+	public static boolean contains(GeometryEnvelope envelope1,
+			GeometryEnvelope envelope2) {
+		return envelope1.contains(envelope2,
+				GeometryConstants.DEFAULT_EQUAL_EPSILON);
 	}
 
 	/**
