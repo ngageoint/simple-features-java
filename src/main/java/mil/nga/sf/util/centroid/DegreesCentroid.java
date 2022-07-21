@@ -22,16 +22,6 @@ import mil.nga.sf.util.SFException;
 public class DegreesCentroid {
 
 	/**
-	 * Radians to Degrees conversion
-	 */
-	public final static double RADIANS_TO_DEGREES = 180.0 / Math.PI;
-
-	/**
-	 * Degrees to Radians conversion
-	 */
-	public final static double DEGREES_TO_RADIANS = Math.PI / 180.0;
-
-	/**
 	 * Geometry
 	 */
 	private final Geometry geometry;
@@ -99,8 +89,9 @@ public class DegreesCentroid {
 			double centroidLongitude = Math.atan2(y, x);
 			double centroidLatitude = Math.atan2(z, Math.sqrt(x * x + y * y));
 
-			centroid = new Point(centroidLongitude * RADIANS_TO_DEGREES,
-					centroidLatitude * RADIANS_TO_DEGREES);
+			centroid = new Point(
+					GeometryUtils.radiansToDegrees(centroidLongitude),
+					GeometryUtils.radiansToDegrees(centroidLatitude));
 		}
 
 		return centroid;
@@ -169,8 +160,8 @@ public class DegreesCentroid {
 	 *            Point
 	 */
 	private void calculatePoint(Point point) {
-		double latitude = point.getY() * DEGREES_TO_RADIANS;
-		double longitude = point.getX() * DEGREES_TO_RADIANS;
+		double latitude = GeometryUtils.degreesToRadians(point.getY());
+		double longitude = GeometryUtils.degreesToRadians(point.getX());
 		double cosLatitude = Math.cos(latitude);
 		x += cosLatitude * Math.cos(longitude);
 		y += cosLatitude * Math.sin(longitude);

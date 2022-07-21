@@ -54,7 +54,7 @@ public class Line extends LineString {
 	 *            first point
 	 * @param point2
 	 *            second point
-	 * @since 2.1.1
+	 * @since 2.2.0
 	 */
 	public Line(Point point1, Point point2) {
 		this(point1.hasZ() || point2.hasZ(), point1.hasM() || point2.hasM());

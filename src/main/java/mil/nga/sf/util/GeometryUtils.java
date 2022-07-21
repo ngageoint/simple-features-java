@@ -52,40 +52,6 @@ public class GeometryUtils {
 			.getLogger(GeometryUtils.class.getName());
 
 	/**
-	 * Default epsilon for line tolerance
-	 * 
-	 * @since 1.0.5
-	 */
-	public static final double DEFAULT_EPSILON = 0.000000000000001;
-
-	/**
-	 * Default epsilon for point equality
-	 */
-	public static final double DEFAULT_EQUAL_EPSILON = 0.00000001;
-
-	/**
-	 * Half the world distance in either direction
-	 * 
-	 * @since 2.1.0
-	 */
-	public static final double WEB_MERCATOR_HALF_WORLD_WIDTH = 20037508.342789244;
-
-	/**
-	 * Half the world longitude width for WGS84
-	 */
-	public static double WGS84_HALF_WORLD_LON_WIDTH = 180.0;
-
-	/**
-	 * Half the world latitude height for WGS84
-	 */
-	public static double WGS84_HALF_WORLD_LAT_HEIGHT = 90.0;
-
-	/**
-	 * Minimum latitude degrees value convertible to meters
-	 */
-	public static double DEGREES_TO_METERS_MIN_LAT = -89.99999999999999;
-
-	/**
 	 * Get the dimension of the Geometry, 0 for points, 1 for curves, 2 for
 	 * surfaces. If a collection, the largest dimension is returned.
 	 * 
@@ -146,28 +112,130 @@ public class GeometryUtils {
 	public static double distance(Point point1, Point point2) {
 		double diffX = point1.getX() - point2.getX();
 		double diffY = point1.getY() - point2.getY();
-
-		double distance = Math.sqrt(diffX * diffX + diffY * diffY);
-
-		return distance;
+		return Math.sqrt(diffX * diffX + diffY * diffY);
 	}
 
+	/**
+	 * Get the Pythagorean theorem distance between the line end points
+	 * 
+	 * @param line
+	 *            line
+	 * @return distance
+	 * @since 2.2.0
+	 */
 	public static double distance(Line line) {
 		return distance(line.startPoint(), line.endPoint());
 	}
 
+	/**
+	 * Get the bearing heading in degrees between two points in degrees
+	 * 
+	 * @param point1
+	 *            point 1
+	 * @param point2
+	 *            point 2
+	 * @return bearing angle in degrees between 0 and 360
+	 * @since 2.2.0
+	 */
 	public static double bearing(Point point1, Point point2) {
-		double y1 = Math.toRadians(point1.getY());
-		double y2 = Math.toRadians(point2.getY());
-		double xDiff = Math.toRadians(point2.getX() - point1.getX());
+		double y1 = degreesToRadians(point1.getY());
+		double y2 = degreesToRadians(point2.getY());
+		double xDiff = degreesToRadians(point2.getX() - point1.getX());
 		double y = Math.sin(xDiff) * Math.cos(y2);
 		double x = Math.cos(y1) * Math.sin(y2)
 				- Math.sin(y1) * Math.cos(y2) * Math.cos(xDiff);
-		return (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
+		return (radiansToDegrees(Math.atan2(y, x)) + 360) % 360;
 	}
 
+	/**
+	 * Get the bearing heading in degrees between line end points in degrees
+	 * 
+	 * @param line
+	 *            line
+	 * @return bearing angle in degrees between 0 inclusively and 360
+	 *         exclusively
+	 * @since 2.2.0
+	 */
 	public static double bearing(Line line) {
 		return bearing(line.startPoint(), line.endPoint());
+	}
+
+	/**
+	 * Determine if the bearing is in any north direction
+	 * 
+	 * @param bearing
+	 *            bearing angle in degrees
+	 * @return true if north bearing
+	 * @since 2.2.0
+	 */
+	public static boolean isNorthBearing(double bearing) {
+		bearing %= 360.0;
+		return bearing < GeometryConstants.BEARING_EAST
+				|| bearing > GeometryConstants.BEARING_WEST;
+	}
+
+	/**
+	 * Determine if the bearing is in any east direction
+	 * 
+	 * @param bearing
+	 *            bearing angle in degrees
+	 * @return true if east bearing
+	 * @since 2.2.0
+	 */
+	public static boolean isEastBearing(double bearing) {
+		bearing %= 360.0;
+		return bearing > GeometryConstants.BEARING_NORTH
+				&& bearing < GeometryConstants.BEARING_SOUTH;
+	}
+
+	/**
+	 * Determine if the bearing is in any south direction
+	 * 
+	 * @param bearing
+	 *            bearing angle in degrees
+	 * @return true if south bearing
+	 * @since 2.2.0
+	 */
+	public static boolean isSouthBearing(double bearing) {
+		bearing %= 360.0;
+		return bearing > GeometryConstants.BEARING_EAST
+				&& bearing < GeometryConstants.BEARING_WEST;
+	}
+
+	/**
+	 * Determine if the bearing is in any west direction
+	 * 
+	 * @param bearing
+	 *            bearing angle in degrees
+	 * @return true if west bearing
+	 * @since 2.2.0
+	 */
+	public static boolean isWestBearing(double bearing) {
+		return (bearing % 360.0) > GeometryConstants.BEARING_SOUTH;
+	}
+
+	/**
+	 * Convert degrees to radians
+	 * 
+	 * @param degrees
+	 *            degrees
+	 * @return radians
+	 * @since 2.2.0
+	 */
+	public static double degreesToRadians(double degrees) {
+		return degrees * GeometryConstants.DEGREES_TO_RADIANS;
+	}
+
+	/**
+	 * Convert radians to degrees
+	 * 
+	 * @param radians
+	 *            radians
+	 * @return degrees
+	 * @since 2.2.0
+	 */
+	public static double radiansToDegrees(double radians) {
+		return radians * GeometryConstants.RADIANS_TO_DEGREES;
 	}
 
 	/**
@@ -217,17 +285,46 @@ public class GeometryUtils {
 	}
 
 	/**
+	 * Minimize the WGS84 geometry using the shortest x distance between each
+	 * connected set of points. Resulting x values will be in the range: -540.0
+	 * &lt;= x &lt;= 540.0
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @since 2.2.0
+	 */
+	public static void minimizeWGS84Geometry(Geometry geometry) {
+		minimizeGeometry(geometry,
+				GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH);
+	}
+
+	/**
+	 * Minimize the Web Mercator geometry using the shortest x distance between
+	 * each connected set of points. Resulting x values will be in the range:
+	 * -60112525.028367732 &lt;= x &lt;= 60112525.028367732
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @since 2.2.0
+	 */
+	public static void minimizeWebMercatorGeometry(Geometry geometry) {
+		minimizeGeometry(geometry,
+				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH);
+	}
+
+	/**
 	 * Minimize the geometry using the shortest x distance between each
 	 * connected set of points. The resulting geometry point x values will be in
 	 * the range: (3 * min value &lt;= x &lt;= 3 * max value
 	 *
 	 * Example: For WGS84 provide a max x of
-	 * {@link #WGS84_HALF_WORLD_LON_WIDTH}. Resulting x values will be in the
-	 * range: -540.0 &lt;= x &lt;= 540.0
+	 * {@link GeometryConstants#WGS84_HALF_WORLD_LON_WIDTH}. Resulting x values
+	 * will be in the range: -540.0 &lt;= x &lt;= 540.0
 	 *
 	 * Example: For web mercator provide a world width of
-	 * {@link #WEB_MERCATOR_HALF_WORLD_WIDTH}. Resulting x values will be in the
-	 * range: -60112525.028367732 &lt;= x &lt;= 60112525.028367732
+	 * {@link GeometryConstants#WEB_MERCATOR_HALF_WORLD_WIDTH}. Resulting x
+	 * values will be in the range: -60112525.028367732 &lt;= x &lt;=
+	 * 60112525.028367732
 	 *
 	 * @param geometry
 	 *            geometry
@@ -410,16 +507,45 @@ public class GeometryUtils {
 	}
 
 	/**
+	 * Normalize the WGS84 geometry using the shortest x distance between each
+	 * connected set of points. Resulting x values will be in the range: -180.0
+	 * &lt;= x &lt;= 180.0
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @since 2.2.0
+	 */
+	public static void normalizeWGS84Geometry(Geometry geometry) {
+		normalizeGeometry(geometry,
+				GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH);
+	}
+
+	/**
+	 * Normalize the Web Mercator geometry using the shortest x distance between
+	 * each connected set of points. Resulting x values will be in the range:
+	 * -20037508.342789244 &lt;= x &lt;= 20037508.342789244
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @since 2.2.0
+	 */
+	public static void normalizeWebMercatorGeometry(Geometry geometry) {
+		normalizeGeometry(geometry,
+				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH);
+	}
+
+	/**
 	 * Normalize the geometry so all points outside of the min and max value
 	 * range are adjusted to fall within the range.
 	 *
 	 * Example: For WGS84 provide a max x of
-	 * {@link #WGS84_HALF_WORLD_LON_WIDTH}. Resulting x values will be in the
-	 * range: -180.0 &lt;= x &lt;= 180.0.
+	 * {@link GeometryConstants#WGS84_HALF_WORLD_LON_WIDTH}. Resulting x values
+	 * will be in the range: -180.0 &lt;= x &lt;= 180.0
 	 *
 	 * Example: For web mercator provide a world width of
-	 * {@link #WEB_MERCATOR_HALF_WORLD_WIDTH}. Resulting x values will be in the
-	 * range: -20037508.342789244 &lt;= x &lt;= 20037508.342789244.
+	 * {@link GeometryConstants#WEB_MERCATOR_HALF_WORLD_WIDTH}. Resulting x
+	 * values will be in the range: -20037508.342789244 &lt;= x &lt;=
+	 * 20037508.342789244
 	 *
 	 * @param geometry
 	 *            geometry
@@ -775,7 +901,8 @@ public class GeometryUtils {
 	 * @since 1.0.5
 	 */
 	public static boolean pointInPolygon(Point point, Polygon polygon) {
-		return pointInPolygon(point, polygon, DEFAULT_EPSILON);
+		return pointInPolygon(point, polygon,
+				GeometryConstants.DEFAULT_LINE_EPSILON);
 	}
 
 	/**
@@ -822,7 +949,8 @@ public class GeometryUtils {
 	 * @since 1.0.5
 	 */
 	public static boolean pointInPolygon(Point point, LineString ring) {
-		return pointInPolygon(point, ring, DEFAULT_EPSILON);
+		return pointInPolygon(point, ring,
+				GeometryConstants.DEFAULT_LINE_EPSILON);
 	}
 
 	/**
@@ -853,7 +981,8 @@ public class GeometryUtils {
 	 * @since 1.0.5
 	 */
 	public static boolean pointInPolygon(Point point, List<Point> points) {
-		return pointInPolygon(point, points, DEFAULT_EPSILON);
+		return pointInPolygon(point, points,
+				GeometryConstants.DEFAULT_LINE_EPSILON);
 	}
 
 	/**
@@ -919,7 +1048,8 @@ public class GeometryUtils {
 	 * @since 1.0.5
 	 */
 	public static boolean pointOnPolygonEdge(Point point, Polygon polygon) {
-		return pointOnPolygonEdge(point, polygon, DEFAULT_EPSILON);
+		return pointOnPolygonEdge(point, polygon,
+				GeometryConstants.DEFAULT_LINE_EPSILON);
 	}
 
 	/**
@@ -951,7 +1081,8 @@ public class GeometryUtils {
 	 * @since 1.0.5
 	 */
 	public static boolean pointOnPolygonEdge(Point point, LineString ring) {
-		return pointOnPolygonEdge(point, ring, DEFAULT_EPSILON);
+		return pointOnPolygonEdge(point, ring,
+				GeometryConstants.DEFAULT_LINE_EPSILON);
 	}
 
 	/**
@@ -982,7 +1113,8 @@ public class GeometryUtils {
 	 * @since 1.0.5
 	 */
 	public static boolean pointOnPolygonEdge(Point point, List<Point> points) {
-		return pointOnPolygonEdge(point, points, DEFAULT_EPSILON);
+		return pointOnPolygonEdge(point, points,
+				GeometryConstants.DEFAULT_LINE_EPSILON);
 	}
 
 	/**
@@ -1059,7 +1191,7 @@ public class GeometryUtils {
 	 * @since 1.0.5
 	 */
 	public static boolean pointOnLine(Point point, LineString line) {
-		return pointOnLine(point, line, DEFAULT_EPSILON);
+		return pointOnLine(point, line, GeometryConstants.DEFAULT_LINE_EPSILON);
 	}
 
 	/**
@@ -1090,7 +1222,8 @@ public class GeometryUtils {
 	 * @since 1.0.5
 	 */
 	public static boolean pointOnLine(Point point, List<Point> points) {
-		return pointOnLine(point, points, DEFAULT_EPSILON);
+		return pointOnLine(point, points,
+				GeometryConstants.DEFAULT_LINE_EPSILON);
 	}
 
 	/**
@@ -1123,7 +1256,8 @@ public class GeometryUtils {
 	 * @since 1.0.5
 	 */
 	public static boolean pointOnPath(Point point, Point point1, Point point2) {
-		return pointOnPath(point, point1, point2, DEFAULT_EPSILON);
+		return pointOnPath(point, point1, point2,
+				GeometryConstants.DEFAULT_LINE_EPSILON);
 	}
 
 	/**
@@ -1254,6 +1388,14 @@ public class GeometryUtils {
 		return intersection;
 	}
 
+	/**
+	 * Convert a geometry in degrees to a geometry in meters
+	 * 
+	 * @param geometry
+	 *            geometry in degrees
+	 * @return geometry in meters
+	 * @since 2.2.0
+	 */
 	public static Geometry degreesToMeters(Geometry geometry) {
 
 		Geometry meters = null;
@@ -1341,16 +1483,28 @@ public class GeometryUtils {
 	 * @since 2.1.0
 	 */
 	public static Point degreesToMeters(double x, double y) {
-		x = normalize(x, WGS84_HALF_WORLD_LON_WIDTH);
-		y = Math.min(y, WGS84_HALF_WORLD_LAT_HEIGHT);
-		y = Math.max(y, DEGREES_TO_METERS_MIN_LAT);
-		double xValue = x * WEB_MERCATOR_HALF_WORLD_WIDTH / 180;
-		double yValue = Math.log(Math.tan((90 + y) * Math.PI / 360))
-				/ (Math.PI / 180);
-		yValue = yValue * WEB_MERCATOR_HALF_WORLD_WIDTH / 180;
+		x = normalize(x, GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH);
+		y = Math.min(y, GeometryConstants.WGS84_HALF_WORLD_LAT_HEIGHT);
+		y = Math.max(y, GeometryConstants.DEGREES_TO_METERS_MIN_LAT);
+		double xValue = x * GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH
+				/ GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH;
+		double yValue = Math.log(Math.tan(
+				(GeometryConstants.WGS84_HALF_WORLD_LAT_HEIGHT + y) * Math.PI
+						/ (2 * GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH)))
+				/ (Math.PI / GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH);
+		yValue = yValue * GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH
+				/ GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH;
 		return new Point(xValue, yValue);
 	}
 
+	/**
+	 * Convert a multi point in degrees to a multi point in meters
+	 * 
+	 * @param multiPoint
+	 *            multi point in degrees
+	 * @return multi point in meters
+	 * @since 2.2.0
+	 */
 	public static MultiPoint degreesToMeters(MultiPoint multiPoint) {
 		MultiPoint meters = new MultiPoint(multiPoint.hasZ(),
 				multiPoint.hasM());
@@ -1360,6 +1514,14 @@ public class GeometryUtils {
 		return meters;
 	}
 
+	/**
+	 * Convert a line string in degrees to a line string in meters
+	 * 
+	 * @param lineString
+	 *            line string in degrees
+	 * @return line string in meters
+	 * @since 2.2.0
+	 */
 	public static LineString degreesToMeters(LineString lineString) {
 		LineString meters = new LineString(lineString.hasZ(),
 				lineString.hasM());
@@ -1369,6 +1531,14 @@ public class GeometryUtils {
 		return meters;
 	}
 
+	/**
+	 * Convert a line in degrees to a line in meters
+	 * 
+	 * @param line
+	 *            line in degrees
+	 * @return line in meters
+	 * @since 2.2.0
+	 */
 	public static Line degreesToMeters(Line line) {
 		Line meters = new Line(line.hasZ(), line.hasM());
 		for (Point point : line.getPoints()) {
@@ -1377,6 +1547,14 @@ public class GeometryUtils {
 		return meters;
 	}
 
+	/**
+	 * Convert a multi line string in degrees to a multi line string in meters
+	 * 
+	 * @param multiLineString
+	 *            multi line string in degrees
+	 * @return multi line string in meters
+	 * @since 2.2.0
+	 */
 	public static MultiLineString degreesToMeters(
 			MultiLineString multiLineString) {
 		MultiLineString meters = new MultiLineString(multiLineString.hasZ(),
@@ -1387,6 +1565,14 @@ public class GeometryUtils {
 		return meters;
 	}
 
+	/**
+	 * Convert a polygon in degrees to a polygon in meters
+	 * 
+	 * @param polygon
+	 *            polygon in degrees
+	 * @return polygon in meters
+	 * @since 2.2.0
+	 */
 	public static Polygon degreesToMeters(Polygon polygon) {
 		Polygon meters = new Polygon(polygon.hasZ(), polygon.hasM());
 		for (LineString ring : polygon.getRings()) {
@@ -1395,6 +1581,14 @@ public class GeometryUtils {
 		return meters;
 	}
 
+	/**
+	 * Convert a multi polygon in degrees to a multi polygon in meters
+	 * 
+	 * @param multiPolygon
+	 *            multi polygon in degrees
+	 * @return multi polygon in meters
+	 * @since 2.2.0
+	 */
 	public static MultiPolygon degreesToMeters(MultiPolygon multiPolygon) {
 		MultiPolygon meters = new MultiPolygon(multiPolygon.hasZ(),
 				multiPolygon.hasM());
@@ -1404,6 +1598,14 @@ public class GeometryUtils {
 		return meters;
 	}
 
+	/**
+	 * Convert a circular string in degrees to a circular string in meters
+	 * 
+	 * @param circularString
+	 *            circular string in degrees
+	 * @return circular string in meters
+	 * @since 2.2.0
+	 */
 	public static CircularString degreesToMeters(
 			CircularString circularString) {
 		CircularString meters = new CircularString(circularString.hasZ(),
@@ -1414,6 +1616,14 @@ public class GeometryUtils {
 		return meters;
 	}
 
+	/**
+	 * Convert a compound curve in degrees to a compound curve in meters
+	 * 
+	 * @param compoundCurve
+	 *            compound curve in degrees
+	 * @return compound curve in meters
+	 * @since 2.2.0
+	 */
 	public static CompoundCurve degreesToMeters(CompoundCurve compoundCurve) {
 		CompoundCurve meters = new CompoundCurve(compoundCurve.hasZ(),
 				compoundCurve.hasM());
@@ -1423,6 +1633,14 @@ public class GeometryUtils {
 		return meters;
 	}
 
+	/**
+	 * Convert a curve polygon in degrees to a curve polygon in meters
+	 * 
+	 * @param curvePolygon
+	 *            curve polygon in degrees
+	 * @return curve polygon in meters
+	 * @since 2.2.0
+	 */
 	public static CurvePolygon<Curve> degreesToMeters(
 			CurvePolygon<Curve> curvePolygon) {
 		CurvePolygon<Curve> meters = new CurvePolygon<>(curvePolygon.hasZ(),
@@ -1433,6 +1651,14 @@ public class GeometryUtils {
 		return meters;
 	}
 
+	/**
+	 * Convert a polyhedral surface in degrees to a polyhedral surface in meters
+	 * 
+	 * @param polyhedralSurface
+	 *            polyhedral surface in degrees
+	 * @return polyhedral surface in meters
+	 * @since 2.2.0
+	 */
 	public static PolyhedralSurface degreesToMeters(
 			PolyhedralSurface polyhedralSurface) {
 		PolyhedralSurface meters = new PolyhedralSurface(
@@ -1443,6 +1669,14 @@ public class GeometryUtils {
 		return meters;
 	}
 
+	/**
+	 * Convert a TIN in degrees to a TIN in meters
+	 * 
+	 * @param tin
+	 *            TIN in degrees
+	 * @return TIN in meters
+	 * @since 2.2.0
+	 */
 	public static TIN degreesToMeters(TIN tin) {
 		TIN degrees = new TIN(tin.hasZ(), tin.hasM());
 		for (Polygon polygon : tin.getPolygons()) {
@@ -1451,6 +1685,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a triangle in degrees to a triangle in meters
+	 * 
+	 * @param triangle
+	 *            triangle in degrees
+	 * @return triangle in meters
+	 * @since 2.2.0
+	 */
 	public static Triangle degreesToMeters(Triangle triangle) {
 		Triangle degrees = new Triangle(triangle.hasZ(), triangle.hasM());
 		for (LineString ring : degrees.getRings()) {
@@ -1459,6 +1701,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a geometry in meters to a geometry in degrees
+	 * 
+	 * @param geometry
+	 *            geometry in meters
+	 * @return geometry in degrees
+	 * @since 2.2.0
+	 */
 	public static Geometry metersToDegrees(Geometry geometry) {
 
 		Geometry degrees = null;
@@ -1546,13 +1796,25 @@ public class GeometryUtils {
 	 * @since 2.1.0
 	 */
 	public static Point metersToDegrees(double x, double y) {
-		double xValue = x * 180 / WEB_MERCATOR_HALF_WORLD_WIDTH;
-		double yValue = y * 180 / WEB_MERCATOR_HALF_WORLD_WIDTH;
-		yValue = Math.atan(Math.exp(yValue * (Math.PI / 180))) / Math.PI * 360
-				- 90;
+		double xValue = x * GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH
+				/ GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH;
+		double yValue = y * GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH
+				/ GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH;
+		yValue = Math.atan(Math.exp(yValue
+				* (Math.PI / GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH)))
+				/ Math.PI * (2 * GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH)
+				- GeometryConstants.WGS84_HALF_WORLD_LAT_HEIGHT;
 		return new Point(xValue, yValue);
 	}
 
+	/**
+	 * Convert a multi point in meters to a multi point in degrees
+	 * 
+	 * @param multiPoint
+	 *            multi point in meters
+	 * @return multi point in degrees
+	 * @since 2.2.0
+	 */
 	public static MultiPoint metersToDegrees(MultiPoint multiPoint) {
 		MultiPoint degrees = new MultiPoint(multiPoint.hasZ(),
 				multiPoint.hasM());
@@ -1562,6 +1824,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a line string in meters to a line string in degrees
+	 * 
+	 * @param lineString
+	 *            line string in meters
+	 * @return line string in degrees
+	 * @since 2.2.0
+	 */
 	public static LineString metersToDegrees(LineString lineString) {
 		LineString degrees = new LineString(lineString.hasZ(),
 				lineString.hasM());
@@ -1571,6 +1841,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a line in meters to a line in degrees
+	 * 
+	 * @param line
+	 *            line in meters
+	 * @return line in degrees
+	 * @since 2.2.0
+	 */
 	public static Line metersToDegrees(Line line) {
 		Line degrees = new Line(line.hasZ(), line.hasM());
 		for (Point point : line.getPoints()) {
@@ -1579,6 +1857,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a multi line string in meters to a multi line string in degrees
+	 * 
+	 * @param multiLineString
+	 *            multi line string in meters
+	 * @return multi line string in degrees
+	 * @since 2.2.0
+	 */
 	public static MultiLineString metersToDegrees(
 			MultiLineString multiLineString) {
 		MultiLineString degrees = new MultiLineString(multiLineString.hasZ(),
@@ -1589,6 +1875,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a polygon in meters to a polygon in degrees
+	 * 
+	 * @param polygon
+	 *            polygon in meters
+	 * @return polygon in degrees
+	 * @since 2.2.0
+	 */
 	public static Polygon metersToDegrees(Polygon polygon) {
 		Polygon degrees = new Polygon(polygon.hasZ(), polygon.hasM());
 		for (LineString ring : polygon.getRings()) {
@@ -1597,6 +1891,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a multi polygon in meters to a multi polygon in degrees
+	 * 
+	 * @param multiPolygon
+	 *            multi polygon in meters
+	 * @return multi polygon in degrees
+	 * @since 2.2.0
+	 */
 	public static MultiPolygon metersToDegrees(MultiPolygon multiPolygon) {
 		MultiPolygon degrees = new MultiPolygon(multiPolygon.hasZ(),
 				multiPolygon.hasM());
@@ -1606,6 +1908,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a circular string in meters to a circular string in degrees
+	 * 
+	 * @param circularString
+	 *            circular string in meters
+	 * @return circular string in degrees
+	 * @since 2.2.0
+	 */
 	public static CircularString metersToDegrees(
 			CircularString circularString) {
 		CircularString degrees = new CircularString(circularString.hasZ(),
@@ -1616,6 +1926,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a compound curve in meters to a compound curve in degrees
+	 * 
+	 * @param compoundCurve
+	 *            compound curve in meters
+	 * @return compound curve in degrees
+	 * @since 2.2.0
+	 */
 	public static CompoundCurve metersToDegrees(CompoundCurve compoundCurve) {
 		CompoundCurve degrees = new CompoundCurve(compoundCurve.hasZ(),
 				compoundCurve.hasM());
@@ -1625,6 +1943,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a curve polygon in meters to a curve polygon in degrees
+	 * 
+	 * @param curvePolygon
+	 *            curve polygon in meters
+	 * @return curve polygon in degrees
+	 * @since 2.2.0
+	 */
 	public static CurvePolygon<Curve> metersToDegrees(
 			CurvePolygon<Curve> curvePolygon) {
 		CurvePolygon<Curve> degrees = new CurvePolygon<>(curvePolygon.hasZ(),
@@ -1635,6 +1961,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a polyhedral surface in meters to a polyhedral surface in degrees
+	 * 
+	 * @param polyhedralSurface
+	 *            polyhedral surface in meters
+	 * @return polyhedral surface in degrees
+	 * @since 2.2.0
+	 */
 	public static PolyhedralSurface metersToDegrees(
 			PolyhedralSurface polyhedralSurface) {
 		PolyhedralSurface degrees = new PolyhedralSurface(
@@ -1645,6 +1979,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a TIN in meters to a TIN in degrees
+	 * 
+	 * @param tin
+	 *            TIN in meters
+	 * @return TIN in degrees
+	 * @since 2.2.0
+	 */
 	public static TIN metersToDegrees(TIN tin) {
 		TIN degrees = new TIN(tin.hasZ(), tin.hasM());
 		for (Polygon polygon : tin.getPolygons()) {
@@ -1653,6 +1995,14 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Convert a triangle in meters to a triangle in degrees
+	 * 
+	 * @param triangle
+	 *            triangle in meters
+	 * @return triangle in degrees
+	 * @since 2.2.0
+	 */
 	public static Triangle metersToDegrees(Triangle triangle) {
 		Triangle degrees = new Triangle(triangle.hasZ(), triangle.hasM());
 		for (LineString ring : degrees.getRings()) {
@@ -1661,6 +2011,18 @@ public class GeometryUtils {
 		return degrees;
 	}
 
+	/**
+	 * Crop the geometry in meters by the envelope bounds in meters. Cropping
+	 * creates new points on the line intersections between the geometry and
+	 * envelope.
+	 * 
+	 * @param geometry
+	 *            geometry in meters
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped geometry in meters or null
+	 * @since 2.2.0
+	 */
 	public static Geometry crop(Geometry geometry, GeometryEnvelope envelope) {
 
 		Geometry crop = null;
@@ -1728,6 +2090,16 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the point by the envelope bounds.
+	 * 
+	 * @param point
+	 *            point
+	 * @param envelope
+	 *            envelope
+	 * @return cropped point or null
+	 * @since 2.2.0
+	 */
 	public static Point crop(Point point, GeometryEnvelope envelope) {
 		Point crop = null;
 		if (envelope.contains(point)) {
@@ -1736,84 +2108,89 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the list of consecutive points in meters by the envelope bounds in
+	 * meters. Cropping creates new points on the line intersections between the
+	 * geometry and envelope.
+	 * 
+	 * @param points
+	 *            consecutive points
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped points in meters or null
+	 * @since 2.2.0
+	 */
 	public static List<Point> crop(List<Point> points,
 			GeometryEnvelope envelope) {
 
 		List<Point> crop = new ArrayList<>();
 
-		Line west = new Line(new Point(envelope.getMinX(), envelope.getMaxY()),
-				new Point(envelope.getMinX(), envelope.getMinY()));
-
-		Line south = new Line(new Point(envelope.getMinX(), envelope.getMinY()),
-				new Point(envelope.getMaxX(), envelope.getMinY()));
-
-		Line east = new Line(new Point(envelope.getMaxX(), envelope.getMinY()),
-				new Point(envelope.getMaxX(), envelope.getMaxY()));
-
-		Line north = new Line(new Point(envelope.getMaxX(), envelope.getMaxY()),
-				new Point(envelope.getMinX(), envelope.getMaxY()));
+		Line left = envelope.getLeft();
+		Line bottom = envelope.getBottom();
+		Line right = envelope.getRight();
+		Line top = envelope.getTop();
 
 		Point previousPoint = null;
 		boolean previousContains = false;
 		for (Point point : points) {
 			boolean contains = envelope.contains(point);
-			// TODO
-			// contains = point.getY() >= envelope.getMinY()
-			// && point.getY() <= envelope.getMaxY();
 
 			if (previousPoint != null && (!contains || !previousContains)) {
 
 				Line line = new Line(previousPoint, point);
 				double bearing = bearing(metersToDegrees(line));
 
+				boolean westBearing = isWestBearing(bearing);
+				boolean eastBearing = isEastBearing(bearing);
+				boolean southBearing = isSouthBearing(bearing);
+				boolean northBearing = isNorthBearing(bearing);
+
 				Line vertLine = null;
-
-				boolean westBearing = bearing > 180.0 && bearing < 360.0;
-				boolean eastBearing = bearing > 0.0 && bearing < 180.0;
-
 				if (point.getX() > envelope.getMaxX()) {
 					if (eastBearing) {
-						vertLine = east;
+						vertLine = right;
 					}
 				} else if (point.getX() < envelope.getMinX()) {
 					if (westBearing) {
-						vertLine = west;
+						vertLine = left;
 					}
 				} else if (eastBearing) {
-					vertLine = west;
+					vertLine = left;
 				} else if (westBearing) {
-					vertLine = east;
+					vertLine = right;
 				}
-				// TODO
-				// vertLine = null;
 
 				Line horizLine = null;
-
-				boolean southBearing = bearing > 90.0 && bearing < 270.0;
-				boolean northBearing = bearing < 90.0 || bearing > 270.0;
-
 				if (point.getY() > envelope.getMaxY()) {
 					if (northBearing) {
-						horizLine = north;
+						horizLine = top;
 					}
 				} else if (point.getY() < envelope.getMinY()) {
 					if (southBearing) {
-						horizLine = south;
+						horizLine = bottom;
 					}
 				} else if (northBearing) {
-					horizLine = south;
+					horizLine = bottom;
 				} else if (southBearing) {
-					horizLine = north;
+					horizLine = top;
 				}
 
 				Point vertIntersection = null;
 				if (vertLine != null) {
 					vertIntersection = intersection(line, vertLine);
+					if (vertIntersection != null
+							&& !envelope.contains(vertIntersection)) {
+						vertIntersection = null;
+					}
 				}
 
 				Point horizIntersection = null;
 				if (horizLine != null) {
 					horizIntersection = intersection(line, horizLine);
+					if (horizIntersection != null
+							&& !envelope.contains(horizIntersection)) {
+						horizIntersection = null;
+					}
 				}
 
 				Point intersection1 = null;
@@ -1859,38 +2236,45 @@ public class GeometryUtils {
 
 		if (crop.isEmpty()) {
 			crop = null;
-		} else {
+		} else if (crop.size() > 1) {
 
 			if (points.get(0).equals(points.get(points.size() - 1))
 					&& !crop.get(0).equals(crop.get(crop.size() - 1))) {
 				crop.add(new Point(crop.get(0)));
 			}
 
-			List<Point> simplified = new ArrayList<>();
-			simplified.add(crop.get(0));
-			for (int i = 1; i < crop.size() - 1; i++) {
-				Point previous = simplified.get(simplified.size() - 1);
-				Point point = crop.get(i);
-				Point next = crop.get(i + 1);
-				if (!pointOnPath(point, previous, next)) {
-					simplified.add(point);
+			if (crop.size() > 2) {
+
+				List<Point> simplified = new ArrayList<>();
+				simplified.add(crop.get(0));
+				for (int i = 1; i < crop.size() - 1; i++) {
+					Point previous = simplified.get(simplified.size() - 1);
+					Point point = crop.get(i);
+					Point next = crop.get(i + 1);
+					if (!pointOnPath(point, previous, next)) {
+						simplified.add(point);
+					}
 				}
+				simplified.add(crop.get(crop.size() - 1));
+				crop = simplified;
+
 			}
-			simplified.add(crop.get(crop.size() - 1));
-			crop = simplified;
+
 		}
+
 		return crop;
 	}
 
-	public static boolean isEqual(Point point1, Point point2) {
-		return isEqual(point1, point2, DEFAULT_EQUAL_EPSILON);
-	}
-
-	public static boolean isEqual(Point point1, Point point2, double delta) {
-		return Math.abs(point1.getX() - point2.getX()) <= delta
-				&& Math.abs(point1.getY() - point2.getY()) <= delta;
-	}
-
+	/**
+	 * Crop the multi point by the envelope bounds.
+	 * 
+	 * @param multiPoint
+	 *            multi point
+	 * @param envelope
+	 *            envelope
+	 * @return cropped multi point or null
+	 * @since 2.2.0
+	 */
 	public static MultiPoint crop(MultiPoint multiPoint,
 			GeometryEnvelope envelope) {
 		MultiPoint crop = null;
@@ -1908,6 +2292,18 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the line string in meters by the envelope bounds in meters. Cropping
+	 * creates new points on the line intersections between the line string and
+	 * envelope.
+	 * 
+	 * @param lineString
+	 *            line string in meters
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped line string in meters or null
+	 * @since 2.2.0
+	 */
 	public static LineString crop(LineString lineString,
 			GeometryEnvelope envelope) {
 		LineString crop = null;
@@ -1919,6 +2315,18 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the line in meters by the envelope bounds in meters. Cropping
+	 * creates new points on the line intersections between the line and
+	 * envelope.
+	 * 
+	 * @param line
+	 *            line in meters
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped line in meters or null
+	 * @since 2.2.0
+	 */
 	public static Line crop(Line line, GeometryEnvelope envelope) {
 		Line crop = null;
 		List<Point> cropPoints = crop(line.getPoints(), envelope);
@@ -1929,6 +2337,18 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the multi line string in meters by the envelope bounds in meters.
+	 * Cropping creates new points on the line intersections between the multi
+	 * line string and envelope.
+	 * 
+	 * @param multiLineString
+	 *            multi line string in meters
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped multi line string in meters or null
+	 * @since 2.2.0
+	 */
 	public static MultiLineString crop(MultiLineString multiLineString,
 			GeometryEnvelope envelope) {
 		MultiLineString crop = null;
@@ -1947,6 +2367,18 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the polygon in meters by the envelope bounds in meters. Cropping
+	 * creates new points on the line intersections between the polygon and
+	 * envelope.
+	 * 
+	 * @param polygon
+	 *            polygon in meters
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped polygon in meters or null
+	 * @since 2.2.0
+	 */
 	public static Polygon crop(Polygon polygon, GeometryEnvelope envelope) {
 		Polygon crop = null;
 		List<LineString> cropRings = new ArrayList<>();
@@ -1969,6 +2401,18 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the multi polygon in meters by the envelope bounds in meters.
+	 * Cropping creates new points on the line intersections between the multi
+	 * polygon and envelope.
+	 * 
+	 * @param multiPolygon
+	 *            multi polygon in meters
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped multi polygon in meters or null
+	 * @since 2.2.0
+	 */
 	public static MultiPolygon crop(MultiPolygon multiPolygon,
 			GeometryEnvelope envelope) {
 		MultiPolygon crop = null;
@@ -1986,6 +2430,18 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the circular string in meters by the envelope bounds in meters.
+	 * Cropping creates new points on the line intersections between the
+	 * circular string and envelope.
+	 * 
+	 * @param circularString
+	 *            circular string in meters
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped circular string in meters or null
+	 * @since 2.2.0
+	 */
 	public static CircularString crop(CircularString circularString,
 			GeometryEnvelope envelope) {
 		CircularString crop = null;
@@ -1998,6 +2454,18 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the compound curve in meters by the envelope bounds in meters.
+	 * Cropping creates new points on the line intersections between the
+	 * compound curve and envelope.
+	 * 
+	 * @param compoundCurve
+	 *            compound curve in meters
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped compound curve in meters or null
+	 * @since 2.2.0
+	 */
 	public static CompoundCurve crop(CompoundCurve compoundCurve,
 			GeometryEnvelope envelope) {
 		CompoundCurve crop = null;
@@ -2016,6 +2484,18 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the curve polygon in meters by the envelope bounds in meters.
+	 * Cropping creates new points on the line intersections between the curve
+	 * polygon and envelope.
+	 * 
+	 * @param curvePolygon
+	 *            curve polygon in meters
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped curve polygon in meters or null
+	 * @since 2.2.0
+	 */
 	public static CurvePolygon<Curve> crop(CurvePolygon<Curve> curvePolygon,
 			GeometryEnvelope envelope) {
 		CurvePolygon<Curve> crop = null;
@@ -2033,6 +2513,18 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the polyhedral surface in meters by the envelope bounds in meters.
+	 * Cropping creates new points on the line intersections between the
+	 * polyhedral surface and envelope.
+	 * 
+	 * @param polyhedralSurface
+	 *            polyhedral surface in meters
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped polyhedral surface in meters or null
+	 * @since 2.2.0
+	 */
 	public static PolyhedralSurface crop(PolyhedralSurface polyhedralSurface,
 			GeometryEnvelope envelope) {
 		PolyhedralSurface crop = null;
@@ -2051,6 +2543,17 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the TIN in meters by the envelope bounds in meters. Cropping creates
+	 * new points on the line intersections between the TIN and envelope.
+	 * 
+	 * @param tin
+	 *            TIN in meters
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped TIN in meters or null
+	 * @since 2.2.0
+	 */
 	public static TIN crop(TIN tin, GeometryEnvelope envelope) {
 		TIN crop = null;
 		List<Polygon> cropPolygons = new ArrayList<>();
@@ -2067,6 +2570,18 @@ public class GeometryUtils {
 		return crop;
 	}
 
+	/**
+	 * Crop the triangle in meters by the envelope bounds in meters. Cropping
+	 * creates new points on the line intersections between the triangle and
+	 * envelope.
+	 * 
+	 * @param triangle
+	 *            triangle in meters
+	 * @param envelope
+	 *            envelope in meters
+	 * @return cropped triangle in meters or null
+	 * @since 2.2.0
+	 */
 	public static Triangle crop(Triangle triangle, GeometryEnvelope envelope) {
 		Triangle crop = null;
 		List<LineString> cropRings = new ArrayList<>();
@@ -2087,6 +2602,51 @@ public class GeometryUtils {
 			crop.setRings(cropRings);
 		}
 		return crop;
+	}
+
+	/**
+	 * Determine if the points are equal within the default tolerance of
+	 * {@link GeometryConstants#DEFAULT_EQUAL_EPSILON}. For exact equality, use
+	 * {@link Point#equals(Object)}.
+	 * 
+	 * @param point1
+	 *            point 1
+	 * @param point2
+	 *            point 2
+	 * @return true if equal
+	 * @since 2.2.0
+	 */
+	public static boolean isEqual(Point point1, Point point2) {
+		return isEqual(point1, point2, GeometryConstants.DEFAULT_EQUAL_EPSILON);
+	}
+
+	/**
+	 * Determine if the points are equal within the tolerance. For exact
+	 * equality, use {@link Point#equals(Object)}.
+	 * 
+	 * @param point1
+	 *            point 1
+	 * @param point2
+	 *            point 2
+	 * @param epsilon
+	 *            epsilon equality tolerance
+	 * @return true if equal
+	 * @since 2.2.0
+	 */
+	public static boolean isEqual(Point point1, Point point2, double epsilon) {
+		boolean equal = Math.abs(point1.getX() - point2.getX()) <= epsilon
+				&& Math.abs(point1.getY() - point2.getY()) <= epsilon
+				&& point1.hasZ() == point2.hasZ()
+				&& point1.hasM() == point2.hasM();
+		if (equal) {
+			if (point1.hasZ()) {
+				equal = Math.abs(point1.getZ() - point2.getZ()) <= epsilon;
+			}
+			if (equal && point1.hasM()) {
+				equal = Math.abs(point1.getM() - point2.getM()) <= epsilon;
+			}
+		}
+		return equal;
 	}
 
 	/**

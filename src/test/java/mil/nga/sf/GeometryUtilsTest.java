@@ -12,6 +12,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import junit.framework.TestCase;
+import mil.nga.sf.util.GeometryConstants;
 import mil.nga.sf.util.GeometryUtils;
 
 /**
@@ -33,6 +34,12 @@ public class GeometryUtilsTest {
 
 	}
 
+	/**
+	 * Test point centroid
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testPointCentroid() throws IOException {
 
@@ -47,6 +54,12 @@ public class GeometryUtilsTest {
 
 	}
 
+	/**
+	 * Test line string centroid
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testLineStringCentroid() throws IOException {
 
@@ -61,6 +74,12 @@ public class GeometryUtilsTest {
 
 	}
 
+	/**
+	 * Test polygon centroid
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testPolygonCentroid() throws IOException {
 
@@ -74,6 +93,12 @@ public class GeometryUtilsTest {
 
 	}
 
+	/**
+	 * Test multi point centroid
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testMultiPointCentroid() throws IOException {
 
@@ -88,6 +113,12 @@ public class GeometryUtilsTest {
 
 	}
 
+	/**
+	 * Test multi line string centroid
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testMultiLineStringCentroid() throws IOException {
 
@@ -103,6 +134,12 @@ public class GeometryUtilsTest {
 
 	}
 
+	/**
+	 * Test multi polygon centroid
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testMultiPolygonCentroid() throws IOException {
 
@@ -116,6 +153,12 @@ public class GeometryUtilsTest {
 
 	}
 
+	/**
+	 * Test geometry collection centroid
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testGeometryCollectionCentroid() throws IOException {
 
@@ -131,6 +174,12 @@ public class GeometryUtilsTest {
 
 	}
 
+	/**
+	 * Test polygon centroid with and without hole
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testPolygonCentroidWithAndWithoutHole() throws IOException {
 
@@ -169,6 +218,7 @@ public class GeometryUtilsTest {
 	 * 
 	 * @param geometry
 	 * @throws IOException
+	 *             upon error
 	 */
 	private Point geometryCentroidTester(Geometry geometry) throws IOException {
 
@@ -199,6 +249,11 @@ public class GeometryUtilsTest {
 		return point;
 	}
 
+	/**
+	 * Create a polygon
+	 * 
+	 * @return polygon
+	 */
 	private static Polygon createPolygon() {
 
 		Polygon polygon = new Polygon();
@@ -219,6 +274,19 @@ public class GeometryUtilsTest {
 		return polygon;
 	}
 
+	/**
+	 * Create a point
+	 * 
+	 * @param minX
+	 *            min x
+	 * @param minY
+	 *            min y
+	 * @param xRange
+	 *            x range
+	 * @param yRange
+	 *            y range
+	 * @return point
+	 */
 	private static Point createPoint(double minX, double minY, double xRange,
 			double yRange) {
 
@@ -230,6 +298,11 @@ public class GeometryUtilsTest {
 		return point;
 	}
 
+	/**
+	 * Create a multi polygon
+	 * 
+	 * @return multi polygon
+	 */
 	private static MultiPolygon createMultiPolygon() {
 
 		MultiPolygon multiPolygon = new MultiPolygon();
@@ -243,6 +316,15 @@ public class GeometryUtilsTest {
 		return multiPolygon;
 	}
 
+	/**
+	 * Create a geometry collection
+	 * 
+	 * @param hasZ
+	 *            has z
+	 * @param hasM
+	 *            has m
+	 * @return geometry collection
+	 */
 	private static GeometryCollection<Geometry> createGeometryCollection(
 			boolean hasZ, boolean hasM) {
 
@@ -283,6 +365,9 @@ public class GeometryUtilsTest {
 		return geometryCollection;
 	}
 
+	/**
+	 * Test copy minimize and normalize
+	 */
 	@Test
 	public void testCopyMinimizeAndNormalize() {
 
@@ -303,10 +388,10 @@ public class GeometryUtilsTest {
 		polygon.addRing(ring);
 
 		Polygon polygon2 = (Polygon) polygon.copy();
-		GeometryUtils.minimizeGeometry(polygon2, 180.0);
+		GeometryUtils.minimizeWGS84Geometry(polygon2);
 
 		Polygon polygon3 = (Polygon) polygon2.copy();
-		GeometryUtils.normalizeGeometry(polygon3, 180.0);
+		GeometryUtils.normalizeWGS84Geometry(polygon3);
 
 		List<Point> points = ring.getPoints();
 		LineString ring2 = polygon2.getRings().get(0);
@@ -338,10 +423,13 @@ public class GeometryUtilsTest {
 
 	}
 
+	/**
+	 * Test simplify points
+	 */
 	@Test
 	public void testSimplifyPoints() {
 
-		final double halfWorldWidth = GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH;
+		final double halfWorldWidth = GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH;
 
 		List<Point> points = new ArrayList<>();
 		List<Double> distances = new ArrayList<>();
@@ -411,6 +499,9 @@ public class GeometryUtilsTest {
 
 	}
 
+	/**
+	 * Test point in polygon
+	 */
 	@Test
 	public void testPointInPolygon() {
 
@@ -497,6 +588,9 @@ public class GeometryUtilsTest {
 
 	}
 
+	/**
+	 * Test closed polygon
+	 */
 	@Test
 	public void testClosedPolygon() {
 
@@ -513,6 +607,9 @@ public class GeometryUtilsTest {
 		TestCase.assertTrue(GeometryUtils.closedPolygon(points));
 	}
 
+	/**
+	 * Test point on line
+	 */
 	@Test
 	public void testPointOnLine() {
 
@@ -586,20 +683,20 @@ public class GeometryUtilsTest {
 		assertEquals(40.745756618323014, point.getY(), 0.0);
 
 		line1 = new Line(
-				new Point(-GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
-						GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH / 2),
-				new Point(-GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH / 2,
-						GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH));
+				new Point(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+						GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH / 2),
+				new Point(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH / 2,
+						GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH));
 		line2 = new Line(
-				new Point(-GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
-						GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH),
-				new Point(-GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH / 2,
-						GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH / 2));
+				new Point(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+						GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH),
+				new Point(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH / 2,
+						GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH / 2));
 
 		point = GeometryUtils.intersection(line1, line2);
-		assertEquals(0.75 * -GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
+		assertEquals(0.75 * -GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
 				point.getX(), 0.00000001);
-		assertEquals(0.75 * GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
+		assertEquals(0.75 * GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
 				point.getY(), 0.00000001);
 
 		point = GeometryUtils.metersToDegrees(point);
@@ -876,10 +973,10 @@ public class GeometryUtilsTest {
 	}
 
 	/**
-	 * Test crop
+	 * Test crop over the international date line
 	 */
 	@Test
-	public void testCrop2() {
+	public void testCropIDL() {
 
 		Polygon polygon = new Polygon();
 		LineString ring = new LineString();
@@ -891,14 +988,15 @@ public class GeometryUtilsTest {
 		polygon.addRing(ring);
 
 		GeometryEnvelope envelope = new GeometryEnvelope(
-				-GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
-				-GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
-				GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH,
-				GeometryUtils.WEB_MERCATOR_HALF_WORLD_WIDTH);
+				-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH);
 
 		Polygon meters = GeometryUtils.degreesToMeters(polygon);
 		Polygon crop = GeometryUtils.crop(meters, envelope);
 		Polygon degrees = GeometryUtils.metersToDegrees(crop);
+		GeometryUtils.minimizeWGS84Geometry(degrees);
 
 		LineString cropRing = degrees.getRing(0);
 		assertEquals(5, cropRing.numPoints());
@@ -908,17 +1006,57 @@ public class GeometryUtilsTest {
 		assertEquals(67.0, cropRing.getPoint(0).getY(), 0.00000000001);
 
 		assertEquals(-168.967, cropRing.getPoint(1).getX(), 0.0);
-		assertEquals(85.05112877980659, cropRing.getPoint(1).getY(), 0.0);
+		assertEquals(GeometryConstants.WEB_MERCATOR_MAX_LAT_RANGE,
+				cropRing.getPoint(1).getY(), 0.00000000001);
 
-		// assertEquals(-180.0000000001, cropRing.getPoint(2).getX(),
-		// 0.00000000001);
-		assertEquals(85.05112877980659, cropRing.getPoint(2).getY(), 0.0);
+		assertEquals(-180.0000000001, cropRing.getPoint(2).getX(),
+				0.00000000001);
+		assertEquals(GeometryConstants.WEB_MERCATOR_MAX_LAT_RANGE,
+				cropRing.getPoint(2).getY(), 0.00000000001);
 
-		// assertEquals(-180.0000000001, cropRing.getPoint(3).getX(), 0.0);
+		assertEquals(-180.0000000001, cropRing.getPoint(3).getX(), 0.0);
 		assertEquals(67.0, cropRing.getPoint(3).getY(), 0.00000000001);
 
 		assertEquals(-168.967, cropRing.getPoint(4).getX(), 0.0);
 		assertEquals(67.0, cropRing.getPoint(4).getY(), 0.00000000001);
+
+		polygon = new Polygon();
+		ring = new LineString();
+		ring.addPoint(new Point(-18809320.400867056, 10156058.722522344));
+		ring.addPoint(new Point(-18809320.400867056, 238107693.26496765));
+		ring.addPoint(new Point(-20037508.342800375, 238107693.26496765));
+		ring.addPoint(new Point(-20037508.342800375, 10156058.722522344));
+		ring.addPoint(new Point(-18809320.400867056, 10156058.722522344));
+		polygon.addRing(ring);
+
+		envelope.setMinX(-20037508.342800375);
+
+		crop = GeometryUtils.crop(polygon, envelope);
+
+		cropRing = crop.getRing(0);
+		assertEquals(5, cropRing.numPoints());
+		assertTrue(cropRing.isClosed());
+
+		assertEquals(-18809320.400867056, cropRing.getPoint(0).getX(), 0.0);
+		assertEquals(10156058.722522344, cropRing.getPoint(0).getY(),
+				0.00000000001);
+
+		assertEquals(-18809320.400867056, cropRing.getPoint(1).getX(), 0.0);
+		assertEquals(GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				cropRing.getPoint(1).getY(), 0.00000001);
+
+		assertEquals(-20037508.342800375, cropRing.getPoint(2).getX(),
+				0.00000000001);
+		assertEquals(GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				cropRing.getPoint(2).getY(), 0.00000001);
+
+		assertEquals(-20037508.342800375, cropRing.getPoint(3).getX(), 0.0);
+		assertEquals(10156058.722522344, cropRing.getPoint(3).getY(),
+				0.00000000001);
+
+		assertEquals(-18809320.400867056, cropRing.getPoint(4).getX(), 0.0);
+		assertEquals(10156058.722522344, cropRing.getPoint(4).getY(),
+				0.00000000001);
 
 	}
 

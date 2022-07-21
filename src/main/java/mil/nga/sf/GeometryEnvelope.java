@@ -465,6 +465,86 @@ public class GeometryEnvelope implements Serializable {
 	}
 
 	/**
+	 * Get the top left point
+	 * 
+	 * @return top left point
+	 * @since 2.2.0
+	 */
+	public Point getTopLeft() {
+		return new Point(minX, maxY);
+	}
+
+	/**
+	 * Get the bottom left point
+	 * 
+	 * @return bottom left point
+	 * @since 2.2.0
+	 */
+	public Point getBottomLeft() {
+		return new Point(minX, minY);
+	}
+
+	/**
+	 * Get the bottom right point
+	 * 
+	 * @return bottom right point
+	 * @since 2.2.0
+	 */
+	public Point getBottomRight() {
+		return new Point(maxX, minY);
+	}
+
+	/**
+	 * Get the top right point
+	 * 
+	 * @return top right point
+	 * @since 2.2.0
+	 */
+	public Point getTopRight() {
+		return new Point(maxX, maxY);
+	}
+
+	/**
+	 * Get the left line
+	 * 
+	 * @return left line
+	 * @since 2.2.0
+	 */
+	public Line getLeft() {
+		return new Line(getTopLeft(), getBottomLeft());
+	}
+
+	/**
+	 * Get the bottom line
+	 * 
+	 * @return bottom line
+	 * @since 2.2.0
+	 */
+	public Line getBottom() {
+		return new Line(getBottomLeft(), getBottomRight());
+	}
+
+	/**
+	 * Get the right line
+	 * 
+	 * @return right line
+	 * @since 2.2.0
+	 */
+	public Line getRight() {
+		return new Line(getBottomRight(), getTopRight());
+	}
+
+	/**
+	 * Get the top line
+	 * 
+	 * @return top line
+	 * @since 2.2.0
+	 */
+	public Line getTop() {
+		return new Line(getTopRight(), getTopLeft());
+	}
+
+	/**
 	 * Get the envelope mid x
 	 * 
 	 * @return mid x
