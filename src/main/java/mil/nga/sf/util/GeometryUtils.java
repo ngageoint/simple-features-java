@@ -293,9 +293,8 @@ public class GeometryUtils {
 	 *            geometry
 	 * @since 2.2.0
 	 */
-	public static void minimizeWGS84Geometry(Geometry geometry) {
-		minimizeGeometry(geometry,
-				GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH);
+	public static void minimizeWGS84(Geometry geometry) {
+		minimize(geometry, GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH);
 	}
 
 	/**
@@ -307,9 +306,8 @@ public class GeometryUtils {
 	 *            geometry
 	 * @since 2.2.0
 	 */
-	public static void minimizeWebMercatorGeometry(Geometry geometry) {
-		minimizeGeometry(geometry,
-				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH);
+	public static void minimizeWebMercator(Geometry geometry) {
+		minimize(geometry, GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH);
 	}
 
 	/**
@@ -332,6 +330,30 @@ public class GeometryUtils {
 	 *            max positive x value in the geometry projection
 	 */
 	public static void minimizeGeometry(Geometry geometry, double maxX) {
+		minimize(geometry, maxX);
+	}
+
+	/**
+	 * Minimize the geometry using the shortest x distance between each
+	 * connected set of points. The resulting geometry point x values will be in
+	 * the range: (3 * min value &lt;= x &lt;= 3 * max value
+	 *
+	 * Example: For WGS84 provide a max x of
+	 * {@link GeometryConstants#WGS84_HALF_WORLD_LON_WIDTH}. Resulting x values
+	 * will be in the range: -540.0 &lt;= x &lt;= 540.0
+	 *
+	 * Example: For web mercator provide a world width of
+	 * {@link GeometryConstants#WEB_MERCATOR_HALF_WORLD_WIDTH}. Resulting x
+	 * values will be in the range: -60112525.028367732 &lt;= x &lt;=
+	 * 60112525.028367732
+	 *
+	 * @param geometry
+	 *            geometry
+	 * @param maxX
+	 *            max positive x value in the geometry projection
+	 * @since 2.2.0
+	 */
+	public static void minimize(Geometry geometry, double maxX) {
 
 		GeometryType geometryType = geometry.getGeometryType();
 		switch (geometryType) {
@@ -373,7 +395,7 @@ public class GeometryUtils {
 			@SuppressWarnings("unchecked")
 			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
 			for (Geometry subGeometry : geomCollection.getGeometries()) {
-				minimizeGeometry(subGeometry, maxX);
+				minimize(subGeometry, maxX);
 			}
 			break;
 		default:
@@ -486,7 +508,7 @@ public class GeometryUtils {
 			double maxX) {
 
 		for (Curve ring : curvePolygon.getRings()) {
-			minimizeGeometry(ring, maxX);
+			minimize(ring, maxX);
 		}
 	}
 
@@ -515,9 +537,8 @@ public class GeometryUtils {
 	 *            geometry
 	 * @since 2.2.0
 	 */
-	public static void normalizeWGS84Geometry(Geometry geometry) {
-		normalizeGeometry(geometry,
-				GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH);
+	public static void normalizeWGS84(Geometry geometry) {
+		normalize(geometry, GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH);
 	}
 
 	/**
@@ -529,9 +550,8 @@ public class GeometryUtils {
 	 *            geometry
 	 * @since 2.2.0
 	 */
-	public static void normalizeWebMercatorGeometry(Geometry geometry) {
-		normalizeGeometry(geometry,
-				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH);
+	public static void normalizeWebMercator(Geometry geometry) {
+		normalize(geometry, GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH);
 	}
 
 	/**
@@ -553,6 +573,29 @@ public class GeometryUtils {
 	 *            max positive x value in the geometry projection
 	 */
 	public static void normalizeGeometry(Geometry geometry, double maxX) {
+		normalize(geometry, maxX);
+	}
+
+	/**
+	 * Normalize the geometry so all points outside of the min and max value
+	 * range are adjusted to fall within the range.
+	 *
+	 * Example: For WGS84 provide a max x of
+	 * {@link GeometryConstants#WGS84_HALF_WORLD_LON_WIDTH}. Resulting x values
+	 * will be in the range: -180.0 &lt;= x &lt;= 180.0
+	 *
+	 * Example: For web mercator provide a world width of
+	 * {@link GeometryConstants#WEB_MERCATOR_HALF_WORLD_WIDTH}. Resulting x
+	 * values will be in the range: -20037508.342789244 &lt;= x &lt;=
+	 * 20037508.342789244
+	 *
+	 * @param geometry
+	 *            geometry
+	 * @param maxX
+	 *            max positive x value in the geometry projection
+	 * @since 2.2.0
+	 */
+	public static void normalize(Geometry geometry, double maxX) {
 
 		GeometryType geometryType = geometry.getGeometryType();
 		switch (geometryType) {
@@ -600,7 +643,7 @@ public class GeometryUtils {
 			@SuppressWarnings("unchecked")
 			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
 			for (Geometry subGeometry : geomCollection.getGeometries()) {
-				normalizeGeometry(subGeometry, maxX);
+				normalize(subGeometry, maxX);
 			}
 			break;
 		default:
@@ -745,7 +788,7 @@ public class GeometryUtils {
 			double maxX) {
 
 		for (Curve ring : curvePolygon.getRings()) {
-			normalizeGeometry(ring, maxX);
+			normalize(ring, maxX);
 		}
 	}
 
@@ -2012,9 +2055,80 @@ public class GeometryUtils {
 	}
 
 	/**
+	 * Get a WGS84 bounded geometry envelope
+	 * 
+	 * @return geometry envelope
+	 * @since 2.2.0
+	 */
+	public static GeometryEnvelope wgs84Envelope() {
+		return new GeometryEnvelope(
+				-GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				-GeometryConstants.WGS84_HALF_WORLD_LAT_HEIGHT,
+				GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				GeometryConstants.WGS84_HALF_WORLD_LAT_HEIGHT);
+	}
+
+	/**
+	 * Get a WGS84 bounded geometry envelope used for projection transformations
+	 * (degrees to meters)
+	 * 
+	 * @return geometry envelope
+	 * @since 2.2.0
+	 */
+	public static GeometryEnvelope wgs84TransformableEnvelope() {
+		return new GeometryEnvelope(
+				-GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				GeometryConstants.DEGREES_TO_METERS_MIN_LAT,
+				GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				GeometryConstants.WGS84_HALF_WORLD_LAT_HEIGHT);
+	}
+
+	/**
+	 * Get a Web Mercator bounded geometry envelope
+	 * 
+	 * @return geometry envelope
+	 * @since 2.2.0
+	 */
+	public static GeometryEnvelope webMercatorEnvelope() {
+		return new GeometryEnvelope(
+				-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH);
+	}
+
+	/**
+	 * Get a WGS84 geometry envelope with Web Mercator bounds
+	 * 
+	 * @return geometry envelope
+	 * @since 2.2.0
+	 */
+	public static GeometryEnvelope wgs84EnvelopeWithWebMercator() {
+		return new GeometryEnvelope(
+				-GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				GeometryConstants.WEB_MERCATOR_MIN_LAT_RANGE,
+				GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				GeometryConstants.WEB_MERCATOR_MAX_LAT_RANGE);
+	}
+
+	/**
+	 * Crop the geometry in meters by web mercator world bounds. Cropping
+	 * removes points outside the envelope and creates new points on the line
+	 * intersections with the envelope.
+	 * 
+	 * @param geometry
+	 *            geometry in meters
+	 * @return cropped geometry in meters or null
+	 * @since 2.2.0
+	 */
+	public static Geometry cropWebMercator(Geometry geometry) {
+		return crop(geometry, webMercatorEnvelope());
+	}
+
+	/**
 	 * Crop the geometry in meters by the envelope bounds in meters. Cropping
-	 * creates new points on the line intersections between the geometry and
-	 * envelope.
+	 * removes points outside the envelope and creates new points on the line
+	 * intersections with the envelope.
 	 * 
 	 * @param geometry
 	 *            geometry in meters
@@ -2110,8 +2224,8 @@ public class GeometryUtils {
 
 	/**
 	 * Crop the list of consecutive points in meters by the envelope bounds in
-	 * meters. Cropping creates new points on the line intersections between the
-	 * geometry and envelope.
+	 * meters. Cropping removes points outside the envelope and creates new
+	 * points on the line intersections with the envelope.
 	 * 
 	 * @param points
 	 *            consecutive points
@@ -2294,8 +2408,8 @@ public class GeometryUtils {
 
 	/**
 	 * Crop the line string in meters by the envelope bounds in meters. Cropping
-	 * creates new points on the line intersections between the line string and
-	 * envelope.
+	 * removes points outside the envelope and creates new points on the line
+	 * intersections with the envelope.
 	 * 
 	 * @param lineString
 	 *            line string in meters
@@ -2317,8 +2431,8 @@ public class GeometryUtils {
 
 	/**
 	 * Crop the line in meters by the envelope bounds in meters. Cropping
-	 * creates new points on the line intersections between the line and
-	 * envelope.
+	 * removes points outside the envelope and creates new points on the line
+	 * intersections with the envelope.
 	 * 
 	 * @param line
 	 *            line in meters
@@ -2339,8 +2453,8 @@ public class GeometryUtils {
 
 	/**
 	 * Crop the multi line string in meters by the envelope bounds in meters.
-	 * Cropping creates new points on the line intersections between the multi
-	 * line string and envelope.
+	 * Cropping removes points outside the envelope and creates new points on
+	 * the line intersections with the envelope.
 	 * 
 	 * @param multiLineString
 	 *            multi line string in meters
@@ -2369,8 +2483,8 @@ public class GeometryUtils {
 
 	/**
 	 * Crop the polygon in meters by the envelope bounds in meters. Cropping
-	 * creates new points on the line intersections between the polygon and
-	 * envelope.
+	 * removes points outside the envelope and creates new points on the line
+	 * intersections with the envelope.
 	 * 
 	 * @param polygon
 	 *            polygon in meters
@@ -2403,8 +2517,8 @@ public class GeometryUtils {
 
 	/**
 	 * Crop the multi polygon in meters by the envelope bounds in meters.
-	 * Cropping creates new points on the line intersections between the multi
-	 * polygon and envelope.
+	 * Cropping removes points outside the envelope and creates new points on
+	 * the line intersections with the envelope.
 	 * 
 	 * @param multiPolygon
 	 *            multi polygon in meters
@@ -2432,8 +2546,8 @@ public class GeometryUtils {
 
 	/**
 	 * Crop the circular string in meters by the envelope bounds in meters.
-	 * Cropping creates new points on the line intersections between the
-	 * circular string and envelope.
+	 * Cropping removes points outside the envelope and creates new points on
+	 * the line intersections with the envelope.
 	 * 
 	 * @param circularString
 	 *            circular string in meters
@@ -2456,8 +2570,8 @@ public class GeometryUtils {
 
 	/**
 	 * Crop the compound curve in meters by the envelope bounds in meters.
-	 * Cropping creates new points on the line intersections between the
-	 * compound curve and envelope.
+	 * Cropping removes points outside the envelope and creates new points on
+	 * the line intersections with the envelope.
 	 * 
 	 * @param compoundCurve
 	 *            compound curve in meters
@@ -2486,8 +2600,8 @@ public class GeometryUtils {
 
 	/**
 	 * Crop the curve polygon in meters by the envelope bounds in meters.
-	 * Cropping creates new points on the line intersections between the curve
-	 * polygon and envelope.
+	 * Cropping removes points outside the envelope and creates new points on
+	 * the line intersections with the envelope.
 	 * 
 	 * @param curvePolygon
 	 *            curve polygon in meters
@@ -2515,8 +2629,8 @@ public class GeometryUtils {
 
 	/**
 	 * Crop the polyhedral surface in meters by the envelope bounds in meters.
-	 * Cropping creates new points on the line intersections between the
-	 * polyhedral surface and envelope.
+	 * Cropping removes points outside the envelope and creates new points on
+	 * the line intersections with the envelope.
 	 * 
 	 * @param polyhedralSurface
 	 *            polyhedral surface in meters
@@ -2544,8 +2658,9 @@ public class GeometryUtils {
 	}
 
 	/**
-	 * Crop the TIN in meters by the envelope bounds in meters. Cropping creates
-	 * new points on the line intersections between the TIN and envelope.
+	 * Crop the TIN in meters by the envelope bounds in meters. Cropping removes
+	 * points outside the envelope and creates new points on the line
+	 * intersections with the envelope.
 	 * 
 	 * @param tin
 	 *            TIN in meters
@@ -2572,8 +2687,8 @@ public class GeometryUtils {
 
 	/**
 	 * Crop the triangle in meters by the envelope bounds in meters. Cropping
-	 * creates new points on the line intersections between the triangle and
-	 * envelope.
+	 * removes points outside the envelope and creates new points on the line
+	 * intersections with the envelope.
 	 * 
 	 * @param triangle
 	 *            triangle in meters
@@ -2682,6 +2797,280 @@ public class GeometryUtils {
 			GeometryEnvelope envelope2) {
 		return envelope1.contains(envelope2,
 				GeometryConstants.DEFAULT_EQUAL_EPSILON);
+	}
+
+	/**
+	 * Bound all points in the geometry to be within WGS84 limits.
+	 * 
+	 * To perform a geometry crop using line intersections, see
+	 * {@link #degreesToMeters(Geometry)} and
+	 * {@link #crop(Geometry, GeometryEnvelope)}.
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @since 2.2.0
+	 */
+	public static void boundWGS84(Geometry geometry) {
+		bound(geometry, wgs84Envelope());
+	}
+
+	/**
+	 * Bound all points in the geometry to be within WGS84 projection
+	 * transformable (degrees to meters) limits.
+	 * 
+	 * To perform a geometry crop using line intersections, see
+	 * {@link #degreesToMeters(Geometry)} and
+	 * {@link #crop(Geometry, GeometryEnvelope)}.
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @since 2.2.0
+	 */
+	public static void boundWGS84Transformable(Geometry geometry) {
+		bound(geometry, wgs84TransformableEnvelope());
+	}
+
+	/**
+	 * Bound all points in the geometry to be within Web Mercator limits.
+	 * 
+	 * To perform a geometry crop using line intersections, see
+	 * {@link #cropWebMercator(Geometry)}.
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @since 2.2.0
+	 */
+	public static void boundWebMercator(Geometry geometry) {
+		bound(geometry, webMercatorEnvelope());
+	}
+
+	/**
+	 * Bound all points in the WGS84 geometry to be within degree Web Mercator
+	 * limits.
+	 * 
+	 * To perform a geometry crop using line intersections, see
+	 * {@link #degreesToMeters(Geometry)} and
+	 * {@link #cropWebMercator(Geometry)}.
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @since 2.2.0
+	 */
+	public static void boundWGS84WithWebMercator(Geometry geometry) {
+		bound(geometry, wgs84EnvelopeWithWebMercator());
+	}
+
+	/**
+	 * Bound all points in the geometry to be within the geometry envelope.
+	 * Point x and y values are bounded by the min and max envelope values.
+	 * 
+	 * To perform a geometry crop using line intersections, see
+	 * {@link #crop(Geometry, GeometryEnvelope)} (requires geometry in meters).
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @param envelope
+	 *            geometry envelope
+	 * @since 2.2.0
+	 */
+	public static void bound(Geometry geometry, GeometryEnvelope envelope) {
+
+		GeometryType geometryType = geometry.getGeometryType();
+		switch (geometryType) {
+		case POINT:
+			bound((Point) geometry, envelope);
+			break;
+		case LINESTRING:
+			bound((LineString) geometry, envelope);
+			break;
+		case POLYGON:
+			bound((Polygon) geometry, envelope);
+			break;
+		case MULTIPOINT:
+			bound((MultiPoint) geometry, envelope);
+			break;
+		case MULTILINESTRING:
+			bound((MultiLineString) geometry, envelope);
+			break;
+		case MULTIPOLYGON:
+			bound((MultiPolygon) geometry, envelope);
+			break;
+		case CIRCULARSTRING:
+			bound((CircularString) geometry, envelope);
+			break;
+		case COMPOUNDCURVE:
+			bound((CompoundCurve) geometry, envelope);
+			break;
+		case CURVEPOLYGON:
+			@SuppressWarnings("unchecked")
+			CurvePolygon<Curve> curvePolygon = (CurvePolygon<Curve>) geometry;
+			bound(curvePolygon, envelope);
+			break;
+		case POLYHEDRALSURFACE:
+			bound((PolyhedralSurface) geometry, envelope);
+			break;
+		case TIN:
+			bound((TIN) geometry, envelope);
+			break;
+		case TRIANGLE:
+			bound((Triangle) geometry, envelope);
+			break;
+		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
+			@SuppressWarnings("unchecked")
+			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
+			for (Geometry subGeometry : geomCollection.getGeometries()) {
+				bound(subGeometry, envelope);
+			}
+			break;
+		default:
+			break;
+
+		}
+
+	}
+
+	/**
+	 * Bound the point by the geometry envelope
+	 * 
+	 * @param point
+	 *            point
+	 * @param envelope
+	 *            geometry envelope
+	 */
+	private static void bound(Point point, GeometryEnvelope envelope) {
+		double x = point.getX();
+		double y = point.getY();
+		if (x < envelope.getMinX()) {
+			point.setX(envelope.getMinX());
+		} else if (x > envelope.getMaxX()) {
+			point.setX(envelope.getMaxX());
+		}
+		if (y < envelope.getMinY()) {
+			point.setY(envelope.getMinY());
+		} else if (y > envelope.getMaxY()) {
+			point.setY(envelope.getMaxY());
+		}
+	}
+
+	/**
+	 * Bound the multi point by the geometry envelope
+	 * 
+	 * @param multiPoint
+	 *            multi point
+	 * @param envelope
+	 *            geometry envelope
+	 */
+	private static void bound(MultiPoint multiPoint,
+			GeometryEnvelope envelope) {
+		for (Point point : multiPoint.getPoints()) {
+			bound(point, envelope);
+		}
+	}
+
+	/**
+	 * Bound the line string by the geometry envelope
+	 * 
+	 * @param lineString
+	 *            line string
+	 * @param envelope
+	 *            geometry envelope
+	 */
+	private static void bound(LineString lineString,
+			GeometryEnvelope envelope) {
+		for (Point point : lineString.getPoints()) {
+			bound(point, envelope);
+		}
+	}
+
+	/**
+	 * Bound the multi line string by the geometry envelope
+	 * 
+	 * @param multiLineString
+	 *            multi line string
+	 * @param envelope
+	 *            geometry envelope
+	 */
+	private static void bound(MultiLineString multiLineString,
+			GeometryEnvelope envelope) {
+		for (LineString lineString : multiLineString.getLineStrings()) {
+			bound(lineString, envelope);
+		}
+	}
+
+	/**
+	 * Bound the polygon by the geometry envelope
+	 * 
+	 * @param polygon
+	 *            polygon
+	 * @param envelope
+	 *            geometry envelope
+	 */
+	private static void bound(Polygon polygon, GeometryEnvelope envelope) {
+		for (LineString ring : polygon.getRings()) {
+			bound(ring, envelope);
+		}
+	}
+
+	/**
+	 * Bound the multi polygon by the geometry envelope
+	 * 
+	 * @param multiPolygon
+	 *            multi polygon
+	 * @param envelope
+	 *            geometry envelope
+	 */
+	private static void bound(MultiPolygon multiPolygon,
+			GeometryEnvelope envelope) {
+		for (Polygon polygon : multiPolygon.getPolygons()) {
+			bound(polygon, envelope);
+		}
+	}
+
+	/**
+	 * Bound the compound curve by the geometry envelope
+	 * 
+	 * @param compoundCurve
+	 *            compound curve
+	 * @param envelope
+	 *            geometry envelope
+	 */
+	private static void bound(CompoundCurve compoundCurve,
+			GeometryEnvelope envelope) {
+		for (LineString lineString : compoundCurve.getLineStrings()) {
+			bound(lineString, envelope);
+		}
+	}
+
+	/**
+	 * Bound the curve polygon by the geometry envelope
+	 * 
+	 * @param curvePolygon
+	 *            curve polygon
+	 * @param envelope
+	 *            geometry envelope
+	 */
+	private static void bound(CurvePolygon<Curve> curvePolygon,
+			GeometryEnvelope envelope) {
+		for (Curve ring : curvePolygon.getRings()) {
+			bound(ring, envelope);
+		}
+	}
+
+	/**
+	 * Bound the polyhedral surface by the geometry envelope
+	 * 
+	 * @param polyhedralSurface
+	 *            polyhedral surface
+	 * @param envelope
+	 *            geometry envelope
+	 */
+	private static void bound(PolyhedralSurface polyhedralSurface,
+			GeometryEnvelope envelope) {
+		for (Polygon polygon : polyhedralSurface.getPolygons()) {
+			bound(polygon, envelope);
+		}
 	}
 
 	/**

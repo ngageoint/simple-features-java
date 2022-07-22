@@ -1,6 +1,7 @@
 package mil.nga.sf;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -388,10 +389,10 @@ public class GeometryUtilsTest {
 		polygon.addRing(ring);
 
 		Polygon polygon2 = (Polygon) polygon.copy();
-		GeometryUtils.minimizeWGS84Geometry(polygon2);
+		GeometryUtils.minimizeWGS84(polygon2);
 
 		Polygon polygon3 = (Polygon) polygon2.copy();
-		GeometryUtils.normalizeWGS84Geometry(polygon3);
+		GeometryUtils.normalizeWGS84(polygon3);
 
 		List<Point> points = ring.getPoints();
 		LineString ring2 = polygon2.getRings().get(0);
@@ -987,16 +988,10 @@ public class GeometryUtilsTest {
 		ring.addPoint(new Point(-168.967, 67.0));
 		polygon.addRing(ring);
 
-		GeometryEnvelope envelope = new GeometryEnvelope(
-				-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
-				-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
-				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
-				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH);
-
 		Polygon meters = GeometryUtils.degreesToMeters(polygon);
-		Polygon crop = GeometryUtils.crop(meters, envelope);
+		Polygon crop = (Polygon) GeometryUtils.cropWebMercator(meters);
 		Polygon degrees = GeometryUtils.metersToDegrees(crop);
-		GeometryUtils.minimizeWGS84Geometry(degrees);
+		GeometryUtils.minimizeWGS84(degrees);
 
 		LineString cropRing = degrees.getRing(0);
 		assertEquals(5, cropRing.numPoints());
@@ -1029,6 +1024,7 @@ public class GeometryUtilsTest {
 		ring.addPoint(new Point(-18809320.400867056, 10156058.722522344));
 		polygon.addRing(ring);
 
+		GeometryEnvelope envelope = GeometryUtils.webMercatorEnvelope();
 		envelope.setMinX(-20037508.342800375);
 
 		crop = GeometryUtils.crop(polygon, envelope);
@@ -1067,16 +1063,10 @@ public class GeometryUtilsTest {
 		ring.addPoint(new Point(-120.0, -90.0));
 		polygon.addRing(ring);
 
-		envelope = new GeometryEnvelope(
-				-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
-				-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
-				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
-				GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH);
-
 		meters = GeometryUtils.degreesToMeters(polygon);
-		crop = GeometryUtils.crop(meters, envelope);
+		crop = (Polygon) GeometryUtils.cropWebMercator(meters);
 		degrees = GeometryUtils.metersToDegrees(crop);
-		GeometryUtils.minimizeWGS84Geometry(degrees);
+		GeometryUtils.minimizeWGS84(degrees);
 
 		cropRing = degrees.getRing(0);
 		assertEquals(5, cropRing.numPoints());
@@ -1112,7 +1102,7 @@ public class GeometryUtilsTest {
 		ring.addPoint(new Point(-13358338.89519283, -233606567.09255272));
 		polygon.addRing(ring);
 
-		crop = GeometryUtils.crop(polygon, envelope);
+		crop = (Polygon) GeometryUtils.cropWebMercator(polygon);
 
 		cropRing = crop.getRing(0);
 		assertEquals(5, cropRing.numPoints());
@@ -1139,6 +1129,194 @@ public class GeometryUtilsTest {
 				0.00000001);
 		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
 				cropRing.getPoint(4).getY(), 0.00000001);
+
+	}
+
+	/**
+	 * Test bound
+	 */
+	@Test
+	public void testBound() {
+
+		Polygon polygon = new Polygon();
+		LineString ring = new LineString();
+		ring.addPoint(new Point(-180.01, 90.01));
+		ring.addPoint(new Point(-90.0, 0.0));
+		ring.addPoint(new Point(-181.0, -91.0));
+		ring.addPoint(new Point(0, -45.0));
+		ring.addPoint(new Point(180.00000000001, -90.00000000001));
+		ring.addPoint(new Point(90.0, 0.0));
+		ring.addPoint(new Point(180.0, 90.0));
+		ring.addPoint(new Point(0, 45.0));
+		ring.addPoint(new Point(-180.01, 90.01));
+		polygon.addRing(ring);
+
+		assertFalse(
+				GeometryUtils.wgs84Envelope().contains(polygon.getEnvelope()));
+
+		Polygon bounded = (Polygon) polygon.copy();
+
+		GeometryUtils.boundWGS84(bounded);
+
+		LineString boundedRing = bounded.getRing(0);
+		assertEquals(ring.numPoints(), boundedRing.numPoints());
+		assertTrue(boundedRing.isClosed());
+		assertTrue(
+				GeometryUtils.wgs84Envelope().contains(bounded.getEnvelope()));
+
+		assertEquals(-GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				boundedRing.getPoint(0).getX(), 0.0);
+		assertEquals(GeometryConstants.WGS84_HALF_WORLD_LAT_HEIGHT,
+				boundedRing.getPoint(0).getY(), 0.0);
+
+		assertEquals(-90.0, boundedRing.getPoint(1).getX(), 0.0);
+		assertEquals(0.0, boundedRing.getPoint(1).getY(), 0.0);
+
+		assertEquals(-GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				boundedRing.getPoint(2).getX(), 0.0);
+		assertEquals(-GeometryConstants.WGS84_HALF_WORLD_LAT_HEIGHT,
+				boundedRing.getPoint(2).getY(), 0.0);
+
+		assertEquals(0.0, boundedRing.getPoint(3).getX(), 0.0);
+		assertEquals(-45.0, boundedRing.getPoint(3).getY(), 0.0);
+
+		assertEquals(GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				boundedRing.getPoint(4).getX(), 0.0);
+		assertEquals(-GeometryConstants.WGS84_HALF_WORLD_LAT_HEIGHT,
+				boundedRing.getPoint(4).getY(), 0.0);
+
+		assertEquals(90.0, boundedRing.getPoint(5).getX(), 0.0);
+		assertEquals(0.0, boundedRing.getPoint(5).getY(), 0.0);
+
+		assertEquals(GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				boundedRing.getPoint(6).getX(), 0.0);
+		assertEquals(GeometryConstants.WGS84_HALF_WORLD_LAT_HEIGHT,
+				boundedRing.getPoint(6).getY(), 0.0);
+
+		assertEquals(0.0, boundedRing.getPoint(7).getX(), 0.0);
+		assertEquals(45.0, boundedRing.getPoint(7).getY(), 0.0);
+
+		assertEquals(-GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				boundedRing.getPoint(8).getX(), 0.0);
+		assertEquals(GeometryConstants.WGS84_HALF_WORLD_LAT_HEIGHT,
+				boundedRing.getPoint(8).getY(), 0.0);
+
+		assertFalse(GeometryUtils.wgs84EnvelopeWithWebMercator()
+				.contains(polygon.getEnvelope()));
+
+		bounded = (Polygon) polygon.copy();
+
+		GeometryUtils.boundWGS84WithWebMercator(bounded);
+
+		boundedRing = bounded.getRing(0);
+		assertEquals(ring.numPoints(), boundedRing.numPoints());
+		assertTrue(boundedRing.isClosed());
+		assertTrue(GeometryUtils.wgs84EnvelopeWithWebMercator()
+				.contains(bounded.getEnvelope()));
+
+		assertEquals(-GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				boundedRing.getPoint(0).getX(), 0.0);
+		assertEquals(GeometryConstants.WEB_MERCATOR_MAX_LAT_RANGE,
+				boundedRing.getPoint(0).getY(), 0.0);
+
+		assertEquals(-90.0, boundedRing.getPoint(1).getX(), 0.0);
+		assertEquals(0.0, boundedRing.getPoint(1).getY(), 0.0);
+
+		assertEquals(-GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				boundedRing.getPoint(2).getX(), 0.0);
+		assertEquals(GeometryConstants.WEB_MERCATOR_MIN_LAT_RANGE,
+				boundedRing.getPoint(2).getY(), 0.0);
+
+		assertEquals(0.0, boundedRing.getPoint(3).getX(), 0.0);
+		assertEquals(-45.0, boundedRing.getPoint(3).getY(), 0.0);
+
+		assertEquals(GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				boundedRing.getPoint(4).getX(), 0.0);
+		assertEquals(GeometryConstants.WEB_MERCATOR_MIN_LAT_RANGE,
+				boundedRing.getPoint(4).getY(), 0.0);
+
+		assertEquals(90.0, boundedRing.getPoint(5).getX(), 0.0);
+		assertEquals(0.0, boundedRing.getPoint(5).getY(), 0.0);
+
+		assertEquals(GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				boundedRing.getPoint(6).getX(), 0.0);
+		assertEquals(GeometryConstants.WEB_MERCATOR_MAX_LAT_RANGE,
+				boundedRing.getPoint(6).getY(), 0.0);
+
+		assertEquals(0.0, boundedRing.getPoint(7).getX(), 0.0);
+		assertEquals(45.0, boundedRing.getPoint(7).getY(), 0.0);
+
+		assertEquals(-GeometryConstants.WGS84_HALF_WORLD_LON_WIDTH,
+				boundedRing.getPoint(8).getX(), 0.0);
+		assertEquals(GeometryConstants.WEB_MERCATOR_MAX_LAT_RANGE,
+				boundedRing.getPoint(8).getY(), 0.0);
+
+		polygon = new Polygon();
+		ring = new LineString();
+		ring.addPoint(new Point(-20037508.35, 20037508.35));
+		ring.addPoint(new Point(-10018754.171394622, 0.0));
+		ring.addPoint(new Point(-20037509, -20037509));
+		ring.addPoint(new Point(0, -10018754.171394622));
+		ring.addPoint(new Point(20037508.34278925, -20037508.34278925));
+		ring.addPoint(new Point(10018754.171394622, 0.0));
+		ring.addPoint(new Point(20037508.342789244, 20037508.342789244));
+		ring.addPoint(new Point(0, 10018754.171394622));
+		ring.addPoint(new Point(-20037508.35, 20037508.35));
+		polygon.addRing(ring);
+
+		assertFalse(GeometryUtils.webMercatorEnvelope()
+				.contains(polygon.getEnvelope()));
+
+		bounded = (Polygon) polygon.copy();
+
+		GeometryUtils.boundWebMercator(bounded);
+
+		boundedRing = bounded.getRing(0);
+		assertEquals(ring.numPoints(), boundedRing.numPoints());
+		assertTrue(boundedRing.isClosed());
+		assertTrue(GeometryUtils.webMercatorEnvelope()
+				.contains(bounded.getEnvelope()));
+
+		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				boundedRing.getPoint(0).getX(), 0.0);
+		assertEquals(GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				boundedRing.getPoint(0).getY(), 0.0);
+
+		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH / 2,
+				boundedRing.getPoint(1).getX(), 0.0);
+		assertEquals(0.0, boundedRing.getPoint(1).getY(), 0.00000001);
+
+		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				boundedRing.getPoint(2).getX(), 0.0);
+		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				boundedRing.getPoint(2).getY(), 0.0);
+
+		assertEquals(0.0, boundedRing.getPoint(3).getX(), 0.0);
+		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH / 2,
+				boundedRing.getPoint(3).getY(), 0.0);
+
+		assertEquals(GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				boundedRing.getPoint(4).getX(), 0.0);
+		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				boundedRing.getPoint(4).getY(), 0.0);
+
+		assertEquals(GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH / 2,
+				boundedRing.getPoint(5).getX(), 0.0);
+		assertEquals(0.0, boundedRing.getPoint(5).getY(), 0.0);
+
+		assertEquals(GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				boundedRing.getPoint(6).getX(), 0.0);
+		assertEquals(GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				boundedRing.getPoint(6).getY(), 0.0);
+
+		assertEquals(0.0, boundedRing.getPoint(7).getX(), 0.0);
+		assertEquals(GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH / 2,
+				boundedRing.getPoint(7).getY(), 0.0);
+
+		assertEquals(-GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				boundedRing.getPoint(8).getX(), 0.0);
+		assertEquals(GeometryConstants.WEB_MERCATOR_HALF_WORLD_WIDTH,
+				boundedRing.getPoint(8).getY(), 0.0);
 
 	}
 
