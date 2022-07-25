@@ -1722,11 +1722,11 @@ public class GeometryUtils {
 	 * @since 2.2.0
 	 */
 	public static TIN degreesToMeters(TIN tin) {
-		TIN degrees = new TIN(tin.hasZ(), tin.hasM());
+		TIN meters = new TIN(tin.hasZ(), tin.hasM());
 		for (Polygon polygon : tin.getPolygons()) {
-			degrees.addPolygon(degreesToMeters(polygon));
+			meters.addPolygon(degreesToMeters(polygon));
 		}
-		return degrees;
+		return meters;
 	}
 
 	/**
@@ -1738,11 +1738,11 @@ public class GeometryUtils {
 	 * @since 2.2.0
 	 */
 	public static Triangle degreesToMeters(Triangle triangle) {
-		Triangle degrees = new Triangle(triangle.hasZ(), triangle.hasM());
-		for (LineString ring : degrees.getRings()) {
-			degrees.addRing(degreesToMeters(ring));
+		Triangle meters = new Triangle(triangle.hasZ(), triangle.hasM());
+		for (LineString ring : triangle.getRings()) {
+			meters.addRing(degreesToMeters(ring));
 		}
-		return degrees;
+		return meters;
 	}
 
 	/**
@@ -2050,7 +2050,7 @@ public class GeometryUtils {
 	 */
 	public static Triangle metersToDegrees(Triangle triangle) {
 		Triangle degrees = new Triangle(triangle.hasZ(), triangle.hasM());
-		for (LineString ring : degrees.getRings()) {
+		for (LineString ring : triangle.getRings()) {
 			degrees.addRing(metersToDegrees(ring));
 		}
 		return degrees;
