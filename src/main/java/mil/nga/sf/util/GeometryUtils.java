@@ -1491,6 +1491,7 @@ public class GeometryUtils {
 			for (Geometry subGeometry : geomCollection.getGeometries()) {
 				metersCollection.addGeometry(degreesToMeters(subGeometry));
 			}
+			meters = metersCollection;
 			break;
 		default:
 			break;
@@ -1798,12 +1799,13 @@ public class GeometryUtils {
 		case GEOMETRYCOLLECTION:
 		case MULTICURVE:
 		case MULTISURFACE:
-			GeometryCollection<Geometry> metersCollection = new GeometryCollection<>();
+			GeometryCollection<Geometry> degreesCollection = new GeometryCollection<>();
 			@SuppressWarnings("unchecked")
 			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
 			for (Geometry subGeometry : geomCollection.getGeometries()) {
-				metersCollection.addGeometry(metersToDegrees(subGeometry));
+				degreesCollection.addGeometry(metersToDegrees(subGeometry));
 			}
+			degrees = degreesCollection;
 			break;
 		default:
 			break;
@@ -2187,12 +2189,13 @@ public class GeometryUtils {
 			case GEOMETRYCOLLECTION:
 			case MULTICURVE:
 			case MULTISURFACE:
-				GeometryCollection<Geometry> metersCollection = new GeometryCollection<>();
+				GeometryCollection<Geometry> cropCollection = new GeometryCollection<>();
 				@SuppressWarnings("unchecked")
 				GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
 				for (Geometry subGeometry : geomCollection.getGeometries()) {
-					metersCollection.addGeometry(crop(subGeometry, envelope));
+					cropCollection.addGeometry(crop(subGeometry, envelope));
 				}
+				crop = cropCollection;
 				break;
 			default:
 				break;
