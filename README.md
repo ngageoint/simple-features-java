@@ -26,14 +26,14 @@ View the latest [Javadoc](http://ngageoint.github.io/simple-features-java/docs/a
 
 ### Installation ###
 
-Pull from the [Maven Central Repository](http://search.maven.org/#artifactdetails|mil.nga|sf|2.1.0|jar) (JAR, POM, Source, Javadoc)
+Pull from the [Maven Central Repository](http://search.maven.org/#artifactdetails|mil.nga|sf|2.2.0|jar) (JAR, POM, Source, Javadoc)
 
 ```xml
 
 <dependency>
     <groupId>mil.nga</groupId>
     <artifactId>sf</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
 </dependency>
 
 ```

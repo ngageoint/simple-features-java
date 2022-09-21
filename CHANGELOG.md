@@ -4,9 +4,12 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## 2.2.0 (TBD)
+## [2.2.0](https://github.com/ngageoint/simple-features-java/releases/tag/2.2.0) (09-21-2022)
 
-* TBD
+* GeometryEnvelope directionals and contains methods
+* Geometry constants
+* Line two point constructor
+* Geometry utility distance, bearings, conversions, minimize, normalize, envelopes, crop, equal, contains, and bound
 
 ## [2.1.0](https://github.com/ngageoint/simple-features-java/releases/tag/2.1.0) (07-08-2022)
 
