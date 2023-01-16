@@ -116,12 +116,18 @@ public class SweepLine {
 
 		// Update the above and below pointers
 		Segment next = tree.higher(segment);
+		if (next == null) {
+			next = tree.first();
+		}
 		Segment previous = tree.lower(segment);
-		if (next != null) {
+		if (previous == null) {
+			previous = tree.last();
+		}
+		if (next != segment) {
 			segment.setAbove(next);
 			next.setBelow(segment);
 		}
-		if (previous != null) {
+		if (previous != segment) {
 			segment.setBelow(previous);
 			previous.setAbove(segment);
 		}
@@ -194,7 +200,7 @@ public class SweepLine {
 
 		boolean intersect = false;
 
-		if (segment1 != null && segment2 != null) {
+		if (segment1 != null && segment2 != null && segment1 != segment2) {
 
 			int ring1 = segment1.getRing();
 			int ring2 = segment2.getRing();
@@ -329,10 +335,9 @@ public class SweepLine {
 	 * @return > 0 if left, 0 if on, < 0 if right
 	 */
 	private static double isLeft(Point point0, Point point1, Point point2) {
-		return (point1.getX() - point0.getX())
-				* (point2.getY() - point0.getY())
+		return (point1.getX() - point0.getX()) * (point2.getY() - point0.getY())
 				- (point2.getX() - point0.getX())
-				* (point1.getY() - point0.getY());
+						* (point1.getY() - point0.getY());
 	}
 
 }

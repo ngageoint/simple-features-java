@@ -568,6 +568,224 @@ public class ShamosHoeyTest {
 				points.size());
 	}
 
+	@Test
+	public void testPolygons1() {
+
+		LineString ring = new LineString();
+		ring.addPoint(new Point(0, 0));
+		ring.addPoint(new Point(4, 4));
+		ring.addPoint(new Point(0, 4));
+		ring.addPoint(new Point(4, 0));
+		Polygon polygon = new Polygon(ring);
+
+		TestCase.assertFalse(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(0, 0));
+		ring.addPoint(new Point(4, 0));
+		ring.addPoint(new Point(4, 4));
+		ring.addPoint(new Point(0, 4));
+		polygon = new Polygon(ring);
+
+		TestCase.assertTrue(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(0, 4));
+		ring.addPoint(new Point(4, 0));
+		ring.addPoint(new Point(0, 0));
+		ring.addPoint(new Point(4, 4));
+		polygon = new Polygon(ring);
+
+		TestCase.assertFalse(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(0, 4));
+		ring.addPoint(new Point(4, 4));
+		ring.addPoint(new Point(4, 0));
+		ring.addPoint(new Point(0, 0));
+		polygon = new Polygon(ring);
+
+		TestCase.assertTrue(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(0, 0));
+		ring.addPoint(new Point(4, 4));
+		ring.addPoint(new Point(1, 3));
+		ring.addPoint(new Point(3, 1));
+		polygon = new Polygon(ring);
+
+		TestCase.assertFalse(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(0, 0));
+		ring.addPoint(new Point(3, 1));
+		ring.addPoint(new Point(4, 4));
+		ring.addPoint(new Point(1, 3));
+		polygon = new Polygon(ring);
+
+		TestCase.assertTrue(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(1, 3));
+		ring.addPoint(new Point(3, 1));
+		ring.addPoint(new Point(0, 0));
+		ring.addPoint(new Point(4, 4));
+		polygon = new Polygon(ring);
+
+		TestCase.assertFalse(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(1, 3));
+		ring.addPoint(new Point(4, 4));
+		ring.addPoint(new Point(3, 1));
+		ring.addPoint(new Point(0, 0));
+		polygon = new Polygon(ring);
+
+		TestCase.assertTrue(polygon.isSimple());
+
+	}
+
+	@Test
+	public void testPolygons2() {
+
+		LineString ring = new LineString();
+		ring.addPoint(new Point(119.65450502825215, 234.97190110269844));
+		ring.addPoint(new Point(120.94208471603682, 241.47274889005215));
+		ring.addPoint(new Point(120.57389187028015, 240.42380619065557));
+		ring.addPoint(new Point(120.40553233952696, 239.3249423106921));
+		ring.addPoint(new Point(120.44278575100797, 238.2138802324909));
+		ring.addPoint(new Point(120.68437322950616, 237.12876169126298));
+		ring.addPoint(new Point(121.12200129996195, 236.1068378045508));
+		ring.addPoint(new Point(121.74064659481407, 235.18319027576013));
+		ring.addPoint(new Point(122.51907159233552, 234.38952707167576));
+		Polygon polygon = new Polygon(ring);
+
+		TestCase.assertFalse(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(119.65450502825215, 234.97190110269844));
+		ring.addPoint(new Point(120.94208471603682, 241.47274889005215));
+		// ring.addPoint(new Point(120.57389187028015, 240.42380619065557));
+		// ring.addPoint(new Point(120.40553233952696, 239.3249423106921));
+		ring.addPoint(new Point(120.44278575100797, 238.2138802324909));
+		ring.addPoint(new Point(120.68437322950616, 237.12876169126298));
+		ring.addPoint(new Point(121.12200129996195, 236.1068378045508));
+		ring.addPoint(new Point(121.74064659481407, 235.18319027576013));
+		ring.addPoint(new Point(122.51907159233552, 234.38952707167576));
+		polygon = new Polygon(ring);
+
+		TestCase.assertTrue(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(119.65450502825215, 234.97190110269844));
+		ring.addPoint(new Point(120.94208471603682, 241.47274889005215));
+		// ring.addPoint(new Point(120.57389187028015, 240.42380619065557));
+		// ring.addPoint(new Point(120.40553233952696, 239.3249423106921));
+		ring.addPoint(new Point(120.44278575100797, 238.2138802324909));
+		ring.addPoint(new Point(120.68437322950616, 237.12876169126298));
+		ring.addPoint(new Point(121.12200129996195, 236.1068378045508));
+		ring.addPoint(new Point(121.74064659481407, 235.18319027576013));
+		ring.addPoint(new Point(122.51907159233552, 234.38952707167576));
+		ring.addPoint(new Point(119.65450502825215, 234.97190110269844));
+		polygon = new Polygon(ring);
+
+		TestCase.assertTrue(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(119.65450502825215, 234.97190110269844));
+		ring.addPoint(new Point(120.94208471603682, 241.47274889005215));
+		ring.addPoint(new Point(120.57389187028015, 240.42380619065557));
+		// ring.addPoint(new Point(120.40553233952696, 239.3249423106921));
+		ring.addPoint(new Point(120.44278575100797, 238.2138802324909));
+		ring.addPoint(new Point(120.68437322950616, 237.12876169126298));
+		ring.addPoint(new Point(121.12200129996195, 236.1068378045508));
+		ring.addPoint(new Point(121.74064659481407, 235.18319027576013));
+		ring.addPoint(new Point(122.51907159233552, 234.38952707167576));
+		polygon = new Polygon(ring);
+
+		TestCase.assertFalse(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(119.65450502825215, 234.97190110269844));
+		ring.addPoint(new Point(120.94208471603682, 241.47274889005215));
+		// ring.addPoint(new Point(120.57389187028015, 240.42380619065557));
+		ring.addPoint(new Point(120.40553233952696, 239.3249423106921));
+		ring.addPoint(new Point(120.44278575100797, 238.2138802324909));
+		ring.addPoint(new Point(120.68437322950616, 237.12876169126298));
+		ring.addPoint(new Point(121.12200129996195, 236.1068378045508));
+		ring.addPoint(new Point(121.74064659481407, 235.18319027576013));
+		ring.addPoint(new Point(122.51907159233552, 234.38952707167576));
+		polygon = new Polygon(ring);
+
+		TestCase.assertFalse(polygon.isSimple());
+
+	}
+
+	@Test
+	public void testPolygons3() {
+
+		LineString ring = new LineString();
+		ring.addPoint(new Point(2.48, 1.38));
+		ring.addPoint(new Point(2.642, 4.22));
+		ring.addPoint(new Point(4.41, 2.91));
+		ring.addPoint(new Point(4.69, 4.42));
+		ring.addPoint(new Point(2.68, 4.90));
+		Polygon polygon = new Polygon(ring);
+
+		TestCase.assertTrue(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(2.48, 1.38));
+		ring.addPoint(new Point(2.641, 4.22));
+		ring.addPoint(new Point(4.41, 2.91));
+		ring.addPoint(new Point(4.69, 4.42));
+		ring.addPoint(new Point(2.68, 4.90));
+		polygon = new Polygon(ring);
+
+		TestCase.assertFalse(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(2.48, 1.38));
+		ring.addPoint(new Point(2.642, 4.22));
+		ring.addPoint(new Point(3.60, 4.68));
+		ring.addPoint(new Point(4.69, 4.42));
+		ring.addPoint(new Point(2.68, 4.90));
+		polygon = new Polygon(ring);
+
+		TestCase.assertTrue(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(2.48, 1.38));
+		ring.addPoint(new Point(2.642, 4.22));
+		ring.addPoint(new Point(3.60, 4.681));
+		ring.addPoint(new Point(4.69, 4.42));
+		ring.addPoint(new Point(2.68, 4.90));
+		polygon = new Polygon(ring);
+
+		TestCase.assertFalse(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(2.48, 1.38));
+		ring.addPoint(new Point(6.34, 2.15));
+		ring.addPoint(new Point(5.85, 3.34));
+		ring.addPoint(new Point(5.98, 3.07));
+		ring.addPoint(new Point(5.09, 4.98));
+		polygon = new Polygon(ring);
+
+		TestCase.assertTrue(polygon.isSimple());
+
+		ring = new LineString();
+		ring.addPoint(new Point(2.48, 1.38));
+		ring.addPoint(new Point(6.34, 2.15));
+		ring.addPoint(new Point(5.855, 3.34));
+		ring.addPoint(new Point(5.98, 3.07));
+		ring.addPoint(new Point(5.09, 4.98));
+		polygon = new Polygon(ring);
+
+		TestCase.assertFalse(polygon.isSimple());
+
+	}
+
 	private void addPoint(List<Point> points, double x, double y) {
 		points.add(new Point(x, y));
 	}
