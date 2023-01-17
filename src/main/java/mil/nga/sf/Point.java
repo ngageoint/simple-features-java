@@ -219,6 +219,42 @@ public class Point extends Geometry {
 	}
 
 	/**
+	 * Indicates if x values are equal
+	 * 
+	 * @param point
+	 *            point to compare
+	 * @return true if x is equal
+	 * @since 2.2.1
+	 */
+	public boolean equalsX(Point point) {
+		return Double.doubleToLongBits(x) == Double.doubleToLongBits(point.x);
+	}
+
+	/**
+	 * Indicates if y values are equal
+	 * 
+	 * @param point
+	 *            point to compare
+	 * @return true if y is equal
+	 * @since 2.2.1
+	 */
+	public boolean equalsY(Point point) {
+		return Double.doubleToLongBits(y) == Double.doubleToLongBits(point.y);
+	}
+
+	/**
+	 * Indicates if x and y values are equal
+	 * 
+	 * @param point
+	 *            point to compare
+	 * @return true if x and y are equal
+	 * @since 2.2.1
+	 */
+	public boolean equalsXY(Point point) {
+		return equalsX(point) && equalsY(point);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -252,9 +288,7 @@ public class Point extends Geometry {
 				return false;
 		} else if (!m.equals(other.m))
 			return false;
-		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
-			return false;
-		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
+		if (!equalsXY(other))
 			return false;
 		if (z == null) {
 			if (other.z != null)

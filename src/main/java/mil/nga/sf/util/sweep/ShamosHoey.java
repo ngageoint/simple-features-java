@@ -110,9 +110,18 @@ public class ShamosHoey {
 			if (ringCopyPoints.size() >= 3) {
 				Point first = ringCopyPoints.get(0);
 				Point last = ringCopyPoints.get(ringCopyPoints.size() - 1);
-				if (first.getX() == last.getX()
-						&& first.getY() == last.getY()) {
+				if (first.equalsXY(last)) {
 					ringCopyPoints.remove(ringCopyPoints.size() - 1);
+				}
+			}
+
+			// Remove duplicate consecutive points
+			for (int j = 0; j < ringCopyPoints.size() - 1; j++) {
+				Point point = ringCopyPoints.get(j);
+				Point next = ringCopyPoints.get(j + 1);
+				if (point.equalsXY(next)) {
+					ringCopyPoints.remove(j + 1);
+					j--;
 				}
 			}
 

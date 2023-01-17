@@ -32,7 +32,7 @@ public class ShamosHoeyTest {
 		TestCase.assertTrue(
 				ShamosHoey.simplePolygon(new Polygon(new LineString(points))));
 		TestCase.assertTrue((new LineString(points)).isSimple());
-		TestCase.assertTrue((new Polygon(new LineString(points))).isSimple());
+		simple(new Polygon(new LineString(points)));
 		TestCase.assertEquals(3, points.size());
 
 		addPoint(points, 0, 0);
@@ -42,7 +42,7 @@ public class ShamosHoeyTest {
 		TestCase.assertTrue(
 				ShamosHoey.simplePolygon(new Polygon(new LineString(points))));
 		TestCase.assertTrue((new LineString(points)).isSimple());
-		TestCase.assertTrue((new Polygon(new LineString(points))).isSimple());
+		simple(new Polygon(new LineString(points)));
 		TestCase.assertEquals(4, points.size());
 
 		points.clear();
@@ -58,7 +58,7 @@ public class ShamosHoeyTest {
 		TestCase.assertTrue(
 				ShamosHoey.simplePolygon(new Polygon(new LineString(points))));
 		TestCase.assertTrue((new LineString(points)).isSimple());
-		TestCase.assertTrue((new Polygon(new LineString(points))).isSimple());
+		simple(new Polygon(new LineString(points)));
 		TestCase.assertEquals(5, points.size());
 
 		points.clear();
@@ -76,7 +76,7 @@ public class ShamosHoeyTest {
 		TestCase.assertTrue(
 				ShamosHoey.simplePolygon(new Polygon(new LineString(points))));
 		TestCase.assertTrue((new LineString(points)).isSimple());
-		TestCase.assertTrue((new Polygon(new LineString(points))).isSimple());
+		simple(new Polygon(new LineString(points)));
 		TestCase.assertEquals(7, points.size());
 
 		points.clear();
@@ -91,7 +91,7 @@ public class ShamosHoeyTest {
 		TestCase.assertTrue(
 				ShamosHoey.simplePolygon(new Polygon(new LineString(points))));
 		TestCase.assertTrue((new LineString(points)).isSimple());
-		TestCase.assertTrue((new Polygon(new LineString(points))).isSimple());
+		simple(new Polygon(new LineString(points)));
 		TestCase.assertEquals(4, points.size());
 
 	}
@@ -108,7 +108,7 @@ public class ShamosHoeyTest {
 		TestCase.assertFalse(
 				ShamosHoey.simplePolygon(new Polygon(new LineString(points))));
 		TestCase.assertFalse((new LineString(points)).isSimple());
-		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
+		complex(new Polygon(new LineString(points)));
 		TestCase.assertEquals(1, points.size());
 
 		addPoint(points, 1, 0);
@@ -118,7 +118,7 @@ public class ShamosHoeyTest {
 		TestCase.assertFalse(
 				ShamosHoey.simplePolygon(new Polygon(new LineString(points))));
 		TestCase.assertFalse((new LineString(points)).isSimple());
-		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
+		complex(new Polygon(new LineString(points)));
 		TestCase.assertEquals(2, points.size());
 
 		addPoint(points, 0, 0);
@@ -128,7 +128,7 @@ public class ShamosHoeyTest {
 		TestCase.assertFalse(
 				ShamosHoey.simplePolygon(new Polygon(new LineString(points))));
 		TestCase.assertFalse((new LineString(points)).isSimple());
-		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
+		complex(new Polygon(new LineString(points)));
 		TestCase.assertEquals(3, points.size());
 
 		points.clear();
@@ -145,7 +145,7 @@ public class ShamosHoeyTest {
 		TestCase.assertFalse(
 				ShamosHoey.simplePolygon(new Polygon(new LineString(points))));
 		TestCase.assertFalse((new LineString(points)).isSimple());
-		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
+		complex(new Polygon(new LineString(points)));
 		TestCase.assertEquals(6, points.size());
 
 		points.clear();
@@ -164,7 +164,7 @@ public class ShamosHoeyTest {
 		TestCase.assertFalse(
 				ShamosHoey.simplePolygon(new Polygon(new LineString(points))));
 		TestCase.assertFalse((new LineString(points)).isSimple());
-		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
+		complex(new Polygon(new LineString(points)));
 		TestCase.assertEquals(8, points.size());
 
 		points.clear();
@@ -201,7 +201,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(ring);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 		TestCase.assertEquals(1, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 
@@ -217,7 +217,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 		TestCase.assertEquals(2, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -240,7 +240,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(ring);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 		TestCase.assertEquals(1, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 
@@ -257,7 +257,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 		TestCase.assertEquals(2, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(4, polygon.getRings().get(1).numPoints());
@@ -280,7 +280,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(ring);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 		TestCase.assertEquals(1, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 
@@ -296,7 +296,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 		TestCase.assertEquals(2, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -319,7 +319,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(ring);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 		TestCase.assertEquals(1, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 
@@ -335,7 +335,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole1);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 		TestCase.assertEquals(2, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -352,7 +352,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole2);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 		TestCase.assertEquals(3, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -376,7 +376,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(ring);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 		TestCase.assertEquals(1, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 
@@ -392,7 +392,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole1);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 		TestCase.assertEquals(2, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -409,7 +409,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole2);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 		TestCase.assertEquals(3, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -433,7 +433,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(ring);
 
 		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 		TestCase.assertEquals(1, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 
@@ -449,7 +449,7 @@ public class ShamosHoeyTest {
 		polygon.addRing(hole);
 
 		TestCase.assertFalse(ShamosHoey.simplePolygon(polygon));
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 		TestCase.assertEquals(2, polygon.numRings());
 		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
@@ -578,7 +578,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(4, 0));
 		Polygon polygon = new Polygon(ring);
 
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(0, 0));
@@ -587,7 +587,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(0, 4));
 		polygon = new Polygon(ring);
 
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(0, 4));
@@ -596,7 +596,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(4, 4));
 		polygon = new Polygon(ring);
 
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(0, 4));
@@ -605,7 +605,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(0, 0));
 		polygon = new Polygon(ring);
 
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(0, 0));
@@ -614,7 +614,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(3, 1));
 		polygon = new Polygon(ring);
 
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(0, 0));
@@ -623,7 +623,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(1, 3));
 		polygon = new Polygon(ring);
 
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(1, 3));
@@ -632,7 +632,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(4, 4));
 		polygon = new Polygon(ring);
 
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(1, 3));
@@ -641,7 +641,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(0, 0));
 		polygon = new Polygon(ring);
 
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 
 	}
 
@@ -660,7 +660,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(122.51907159233552, 234.38952707167576));
 		Polygon polygon = new Polygon(ring);
 
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(119.65450502825215, 234.97190110269844));
@@ -674,7 +674,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(122.51907159233552, 234.38952707167576));
 		polygon = new Polygon(ring);
 
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(119.65450502825215, 234.97190110269844));
@@ -689,7 +689,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(119.65450502825215, 234.97190110269844));
 		polygon = new Polygon(ring);
 
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(119.65450502825215, 234.97190110269844));
@@ -703,7 +703,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(122.51907159233552, 234.38952707167576));
 		polygon = new Polygon(ring);
 
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(119.65450502825215, 234.97190110269844));
@@ -717,7 +717,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(122.51907159233552, 234.38952707167576));
 		polygon = new Polygon(ring);
 
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 
 	}
 
@@ -732,7 +732,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(2.68, 4.90));
 		Polygon polygon = new Polygon(ring);
 
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(2.48, 1.38));
@@ -742,7 +742,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(2.68, 4.90));
 		polygon = new Polygon(ring);
 
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(2.48, 1.38));
@@ -752,7 +752,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(2.68, 4.90));
 		polygon = new Polygon(ring);
 
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(2.48, 1.38));
@@ -762,7 +762,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(2.68, 4.90));
 		polygon = new Polygon(ring);
 
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(2.48, 1.38));
@@ -772,7 +772,7 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(5.09, 4.98));
 		polygon = new Polygon(ring);
 
-		TestCase.assertTrue(polygon.isSimple());
+		simple(polygon);
 
 		ring = new LineString();
 		ring.addPoint(new Point(2.48, 1.38));
@@ -782,7 +782,58 @@ public class ShamosHoeyTest {
 		ring.addPoint(new Point(5.09, 4.98));
 		polygon = new Polygon(ring);
 
-		TestCase.assertFalse(polygon.isSimple());
+		complex(polygon);
+
+	}
+
+	@Test
+	public void testPolygons4() {
+
+		LineString ring = new LineString();
+		ring.addPoint(new Point(4.96, 4.18));
+		ring.addPoint(new Point(2.68, 4.90));
+		ring.addPoint(new Point(3.50, 2.64));
+		ring.addPoint(new Point(5.20, 1.86));
+		ring.addPoint(new Point(8.00, 2.83));
+		ring.addPoint(new Point(3.50, 2.64));
+		Polygon polygon = new Polygon(ring);
+
+		complex(polygon);
+
+		ring = new LineString();
+		ring.addPoint(new Point(4.96, 4.18));
+		ring.addPoint(new Point(2.68, 4.90));
+		ring.addPoint(new Point(3.50, 2.64));
+		ring.addPoint(new Point(5.20, 1.86));
+		ring.addPoint(new Point(8.00, 2.83));
+		ring.addPoint(new Point(3.500000000000001, 2.64));
+		polygon = new Polygon(ring);
+
+		simple(polygon);
+
+	}
+
+	private void simple(Polygon polygon) {
+		validate(polygon, true);
+	}
+
+	private void complex(Polygon polygon) {
+		validate(polygon, false);
+	}
+
+	private void validate(Polygon polygon, boolean simple) {
+
+		TestCase.assertEquals(simple, polygon.isSimple());
+
+		Polygon copy = new Polygon(polygon);
+		List<Point> points = copy.getRing(0).getPoints();
+
+		for (int i = 1; i < points.size(); i++) {
+
+			points.add(points.remove(0));
+
+			TestCase.assertEquals(simple, copy.isSimple());
+		}
 
 	}
 

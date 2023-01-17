@@ -24,47 +24,53 @@ public class SweepLine {
 	private class SegmentComparator implements Comparator<Segment> {
 
 		/**
-		 * Current sweep x value
-		 */
-		private double x;
-
-		/**
-		 * Set the current sweep x value
-		 * 
-		 * @param x
-		 *            x value
-		 */
-		public void setX(double x) {
-			this.x = x;
-		}
-
-		/**
 		 * {@inheritDoc}
 		 */
 		@Override
 		public int compare(Segment segment1, Segment segment2) {
 
-			double y1 = yValueAtX(segment1, x);
-			double y2 = yValueAtX(segment2, x);
+			int compare = 0;
 
-			int compare;
-			if (y1 < y2) {
-				compare = -1;
-			} else if (y2 < y1) {
-				compare = 1;
-			} else if (segment1.getRing() < segment2.getRing()) {
-				compare = -1;
-			} else if (segment2.getRing() < segment1.getRing()) {
-				compare = 1;
-			} else if (segment1.getEdge() < segment2.getEdge()) {
-				compare = -1;
-			} else if (segment2.getEdge() < segment1.getEdge()) {
-				compare = 1;
-			} else {
-				compare = 0;
+			if (segment1 != segment2) {
+
+				Point lp1 = segment1.getLeftPoint();
+				Point rp1 = segment1.getRightPoint();
+				Point lp2 = segment2.getLeftPoint();
+				Point rp2 = segment2.getRightPoint();
+
+				if (lp1.getX() <= lp2.getX()) {
+					double s = isLeft(segment1, lp2);
+					if (s != 0) {
+						compare = comparison(s > 0);
+					} else {
+						if (lp1.equalsX(rp1)) { // Vertical line
+							compare = comparison(lp1.getY() < lp2.getY());
+						} else {
+							compare = comparison(isLeft(segment1, rp2) > 0);
+						}
+					}
+				} else {
+					double s = isLeft(segment2, lp1);
+					if (s != 0) {
+						compare = comparison(s < 0);
+					} else {
+						compare = comparison(isLeft(segment2, rp1) < 0);
+					}
+				}
 			}
 
 			return compare;
+		}
+
+		/**
+		 * Get the comparison value
+		 * 
+		 * @param left
+		 *            left comparison result
+		 * @return -1 if left, 1 if right
+		 */
+		private int comparison(boolean left) {
+			return left ? -1 : 1;
 		}
 
 	}
@@ -111,23 +117,16 @@ public class SweepLine {
 		Segment segment = createSegment(event);
 
 		// Add to the tree
-		comparator.setX(event.getPoint().getX());
 		tree.add(segment);
 
 		// Update the above and below pointers
 		Segment next = tree.higher(segment);
-		if (next == null) {
-			next = tree.first();
-		}
 		Segment previous = tree.lower(segment);
-		if (previous == null) {
-			previous = tree.last();
-		}
-		if (next != segment) {
+		if (next != null) {
 			segment.setAbove(next);
 			next.setBelow(segment);
 		}
-		if (previous != segment) {
+		if (previous != null) {
 			segment.setBelow(previous);
 			previous.setAbove(segment);
 		}
@@ -200,7 +199,7 @@ public class SweepLine {
 
 		boolean intersect = false;
 
-		if (segment1 != null && segment2 != null && segment1 != segment2) {
+		if (segment1 != null && segment2 != null) {
 
 			int ring1 = segment1.getRing();
 			int ring2 = segment2.getRing();
@@ -244,7 +243,6 @@ public class SweepLine {
 
 		boolean removed = tree.remove(segment);
 		if (!removed) {
-			comparator.setX(segment.getLeftPoint().getX());
 			removed = tree.remove(segment);
 		}
 
@@ -262,28 +260,6 @@ public class SweepLine {
 			segments.get(segment.getRing()).remove(segment.getEdge());
 		}
 
-	}
-
-	/**
-	 * Get the segment y value at the x location by calculating the line slope
-	 * 
-	 * @param segment
-	 *            segment
-	 * @param x
-	 *            current point x value
-	 * @return segment y value
-	 */
-	private double yValueAtX(Segment segment, double x) {
-
-		Point left = segment.getLeftPoint();
-		Point right = segment.getRightPoint();
-
-		double m = (right.getY() - left.getY()) / (right.getX() - left.getX());
-		double b = left.getY() - (m * left.getX());
-
-		double y = (m * x) + b;
-
-		return y;
 	}
 
 	/**
