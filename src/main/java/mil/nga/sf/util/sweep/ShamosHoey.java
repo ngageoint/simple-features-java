@@ -1,7 +1,11 @@
 package mil.nga.sf.util.sweep;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import mil.nga.sf.LineString;
 import mil.nga.sf.Point;
@@ -115,20 +119,29 @@ public class ShamosHoey {
 				}
 			}
 
-			// Remove duplicate consecutive points
-			for (int j = 0; j < ringCopyPoints.size() - 1; j++) {
-				Point point = ringCopyPoints.get(j);
-				Point next = ringCopyPoints.get(j + 1);
-				if (point.equalsXY(next)) {
-					ringCopyPoints.remove(j + 1);
-					j--;
-				}
-			}
-
 			// Verify enough ring points
 			if (ringCopyPoints.size() < 3) {
 				simple = false;
 				break;
+			}
+
+			// Check for duplicate points (thus connecting more than two edges
+			// and not simple)
+			Map<Double, Set<Double>> pointValues = new HashMap<>();
+			for (Point point : ringCopyPoints) {
+				double x = point.getX();
+				double y = point.getY();
+				Set<Double> xValues = pointValues.get(x);
+				if (xValues == null) {
+					xValues = new HashSet<>();
+					xValues.add(y);
+					pointValues.put(x, xValues);
+				} else if (!xValues.contains(y)) {
+					xValues.add(y);
+				} else {
+					simple = false;
+					break;
+				}
 			}
 
 			// Check holes to make sure the first point is in the polygon

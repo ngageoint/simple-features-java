@@ -179,7 +179,22 @@ public class ShamosHoeyTest {
 		TestCase.assertFalse(
 				ShamosHoey.simplePolygon(new Polygon(new LineString(points))));
 		TestCase.assertFalse((new LineString(points)).isSimple());
-		TestCase.assertFalse((new Polygon(new LineString(points))).isSimple());
+		complex(new Polygon(new LineString(points)));
+		TestCase.assertEquals(4, points.size());
+
+		points.clear();
+
+		addPoint(points, 1, 0);
+		addPoint(points, 0, 1);
+		addPoint(points, 1, 0);
+		addPoint(points, 2, 2);
+
+		TestCase.assertFalse(ShamosHoey.simplePolygonPoints(points));
+		TestCase.assertFalse(ShamosHoey.simplePolygon(new LineString(points)));
+		TestCase.assertFalse(
+				ShamosHoey.simplePolygon(new Polygon(new LineString(points))));
+		TestCase.assertFalse((new LineString(points)).isSimple());
+		complex(new Polygon(new LineString(points)));
 		TestCase.assertEquals(4, points.size());
 
 	}
@@ -827,6 +842,12 @@ public class ShamosHoeyTest {
 
 		Polygon copy = new Polygon(polygon);
 		List<Point> points = copy.getRing(0).getPoints();
+
+		Point first = points.get(0);
+		Point last = points.get(points.size() - 1);
+		if (first.equalsXY(last)) {
+			points.remove(points.size() - 1);
+		}
 
 		for (int i = 1; i < points.size(); i++) {
 
