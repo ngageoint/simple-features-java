@@ -4,7 +4,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## 2.2.1 (TBD)
+## [2.2.1](https://github.com/ngageoint/simple-features-java/releases/tag/2.2.1) (01-19-2023)
 
 * Shamos-Hoey simple polygon detection bug fix
 
