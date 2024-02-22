@@ -128,6 +128,32 @@ public class GeometryUtils {
 	}
 
 	/**
+	 * Get the distance in meters between two points in degrees using the
+	 * Haversine formula
+	 * 
+	 * @param point1
+	 *            point 1
+	 * @param point2
+	 *            point 2
+	 * @return distance in meters
+	 * @since 2.2.2
+	 */
+	public static double distanceHaversine(Point point1, Point point2) {
+		double lat1 = point1.getY();
+		double lon1 = point1.getX();
+		double lat2 = point2.getY();
+		double lon2 = point2.getX();
+		double diffLat = degreesToRadians(lat2 - lat1);
+		double diffLon = degreesToRadians(lon2 - lon1);
+		double a = Math.sin(diffLat / 2) * Math.sin(diffLat / 2)
+				+ Math.cos(degreesToRadians(lat1))
+						* Math.cos(degreesToRadians(lat2))
+						* Math.sin(diffLon / 2) * Math.sin(diffLon / 2);
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		return GeometryConstants.EARTH_RADIUS * c;
+	}
+
+	/**
 	 * Get the bearing heading in degrees between two points in degrees
 	 * 
 	 * @param point1
@@ -145,6 +171,52 @@ public class GeometryUtils {
 		double x = Math.cos(y1) * Math.sin(y2)
 				- Math.sin(y1) * Math.cos(y2) * Math.cos(xDiff);
 		return (radiansToDegrees(Math.atan2(y, x)) + 360) % 360;
+	}
+
+	/**
+	 * Get the geodesic midpoint in degrees between two points in degrees
+	 * 
+	 * @param point1
+	 *            point 1
+	 * @param point2
+	 *            point 2
+	 * @return geodesic midpoint in degrees
+	 * @since 2.2.2
+	 */
+	public static Point geodesicMidpoint(Point point1, Point point2) {
+		Point point1Radians = degreesToRadians(point1);
+		Point point2Radians = degreesToRadians(point2);
+		Point midpointRadians = geodesicMidpointRadians(point1Radians,
+				point2Radians);
+		return radiansToDegrees(midpointRadians);
+	}
+
+	/**
+	 * Get the geodesic midpoint in radians between two points in radians
+	 * 
+	 * @param point1
+	 *            point 1
+	 * @param point2
+	 *            point 2
+	 * @return geodesic midpoint in radians
+	 * @since 2.2.2
+	 */
+	public static Point geodesicMidpointRadians(Point point1, Point point2) {
+
+		double xDiff = point2.getX() - point1.getX();
+		double y1 = point1.getY();
+		double y2 = point2.getY();
+		double x1 = point1.getX();
+
+		double bx = Math.cos(y2) * Math.cos(xDiff);
+		double by = Math.cos(y2) * Math.sin(xDiff);
+
+		double y = Math.atan2(Math.sin(y1) + Math.sin(y2),
+				Math.sqrt((Math.cos(y1) + bx) * (Math.cos(y1) + bx) + by * by));
+		double x = x1 + Math.atan2(by, Math.cos(y1) + bx);
+		Point midpoint = new Point(x, y);
+
+		return midpoint;
 	}
 
 	/**
@@ -236,6 +308,34 @@ public class GeometryUtils {
 	 */
 	public static double radiansToDegrees(double radians) {
 		return radians * GeometryConstants.RADIANS_TO_DEGREES;
+	}
+
+	/**
+	 * Convert point in degrees to radians
+	 * 
+	 * @param point
+	 *            point in degrees
+	 * @return point in radians
+	 * @since 2.2.2
+	 */
+	public static Point degreesToRadians(Point point) {
+		double x = degreesToRadians(point.getX());
+		double y = degreesToRadians(point.getY());
+		return new Point(x, y);
+	}
+
+	/**
+	 * Convert point in radians to degrees
+	 * 
+	 * @param point
+	 *            point in radians
+	 * @return point in degrees
+	 * @since 2.2.2
+	 */
+	public static Point radiansToDegrees(Point point) {
+		double x = radiansToDegrees(point.getX());
+		double y = radiansToDegrees(point.getY());
+		return new Point(x, y);
 	}
 
 	/**
@@ -881,6 +981,127 @@ public class GeometryUtils {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Create a geodesic path of a line string in degrees with a max distance
+	 * between any two path points
+	 * 
+	 * @param lineString
+	 *            line string in degrees
+	 * @param maxDistance
+	 *            max distance allowed between path points
+	 * @return geodesic path of points
+	 * @since 2.2.2
+	 */
+	public static List<Point> geodesicPath(LineString lineString,
+			double maxDistance) {
+		return geodesicPath(lineString.getPoints(), maxDistance);
+	}
+
+	/**
+	 * Create a geodesic path of a points in degrees with a max distance between
+	 * any two path points
+	 * 
+	 * @param points
+	 *            points in degrees
+	 * @param maxDistance
+	 *            max distance allowed between path points
+	 * @return geodesic path of points
+	 * @since 2.2.2
+	 */
+	public static List<Point> geodesicPath(List<Point> points,
+			double maxDistance) {
+		List<Point> path = new ArrayList<>();
+		if (!points.isEmpty()) {
+			path.add(points.get(0));
+			for (int i = 0; i < points.size() - 1; i++) {
+				List<Point> subPath = geodesicPath(points.get(i),
+						points.get(i + 1), maxDistance);
+				path.addAll(subPath.subList(1, subPath.size()));
+			}
+		}
+		return path;
+	}
+
+	/**
+	 * Create a geodesic path between the two points in degrees with a max
+	 * distance between any two path points
+	 * 
+	 * @param point1
+	 *            point 1
+	 * @param point2
+	 *            point 2
+	 * @param maxDistance
+	 *            max distance allowed between path points
+	 * @return geodesic path of points
+	 * @since 2.2.2
+	 */
+	public static List<Point> geodesicPath(Point point1, Point point2,
+			double maxDistance) {
+		List<Point> path = new ArrayList<>();
+		path.add(point1);
+		geodesicPath(point1, point2, maxDistance, path);
+		path.add(point2);
+		return path;
+	}
+
+	/**
+	 * Populate a geodesic path between the two points in degrees with a max
+	 * distance between any two path points
+	 * 
+	 * @param point1
+	 *            point 1
+	 * @param point2
+	 *            point 2
+	 * @param maxDistance
+	 *            max distance allowed between path points
+	 * @param path
+	 *            geodesic path of points
+	 */
+	private static void geodesicPath(Point point1, Point point2,
+			double maxDistance, List<Point> path) {
+		double distance = distanceHaversine(point1, point2);
+		if (distance > maxDistance) {
+			Point midpoint = geodesicMidpoint(point1, point2);
+			geodesicPath(point1, midpoint, maxDistance, path);
+			path.add(midpoint);
+			geodesicPath(midpoint, point2, maxDistance, path);
+		}
+	}
+
+	/**
+	 * Expand the vertical bounds of a geometry envelope in degrees by including
+	 * geodesic bounds
+	 * 
+	 * @param envelope
+	 *            geometry envelope in degrees
+	 * @return geodesic expanded geometry envelope in degrees
+	 * @since 2.2.2
+	 */
+	public static GeometryEnvelope geodesicEnvelope(GeometryEnvelope envelope) {
+		GeometryEnvelope geodesic = envelope.copy();
+		if (envelope.getMinY() < 0) {
+			Point left = envelope.getBottomLeft();
+			Point right = envelope.getBottomRight();
+			Point midpoint = geodesicMidpoint(left, right);
+			double y = midpoint.getY();
+			if (y < geodesic.getMinY()) {
+				geodesic.setMinY(y);
+			}
+
+		}
+		if (envelope.getMaxY() > 0) {
+			Point left = envelope.getTopLeft();
+			Point right = envelope.getTopRight();
+			Point midpoint = geodesicMidpoint(left, right);
+			double y = midpoint.getY();
+			if (y > geodesic.getMaxY()) {
+				geodesic.setMaxY(y);
+			}
+
+		}
+		return geodesic;
 	}
 
 	/**

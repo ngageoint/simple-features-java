@@ -2,6 +2,7 @@ package mil.nga.sf;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import org.junit.Test;
 
 import junit.framework.TestCase;
 import mil.nga.sf.util.GeometryConstants;
+import mil.nga.sf.util.GeometryEnvelopeBuilder;
 import mil.nga.sf.util.GeometryUtils;
 
 /**
@@ -1461,6 +1463,645 @@ public class GeometryUtilsTest {
 
 		TestCase.assertEquals(-0.6891904581641471, degreesCentroid.getX());
 		TestCase.assertEquals(37.02524099014426, degreesCentroid.getY());
+
+	}
+
+	/**
+	 * Test distance Haversine
+	 */
+	@Test
+	public void testDistanceHaversine() {
+
+		testDistanceHaversine(-73.779, 40.640, 103.989, 1.359,
+				15356717.55865963);
+
+		testDistanceHaversine(-61.207542, 15.526518, -18.124573, 27.697002,
+				4633776.207109179);
+
+		testDistanceHaversine(-115.49, 39.64, 52.98, -22.69,
+				17858784.720537618);
+
+	}
+
+	/**
+	 * Test distance Haversine
+	 * 
+	 * @param lon1
+	 *            longitude 1
+	 * @param lat1
+	 *            latitude 1
+	 * @param lon2
+	 *            longitude 2
+	 * @param lat2
+	 *            latitude 2
+	 * @param expectedDistance
+	 *            expected distance
+	 */
+	private void testDistanceHaversine(double lon1, double lat1, double lon2,
+			double lat2, double expectedDistance) {
+
+		Point point1 = new Point(lon1, lat1);
+		Point point2 = new Point(lon2, lat2);
+
+		double distance = GeometryUtils.distanceHaversine(point1, point2);
+
+		assertEquals(expectedDistance, distance, 0.0);
+
+	}
+
+	/**
+	 * Test bearing
+	 */
+	@Test
+	public void testBearing() {
+
+		testBearing(-73.779, 40.640, 103.989, 1.359, 3.3326543286976857);
+
+		testBearing(-61.207542, 15.526518, -18.124573, 27.697002,
+				65.56992873258116);
+
+		testBearing(-115.49, 39.64, 52.98, -22.69, 33.401404803852586);
+
+	}
+
+	/**
+	 * Test bearing
+	 * 
+	 * @param lon1
+	 *            longitude 1
+	 * @param lat1
+	 *            latitude 1
+	 * @param lon2
+	 *            longitude 2
+	 * @param lat2
+	 *            latitude 2
+	 * @param expectedBearing
+	 *            expected bearing
+	 */
+	private void testBearing(double lon1, double lat1, double lon2, double lat2,
+			double expectedBearing) {
+
+		Point point1 = new Point(lon1, lat1);
+		Point point2 = new Point(lon2, lat2);
+
+		double bearing = GeometryUtils.bearing(point1, point2);
+
+		assertEquals(expectedBearing, bearing, 0.0);
+
+	}
+
+	/**
+	 * Test midpoint
+	 */
+	@Test
+	public void testMidpoint() {
+
+		testMidpoint(-73.779, 40.640, 103.989, 1.359, 97.01165658499957,
+				70.180706801119);
+
+		testMidpoint(-61.207542, 15.526518, -18.124573, 27.697002,
+				-40.62120498446578, 23.06700073523901);
+
+		testMidpoint(-115.49, 39.64, 52.98, -22.69, 10.497130585764902,
+				47.89844929382955);
+
+	}
+
+	/**
+	 * Test midpoint
+	 * 
+	 * @param lon1
+	 *            longitude 1
+	 * @param lat1
+	 *            latitude 1
+	 * @param lon2
+	 *            longitude 2
+	 * @param lat2
+	 *            latitude 2
+	 * @param expectedLon
+	 *            expected longitude
+	 * @param expectedLat
+	 *            expected latitude
+	 */
+	private void testMidpoint(double lon1, double lat1, double lon2,
+			double lat2, double expectedLon, double expectedLat) {
+
+		Point point1 = new Point(lon1, lat1);
+		Point point2 = new Point(lon2, lat2);
+
+		Point midpoint = GeometryUtils.geodesicMidpoint(point1, point2);
+
+		assertEquals(expectedLon, midpoint.getX(), 0.0);
+		assertEquals(expectedLat, midpoint.getY(), 0.0);
+
+		Point point1Radians = GeometryUtils.degreesToRadians(point1);
+		Point point2Radians = GeometryUtils.degreesToRadians(point2);
+
+		Point midpointRadians = GeometryUtils
+				.geodesicMidpointRadians(point1Radians, point2Radians);
+
+		assertEquals(GeometryUtils.degreesToRadians(midpoint), midpointRadians);
+
+	}
+
+	/**
+	 * Test geodesic path
+	 */
+	@Test
+	public void testGeodesicPath() {
+
+		final double METERS_TEST = 2500000;
+
+		Point point1 = new Point(-73.779, 40.640);
+		Point point2 = new Point(103.989, 1.359);
+
+		List<Point> path = GeometryUtils.geodesicPath(point1, point2,
+				100000000);
+
+		assertEquals(2, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+		assertEquals(point2, path.get(path.size() - 1));
+
+		path = GeometryUtils.geodesicPath(point1, point2, 10000000);
+
+		assertEquals(3, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+		assertEquals(point2, path.get(path.size() - 1));
+		assertEquals(97.01165658499957, path.get(1).getX(), 0.0);
+		assertEquals(70.180706801119, path.get(1).getY(), 0.0);
+
+		path = GeometryUtils.geodesicPath(point1, point2, METERS_TEST);
+
+		final int PATH_COUNT_1 = 9;
+		assertEquals(PATH_COUNT_1, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+		assertEquals(point2, path.get(path.size() - 1));
+		assertEquals(-71.92354211648598, path.get(1).getX(), 0.0);
+		assertEquals(57.84299258409111, path.get(1).getY(), 0.0);
+		assertEquals(-66.48824612217787, path.get(2).getX(), 0.0);
+		assertEquals(74.96658102555037, path.get(2).getY(), 0.0);
+		assertEquals(57.819970305247146, path.get(3).getX(), 0.0);
+		assertEquals(86.50086370806171, path.get(3).getY(), 0.0);
+		assertEquals(97.01165658499957, path.get(4).getX(), 0.0);
+		assertEquals(70.180706801119, path.get(4).getY(), 0.0);
+		assertEquals(100.68758599469604, path.get(5).getX(), 0.0);
+		assertEquals(53.01802965780041, path.get(5).getY(), 0.0);
+		assertEquals(102.22354481789006, path.get(6).getX(), 0.0);
+		assertEquals(35.80797373447713, path.get(6).getY(), 0.0);
+		assertEquals(103.19828968828496, path.get(7).getX(), 0.0);
+		assertEquals(18.585518760662953, path.get(7).getY(), 0.0);
+
+		point1 = new Point(-61.207542, 15.526518);
+		point2 = new Point(-18.124573, 27.697002);
+
+		path = GeometryUtils.geodesicPath(point1, point2, METERS_TEST);
+
+		final int PATH_COUNT_2 = 3;
+		assertEquals(PATH_COUNT_2, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+		assertEquals(point2, path.get(path.size() - 1));
+		assertEquals(-40.62120498446578, path.get(1).getX(), 0.0);
+		assertEquals(23.06700073523901, path.get(1).getY(), 0.0);
+
+		path = GeometryUtils.geodesicPath(point1, point2, 1500000);
+
+		assertEquals(5, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+		assertEquals(point2, path.get(path.size() - 1));
+		assertEquals(-51.154455380800286, path.get(1).getX(), 0.0);
+		assertEquals(19.58837936536169, path.get(1).getY(), 0.0);
+		assertEquals(-40.62120498446578, path.get(2).getX(), 0.0);
+		assertEquals(23.06700073523901, path.get(2).getY(), 0.0);
+		assertEquals(-29.591449129559173, path.get(3).getX(), 0.0);
+		assertEquals(25.814850212565023, path.get(3).getY(), 0.0);
+
+		point1 = new Point(-115.49, 39.64);
+		point2 = new Point(52.98, -22.69);
+
+		path = GeometryUtils.geodesicPath(point1, point2, 10000000);
+
+		assertEquals(3, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+		assertEquals(point2, path.get(path.size() - 1));
+		assertEquals(10.497130585764902, path.get(1).getX(), 0.0);
+		assertEquals(47.89844929382955, path.get(1).getY(), 0.0);
+
+		path = GeometryUtils.geodesicPath(point1, point2, METERS_TEST);
+
+		final int PATH_COUNT_3 = 9;
+		assertEquals(PATH_COUNT_3, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+		assertEquals(point2, path.get(path.size() - 1));
+		assertEquals(-96.24706669925085, path.get(1).getX(), 0.0);
+		assertEquals(55.05735117318652, path.get(1).getY(), 0.0);
+		assertEquals(-60.22371275346116, path.get(2).getX(), 0.0);
+		assertEquals(64.43472917406754, path.get(2).getY(), 0.0);
+		assertEquals(-16.117214263945066, path.get(3).getX(), 0.0);
+		assertEquals(61.05440885911931, path.get(3).getY(), 0.0);
+		assertEquals(10.497130585764902, path.get(4).getX(), 0.0);
+		assertEquals(47.89844929382955, path.get(4).getY(), 0.0);
+		assertEquals(25.189402921803275, path.get(5).getX(), 0.0);
+		assertEquals(31.25647851927572, path.get(5).getY(), 0.0);
+		assertEquals(35.259366393531955, path.get(6).getX(), 0.0);
+		assertEquals(13.465910465448717, path.get(6).getY(), 0.0);
+		assertEquals(43.88449185422331, path.get(7).getX(), 0.0);
+		assertEquals(-4.667462203083873, path.get(7).getY(), 0.0);
+
+		LineString lineString = new LineString();
+
+		int expectedPoints = 0;
+
+		path = GeometryUtils.geodesicPath(lineString, METERS_TEST);
+		assertEquals(expectedPoints, path.size());
+		pathDuplicateCheck(path);
+
+		point1 = new Point(-73.779, 40.640);
+		lineString.addPoint(point1);
+		expectedPoints++;
+
+		path = GeometryUtils.geodesicPath(lineString, METERS_TEST);
+		assertEquals(expectedPoints, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+
+		point2 = new Point(103.989, 1.359);
+		lineString.addPoint(point2);
+		expectedPoints += PATH_COUNT_1 - 1;
+
+		path = GeometryUtils.geodesicPath(lineString, METERS_TEST);
+		assertEquals(expectedPoints, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+		assertEquals(point2, path.get(path.size() - 1));
+
+		Point point3 = new Point(-61.207542, 15.526518);
+		lineString.addPoint(point3);
+		final int PATH_COUNT_1_2 = GeometryUtils
+				.geodesicPath(point2, point3, METERS_TEST).size();
+		expectedPoints += PATH_COUNT_1_2 - 1;
+
+		path = GeometryUtils.geodesicPath(lineString, METERS_TEST);
+		assertEquals(expectedPoints, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+		assertEquals(point2, path.get(PATH_COUNT_1 - 1));
+		assertEquals(point3, path.get(path.size() - 1));
+
+		Point point4 = new Point(-18.124573, 27.697002);
+		lineString.addPoint(point4);
+		expectedPoints += PATH_COUNT_2 - 1;
+
+		path = GeometryUtils.geodesicPath(lineString, METERS_TEST);
+		assertEquals(expectedPoints, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+		assertEquals(point2, path.get(PATH_COUNT_1 - 1));
+		assertEquals(point3, path.get(PATH_COUNT_1 + PATH_COUNT_1_2 - 2));
+		assertEquals(point4, path.get(path.size() - 1));
+
+		Point point5 = new Point(-115.49, 39.64);
+		lineString.addPoint(point5);
+		final int PATH_COUNT_2_3 = GeometryUtils
+				.geodesicPath(point4, point5, METERS_TEST).size();
+		expectedPoints += PATH_COUNT_2_3 - 1;
+
+		path = GeometryUtils.geodesicPath(lineString, METERS_TEST);
+		assertEquals(expectedPoints, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+		assertEquals(point2, path.get(PATH_COUNT_1 - 1));
+		assertEquals(point3, path.get(PATH_COUNT_1 + PATH_COUNT_1_2 - 2));
+		assertEquals(point4,
+				path.get(PATH_COUNT_1 + PATH_COUNT_1_2 + PATH_COUNT_2 - 3));
+		assertEquals(point5, path.get(path.size() - 1));
+
+		Point point6 = new Point(52.98, -22.69);
+		lineString.addPoint(point6);
+		expectedPoints += PATH_COUNT_3 - 1;
+
+		path = GeometryUtils.geodesicPath(lineString, METERS_TEST);
+		assertEquals(expectedPoints, path.size());
+		pathDuplicateCheck(path);
+		assertEquals(point1, path.get(0));
+		assertEquals(point2, path.get(PATH_COUNT_1 - 1));
+		assertEquals(point3, path.get(PATH_COUNT_1 + PATH_COUNT_1_2 - 2));
+		assertEquals(point4,
+				path.get(PATH_COUNT_1 + PATH_COUNT_1_2 + PATH_COUNT_2 - 3));
+		assertEquals(point5, path.get(PATH_COUNT_1 + PATH_COUNT_1_2
+				+ PATH_COUNT_2 + PATH_COUNT_2_3 - 4));
+		assertEquals(point6, path.get(path.size() - 1));
+
+	}
+
+	/**
+	 * Test geodesic envelope
+	 */
+	@Test
+	public void testGeodesicEnvelope() {
+
+		testGeodesicEnvelope(new GeometryEnvelope());
+
+		testGeodesicEnvelope(new GeometryEnvelope(-85, 0, 85, 0));
+
+		testGeodesicEnvelope(new GeometryEnvelope(0, -45, 0, 45));
+
+		testGeodesicEnvelope(new GeometryEnvelope(-85, -45, 85, 45),
+				new GeometryEnvelope(-85, -85.0189306062998, 85,
+						85.0189306062998));
+
+		testGeodesicEnvelope(new GeometryEnvelope(0, 40, 60, 60),
+				new GeometryEnvelope(0, 40, 60, 63.43494882292201));
+
+		testGeodesicEnvelope(
+				new GeometryEnvelope(-116.564009, 52.257876, 21.002792,
+						55.548544),
+				new GeometryEnvelope(-116.564009, 52.257876, 21.002792,
+						76.05697069912907));
+
+		testGeodesicEnvelope(
+				new GeometryEnvelope(-0.118092, 1.290270, 103.851959,
+						51.509865),
+				new GeometryEnvelope(-0.118092, 1.290270, 103.851959,
+						63.908548725225884));
+
+		testGeodesicEnvelope(
+				new GeometryEnvelope(-71.038887, -33.92584, 18.42322,
+						42.364506),
+				new GeometryEnvelope(-71.038887, -43.43480368259327, 18.42322,
+						52.08227546634191));
+
+		testGeodesicEnvelope(
+				new GeometryEnvelope(-65.116900, -54.656860, 13.008587,
+						-9.120679),
+				new GeometryEnvelope(-65.116900, -61.16106506177795, 13.008587,
+						-9.120679));
+
+		testGeodesicEnvelope(
+				new GeometryEnvelope(-69.001773, -51.614743, 120.316646,
+						22.794475),
+				new GeometryEnvelope(-69.001773, -86.31825003835286, 120.316646,
+						79.0603064734963));
+
+	}
+
+	/**
+	 * Test geodesic geometry envelope expansion
+	 * 
+	 * @param envelope
+	 *            geometry envelope and expected geometry envelope
+	 */
+	private void testGeodesicEnvelope(GeometryEnvelope envelope) {
+		testGeodesicEnvelope(envelope, envelope);
+	}
+
+	/**
+	 * Test geodesic geometry envelope expansion
+	 * 
+	 * @param envelope
+	 *            geometry envelope
+	 * @param expected
+	 *            expected geometry envelope
+	 */
+	private void testGeodesicEnvelope(GeometryEnvelope envelope,
+			GeometryEnvelope expected) {
+
+		final double distancePixels = 512.0;
+		final double delta = 0.0000000000001;
+
+		GeometryEnvelope geodesic = GeometryUtils.geodesicEnvelope(envelope);
+		compareEnvelopes(expected, geodesic, delta);
+
+		if (envelope.getMaxX() - envelope.getMinX() <= 180.0) {
+
+			// Top line
+			double distance = GeometryUtils.distanceHaversine(
+					envelope.getTopLeft(), envelope.getTopRight());
+			double maxDistance = distance / distancePixels;
+			List<Point> path = GeometryUtils.geodesicPath(envelope.getTopLeft(),
+					envelope.getTopRight(), maxDistance);
+			GeometryEnvelope pathEnvelope = GeometryEnvelopeBuilder
+					.buildEnvelope(new LineString(path));
+
+			// Bottom line
+			distance = GeometryUtils.distanceHaversine(envelope.getBottomLeft(),
+					envelope.getBottomRight());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getBottomLeft(),
+					envelope.getBottomRight(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			compareEnvelopes(pathEnvelope, geodesic, delta);
+
+			// The rest of the line tests below are not really needed, but
+			// included as extra sanity checks
+
+			// Left line
+			distance = GeometryUtils.distanceHaversine(envelope.getTopLeft(),
+					envelope.getBottomLeft());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getTopLeft(),
+					envelope.getBottomLeft(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			// Right line
+			distance = GeometryUtils.distanceHaversine(envelope.getTopRight(),
+					envelope.getBottomRight());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getTopRight(),
+					envelope.getBottomRight(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			compareEnvelopes(pathEnvelope, geodesic, delta);
+
+			// Diagonal line
+			distance = GeometryUtils.distanceHaversine(envelope.getTopLeft(),
+					envelope.getBottomRight());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getTopLeft(),
+					envelope.getBottomRight(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			// Other diagonal line
+			distance = GeometryUtils.distanceHaversine(envelope.getTopRight(),
+					envelope.getBottomLeft());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getTopRight(),
+					envelope.getBottomLeft(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			compareEnvelopes(pathEnvelope, geodesic, delta);
+
+			// Mid horizontal line
+			distance = GeometryUtils.distanceHaversine(envelope.getLeftMid(),
+					envelope.getRightMid());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getLeftMid(),
+					envelope.getRightMid(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			// Mid vertical line
+			distance = GeometryUtils.distanceHaversine(envelope.getTopMid(),
+					envelope.getBottomMid());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getTopMid(),
+					envelope.getBottomMid(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			compareEnvelopes(pathEnvelope, geodesic, delta);
+
+			// Mid to neighbor mid lines
+
+			distance = GeometryUtils.distanceHaversine(envelope.getLeftMid(),
+					envelope.getTopMid());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getLeftMid(),
+					envelope.getTopMid(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			distance = GeometryUtils.distanceHaversine(envelope.getTopMid(),
+					envelope.getRightMid());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getTopMid(),
+					envelope.getRightMid(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			distance = GeometryUtils.distanceHaversine(envelope.getRightMid(),
+					envelope.getBottomMid());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getRightMid(),
+					envelope.getBottomMid(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			distance = GeometryUtils.distanceHaversine(envelope.getBottomMid(),
+					envelope.getLeftMid());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getBottomMid(),
+					envelope.getLeftMid(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			compareEnvelopes(pathEnvelope, geodesic, delta);
+
+			// Mid to corner lines
+
+			distance = GeometryUtils.distanceHaversine(envelope.getLeftMid(),
+					envelope.getTopRight());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getLeftMid(),
+					envelope.getTopRight(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			distance = GeometryUtils.distanceHaversine(envelope.getLeftMid(),
+					envelope.getBottomRight());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getLeftMid(),
+					envelope.getBottomRight(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			distance = GeometryUtils.distanceHaversine(envelope.getTopMid(),
+					envelope.getBottomLeft());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getTopMid(),
+					envelope.getBottomLeft(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			distance = GeometryUtils.distanceHaversine(envelope.getTopMid(),
+					envelope.getBottomRight());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getTopMid(),
+					envelope.getBottomRight(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			distance = GeometryUtils.distanceHaversine(envelope.getRightMid(),
+					envelope.getTopLeft());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getRightMid(),
+					envelope.getTopLeft(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			distance = GeometryUtils.distanceHaversine(envelope.getRightMid(),
+					envelope.getBottomLeft());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getRightMid(),
+					envelope.getBottomLeft(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			distance = GeometryUtils.distanceHaversine(envelope.getBottomMid(),
+					envelope.getTopLeft());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getBottomMid(),
+					envelope.getTopLeft(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			distance = GeometryUtils.distanceHaversine(envelope.getBottomMid(),
+					envelope.getTopRight());
+			maxDistance = distance / distancePixels;
+			path = GeometryUtils.geodesicPath(envelope.getBottomMid(),
+					envelope.getTopRight(), maxDistance);
+			GeometryEnvelopeBuilder.buildEnvelope(new LineString(path),
+					pathEnvelope);
+
+			compareEnvelopes(pathEnvelope, geodesic, delta);
+
+		}
+
+	}
+
+	/**
+	 * Compare the envelopes for equality
+	 * 
+	 * @param expected
+	 *            expected geometry envelope
+	 * @param envelope
+	 *            geometry envelope
+	 * @param delta
+	 *            comparison delta
+	 */
+	private void compareEnvelopes(GeometryEnvelope expected,
+			GeometryEnvelope envelope, double delta) {
+		if (!envelope.equals(expected)) {
+			assertEquals(expected.getMinX(), envelope.getMinX(), delta);
+			assertEquals(expected.getMinY(), envelope.getMinY(), delta);
+			assertEquals(expected.getMaxX(), envelope.getMaxX(), delta);
+			assertEquals(expected.getMaxY(), envelope.getMaxY(), delta);
+		}
+	}
+
+	/**
+	 * Check that there are no back to back duplicate points
+	 * 
+	 * @param path
+	 *            point path
+	 */
+	private void pathDuplicateCheck(List<Point> path) {
+
+		for (int i = 0; i < path.size() - 1; i++) {
+			assertNotEquals(path.get(i), path.get(i + 1));
+		}
 
 	}
 

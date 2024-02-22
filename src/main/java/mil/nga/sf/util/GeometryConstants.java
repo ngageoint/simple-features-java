@@ -78,4 +78,11 @@ public class GeometryConstants {
 	 */
 	public static final double DEGREES_TO_RADIANS = Math.PI / 180.0;
 
+	/**
+	 * Earth radius in meters (WGS84)
+	 * 
+	 * @since 2.2.2
+	 */
+	public static final double EARTH_RADIUS = 6378137.0;
+
 }

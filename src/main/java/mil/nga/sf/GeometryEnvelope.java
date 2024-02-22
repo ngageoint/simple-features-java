@@ -505,6 +505,46 @@ public class GeometryEnvelope implements Serializable {
 	}
 
 	/**
+	 * Get the left mid point
+	 * 
+	 * @return left mid point
+	 * @since 2.2.2
+	 */
+	public Point getLeftMid() {
+		return new Point(minX, getMidY());
+	}
+
+	/**
+	 * Get the bottom mid point
+	 * 
+	 * @return bottom mid point
+	 * @since 2.2.2
+	 */
+	public Point getBottomMid() {
+		return new Point(getMidX(), minY);
+	}
+
+	/**
+	 * Get the right mid point
+	 * 
+	 * @return right mid point
+	 * @since 2.2.2
+	 */
+	public Point getRightMid() {
+		return new Point(maxX, getMidY());
+	}
+
+	/**
+	 * Get the top mid point
+	 * 
+	 * @return top mid point
+	 * @since 2.2.2
+	 */
+	public Point getTopMid() {
+		return new Point(getMidX(), maxY);
+	}
+
+	/**
 	 * Get the left line
 	 * 
 	 * @return left line

@@ -6,7 +6,8 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ## 2.2.2 (TBD)
 
-* TBD
+* Geometry Utils for Haversine distance, geodesic midpoints, geodesic paths, and geodesic envelopes
+* Envelope left mid, bottom mid, right mid, and top mid methods
 
 ## [2.2.1](https://github.com/ngageoint/simple-features-java/releases/tag/2.2.1) (01-19-2023)
 
