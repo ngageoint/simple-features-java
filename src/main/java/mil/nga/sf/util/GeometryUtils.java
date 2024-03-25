@@ -154,6 +154,19 @@ public class GeometryUtils {
 	}
 
 	/**
+	 * Get the distance in meters between the end points of a line in degrees
+	 * using the Haversine formula
+	 * 
+	 * @param line
+	 *            line
+	 * @return distance in meters
+	 * @since 2.2.2
+	 */
+	public static double distanceHaversine(Line line) {
+		return distanceHaversine(line.startPoint(), line.endPoint());
+	}
+
+	/**
 	 * Get the bearing heading in degrees between two points in degrees
 	 * 
 	 * @param point1
