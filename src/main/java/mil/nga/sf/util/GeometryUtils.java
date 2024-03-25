@@ -1013,7 +1013,7 @@ public class GeometryUtils {
 	}
 
 	/**
-	 * Create a geodesic path of a points in degrees with a max distance between
+	 * Create a geodesic path of points in degrees with a max distance between
 	 * any two path points
 	 * 
 	 * @param points
