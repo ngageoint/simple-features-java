@@ -187,52 +187,6 @@ public class GeometryUtils {
 	}
 
 	/**
-	 * Get the geodesic midpoint in degrees between two points in degrees
-	 * 
-	 * @param point1
-	 *            point 1
-	 * @param point2
-	 *            point 2
-	 * @return geodesic midpoint in degrees
-	 * @since 2.2.2
-	 */
-	public static Point geodesicMidpoint(Point point1, Point point2) {
-		Point point1Radians = degreesToRadians(point1);
-		Point point2Radians = degreesToRadians(point2);
-		Point midpointRadians = geodesicMidpointRadians(point1Radians,
-				point2Radians);
-		return radiansToDegrees(midpointRadians);
-	}
-
-	/**
-	 * Get the geodesic midpoint in radians between two points in radians
-	 * 
-	 * @param point1
-	 *            point 1
-	 * @param point2
-	 *            point 2
-	 * @return geodesic midpoint in radians
-	 * @since 2.2.2
-	 */
-	public static Point geodesicMidpointRadians(Point point1, Point point2) {
-
-		double xDiff = point2.getX() - point1.getX();
-		double y1 = point1.getY();
-		double y2 = point2.getY();
-		double x1 = point1.getX();
-
-		double bx = Math.cos(y2) * Math.cos(xDiff);
-		double by = Math.cos(y2) * Math.sin(xDiff);
-
-		double y = Math.atan2(Math.sin(y1) + Math.sin(y2),
-				Math.sqrt((Math.cos(y1) + bx) * (Math.cos(y1) + bx) + by * by));
-		double x = x1 + Math.atan2(by, Math.cos(y1) + bx);
-		Point midpoint = new Point(x, y);
-
-		return midpoint;
-	}
-
-	/**
 	 * Get the bearing heading in degrees between line end points in degrees
 	 * 
 	 * @param line
@@ -297,6 +251,52 @@ public class GeometryUtils {
 	 */
 	public static boolean isWestBearing(double bearing) {
 		return (bearing % 360.0) > GeometryConstants.BEARING_SOUTH;
+	}
+
+	/**
+	 * Get the geodesic midpoint in degrees between two points in degrees
+	 * 
+	 * @param point1
+	 *            point 1
+	 * @param point2
+	 *            point 2
+	 * @return geodesic midpoint in degrees
+	 * @since 2.2.2
+	 */
+	public static Point geodesicMidpoint(Point point1, Point point2) {
+		Point point1Radians = degreesToRadians(point1);
+		Point point2Radians = degreesToRadians(point2);
+		Point midpointRadians = geodesicMidpointRadians(point1Radians,
+				point2Radians);
+		return radiansToDegrees(midpointRadians);
+	}
+
+	/**
+	 * Get the geodesic midpoint in radians between two points in radians
+	 * 
+	 * @param point1
+	 *            point 1
+	 * @param point2
+	 *            point 2
+	 * @return geodesic midpoint in radians
+	 * @since 2.2.2
+	 */
+	public static Point geodesicMidpointRadians(Point point1, Point point2) {
+
+		double xDiff = point2.getX() - point1.getX();
+		double y1 = point1.getY();
+		double y2 = point2.getY();
+		double x1 = point1.getX();
+
+		double bx = Math.cos(y2) * Math.cos(xDiff);
+		double by = Math.cos(y2) * Math.sin(xDiff);
+
+		double y = Math.atan2(Math.sin(y1) + Math.sin(y2),
+				Math.sqrt((Math.cos(y1) + bx) * (Math.cos(y1) + bx) + by * by));
+		double x = x1 + Math.atan2(by, Math.cos(y1) + bx);
+		Point midpoint = new Point(x, y);
+
+		return midpoint;
 	}
 
 	/**
